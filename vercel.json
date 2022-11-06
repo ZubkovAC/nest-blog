@@ -1,7 +1,7 @@
 {
   "version": 2,
   "env": {
-    "MONGO_URi": "@"
+    "MONGO_URi": "@mongodb+srv://ZybkovAC:u2fvwZGQ60wsUru2@cluster0.ywntv.mongodb.net/expample"
   },
   "builds": [
     {
