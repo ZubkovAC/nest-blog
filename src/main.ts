@@ -16,7 +16,6 @@ async function bootstrap() {
     .addTag('cats')
     .build();
   const document = SwaggerModule.createDocument(app, config, {
-    ignoreGlobalPrefix: true,
     deepScanRoutes: true,
   });
   SwaggerModule.setup('doc', app, document);
