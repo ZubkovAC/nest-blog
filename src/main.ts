@@ -13,7 +13,7 @@ async function bootstrap() {
     // .addTag('cats')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-doc', app, document);
+  await SwaggerModule.setup('api-doc', app, document);
 
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
