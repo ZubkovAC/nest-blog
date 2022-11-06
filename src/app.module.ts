@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+// import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BloggersController } from './bloggers/bloggers.controller';
 import { BloggersService } from './bloggers/bloggers.service';
@@ -24,7 +24,7 @@ import { EmailService } from './auth/email.service';
 @Module({
   imports: [DatabaseModule, ConfigModule.forRoot()],
   controllers: [
-    AppController,
+    // AppController,
     BloggersController,
     UsersController,
     PostsController,
