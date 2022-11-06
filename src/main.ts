@@ -6,13 +6,13 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // swagger
-  const config = new DocumentBuilder()
+  const config = await new DocumentBuilder()
     .setTitle('"Study, study and study again." @ Lenin')
     .setDescription('educational API description')
     .setVersion('1.0')
     // .addTag('cats')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = await SwaggerModule.createDocument(app, config);
   await SwaggerModule.setup('/api-doc', app, document);
 
   app.enableCors();
