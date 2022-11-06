@@ -17,6 +17,7 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config, {
     ignoreGlobalPrefix: true,
+    deepScanRoutes: true,
   });
   SwaggerModule.setup('doc', app, document);
   await app.listen(3000);
