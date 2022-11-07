@@ -22,13 +22,13 @@ export class AppController {
   async getHello() {
     // return this.appService.getHello();
     const app = await NestFactory.create(AppModule);
-    const config = new DocumentBuilder()
+    const config = await new DocumentBuilder()
       .setTitle('"Study, study and study again." @ Lenin')
       .setDescription('educational API description')
       .setVersion('1.0')
       .addTag('cats')
       .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
+    const document = await SwaggerModule.createDocument(app, config);
+    return SwaggerModule.setup('api', app, document);
   }
 }
