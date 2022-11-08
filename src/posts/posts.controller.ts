@@ -81,6 +81,7 @@ class DTO_Posts {
               addedAt: '2022-11-05T05:27:41.215Z',
               userId: 'string',
               login: 'string',
+              createdAt: '2022-11-08T08:47:05.355Z',
             },
           ],
         },

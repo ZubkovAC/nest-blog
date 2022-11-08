@@ -10,15 +10,38 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BloggersService } from './bloggers.service';
-import { Length } from 'class-validator';
+import { IsUrl, Length } from 'class-validator';
 import { CheckBloggerIdGuard } from '../guards/CheckBloggerId.guard';
 import { AuthBaseGuard } from '../guards/AuthBase.guard';
-import { ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBasicAuth,
+  ApiBody,
+  ApiProperty,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+
+export class Cat {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  age: number;
+
+  @ApiProperty()
+  breed: string;
+}
 
 export class InputBloggerType {
+  @ApiProperty()
   @Length(0, 15)
   name: string;
+  @ApiProperty()
   @Length(0, 100)
+  @IsUrl()
   youtubeUrl: string;
 }
 class DTO_b {
@@ -28,32 +51,33 @@ class DTO_b {
   name: string;
   @ApiProperty()
   youtubeUrl: string;
-}
-class DTO_Blogger {
   @ApiProperty()
+  createdAt: Date;
+}
+
+class DTO_Blogger {
+  @ApiProperty({ type: Number })
   pagesCount: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: Number })
   page: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: Number })
   pageSize: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: Number })
   totalCount: number;
 
-  @ApiProperty({
-    example: [{ id: '123123', name: '123123', youtubeUrl: 'asdfasdf' }],
-    // default: [DTO_b],
-  })
+  @ApiProperty({ type: [DTO_b] })
   items: DTO_b[];
 }
 
-@ApiTags('bloggers')
-@Controller('bloggers')
+@ApiTags('blogs')
+@Controller('blogs')
 export class BloggersController {
   constructor(protected bloggerService: BloggersService) {}
-  @Get()
+
+  @Get('/')
   @ApiResponse({
     status: 200,
     description: 'return all Bloggers',
@@ -63,16 +87,37 @@ export class BloggersController {
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
     @Query('searchNameTerm') searchNameTerm: string,
+    @Query('sortBy') sortBy: string,
+    @Query('sortDirection') sortDirection: string,
   ) {
-    return this.bloggerService.getBloggers(
+    const by = sortBy !== undefined && sortBy.trim();
+    const direction = sortDirection !== undefined && sortDirection.trim();
+    return this.bloggerService.getBlogs(
       pageNumber,
       pageSize,
       searchNameTerm,
+      by || direction || '',
     );
   }
-  @Get(':bloggerId/posts')
+
+  @UseGuards(CheckBloggerIdGuard)
+  @ApiResponse({
+    status: 200,
+    description: 'return all Bloggers',
+    type: DTO_b,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+  })
+  @Get(':id')
+  async getBlog(@Param('id') blogId: string) {
+    return this.bloggerService.getBlogId(blogId);
+  }
+
+  @Get(':blogId/posts')
   async getBloggerIdPosts(
-    @Param('bloggerId') bloggerId: string,
+    @Param('blogId') bloggerId: string,
     @Query() pageNumber: string,
     @Query() pageSize: string,
   ) {
@@ -82,9 +127,55 @@ export class BloggersController {
       pageSize,
     );
   }
-  @Post(':bloggerId/posts')
+
+  @UseGuards(AuthBaseGuard)
+  @Post()
+  @ApiBasicAuth()
+  @ApiBody({
+    schema: {
+      example: {
+        name: 'string Length(0, 15)',
+        youtubeUrl:
+          'string Length(0, 100) pattern ^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$\n',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    schema: {
+      example: {
+        id: 'string',
+        name: 'string',
+        youtubeUrl: 'string',
+        createdAt: '2022-11-08T08:53:15.121Z',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  async createBlogger(@Body() inputBlogger: InputBloggerType) {
+    await this.bloggerService.createBlogger(inputBlogger);
+    return;
+  }
+  @ApiBasicAuth()
+  @Post(':blogId/posts')
   async createBloggerIdPosts(
-    @Param('bloggerId') bloggerId: string,
+    @Param('blogId') bloggerId: string,
     @Body() valueBloggerIdPost: ValueBloggerIdPostType,
   ) {
     return this.bloggerService.createBloggerIdPosts(
@@ -92,17 +183,7 @@ export class BloggersController {
       valueBloggerIdPost,
     );
   }
-  @UseGuards(CheckBloggerIdGuard)
-  @Get(':id')
-  async getBlogger(@Param('id') bloggerId: string) {
-    return this.bloggerService.getBloggerId(bloggerId);
-  }
-  @UseGuards(AuthBaseGuard)
-  @Post()
-  async createBlogger(@Body() inputBlogger: InputBloggerType) {
-    await this.bloggerService.createBlogger(inputBlogger);
-    return;
-  }
+  @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
   @UseGuards(CheckBloggerIdGuard)
   @Put(':id')
@@ -113,6 +194,7 @@ export class BloggersController {
     await this.bloggerService.updateBloggerId(bloggerId, bloggerUpdate);
     return;
   }
+  @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
   @UseGuards(CheckBloggerIdGuard)
   @Delete(':id')

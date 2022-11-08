@@ -7,6 +7,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // swagger
   const config = new DocumentBuilder()
+    .addSecurity('basic', {
+      type: 'http',
+      scheme: 'basic',
+    })
+    .addBearerAuth()
     .setTitle('"Study, study and study again." @ Lenin')
     .setDescription('educational API description')
     .setVersion('1.0')

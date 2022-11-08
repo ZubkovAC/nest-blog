@@ -18,18 +18,19 @@ export class BloggersService {
     protected bloggerRepository: BloggerRepository, // ???
     private postsRepository: PostsRepository,
   ) {}
-  async getBloggers(
+  async getBlogs(
     pageNumber: string,
     pageSize: string,
     searchNameTerm: string,
+    sort: string,
   ) {
     const pNumber = pageNumberValidate(pageNumber);
     const pSize = pageSizeValidate(pageSize);
     const searchNT = termValidate(searchNameTerm);
-    return this.bloggerRepository.getBloggers(pNumber, pSize, searchNT);
+    return this.bloggerRepository.getBloggers(pNumber, pSize, searchNT, sort);
   }
-  async getBloggerId(bloggerId: string) {
-    return this.bloggerRepository.findBloggerId(bloggerId);
+  async getBlogId(bloggerId: string) {
+    return this.bloggerRepository.findBlogId(bloggerId);
   }
   async getBloggerIdPosts(
     bloggerId: string,
@@ -63,6 +64,7 @@ export class BloggersService {
       id: new Types.ObjectId().toString(),
       name: inputBlogger.name,
       youtubeUrl: inputBlogger.youtubeUrl,
+      createdAt: new Date().toISOString(),
     });
   }
 }

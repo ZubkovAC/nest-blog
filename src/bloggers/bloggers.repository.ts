@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InputBloggerType } from './bloggers.controller';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { bloggersSchema } from './blogger.schemas';
 
 export const bloggers = [
@@ -31,16 +31,52 @@ export class BloggerRepository {
     pageNumber: number,
     pageSize: number,
     searchNameTerm: string,
+    sort: string,
   ) {
     const skipCount = (pageNumber - 1) * pageSize;
     const query = { name: { $regex: searchNameTerm } };
     const totalCount = await this.blogRepository.countDocuments(query);
 
-    const bloggersRestrict = await this.blogRepository
-      .find({ query }, '-_id -__v')
-      .skip(skipCount)
-      .limit(pageSize)
-      .lean();
+    let bloggersRestrict;
+    console.log('sort', sort);
+    if (
+      !sort ||
+      sort === 'desc' ||
+      (sort !== 'asc' && sort !== 'createdAt' && sort !== 'createdOld')
+    ) {
+      bloggersRestrict = await this.blogRepository
+        .find({ query }, '-_id -__v')
+        // .sort({ [sort]: 1 })
+        .sort({ name: 1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean();
+    }
+    if (sort === 'asc') {
+      bloggersRestrict = await this.blogRepository
+        .find({ query }, '-_id -__v')
+        .sort({ name: -1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean();
+    }
+    if (sort === 'createdAt') {
+      bloggersRestrict = await this.blogRepository
+        .find({ query }, '-_id -__v')
+        .sort({ youtubeUrl: 1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean();
+    }
+    if (sort === 'createdOld') {
+      bloggersRestrict = await this.blogRepository
+        .find({ query }, '-_id -__v')
+        .sort({ youtubeUrl: -1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean();
+    }
+
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
@@ -49,7 +85,7 @@ export class BloggerRepository {
       items: bloggersRestrict,
     };
   }
-  async findBloggerId(bloggerId: string) {
+  async findBlogId(bloggerId: string) {
     return this.blogRepository.findOne({ id: bloggerId }, '-_id -__v').exec();
   }
   async deleteBloggerId(bloggerId: string) {
@@ -68,6 +104,7 @@ export class BloggerRepository {
     id: string;
     name: string;
     youtubeUrl: string;
+    createdAt: string;
   }) {
     return this.blogRepository.insertMany([inputBlogger]);
   }
