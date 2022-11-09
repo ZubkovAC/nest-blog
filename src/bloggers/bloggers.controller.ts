@@ -193,6 +193,7 @@ export class BlogsController {
   }
   @ApiBasicAuth()
   @Post(':blogId/posts')
+  @UseGuards(CheckBloggerIdGuard)
   @ApiBody({
     description: 'Data for constructing new post entity',
     schema: {

@@ -109,7 +109,7 @@ export class PostsRepository {
     if (sort === 'asc') {
       allPostsBlog = await this.postsRepository
         .find({}, '-_id -__v')
-        .sort({ name: -1 })
+        .sort({ name: 1 })
         .skip(skipCount)
         .limit(pageSize)
         .lean();
@@ -117,7 +117,7 @@ export class PostsRepository {
     if (sort === 'createdAt') {
       allPostsBlog = await this.postsRepository
         .find({}, '-_id -__v')
-        .sort({ youtubeUrl: 1 })
+        .sort({ createdAt: 1 })
         .skip(skipCount)
         .limit(pageSize)
         .lean();
@@ -125,7 +125,7 @@ export class PostsRepository {
     if (sort === 'createdOld') {
       allPostsBlog = await this.postsRepository
         .find({}, '-_id -__v')
-        .sort({ youtubeUrl: -1 })
+        .sort({ createdAt: -1 })
         .skip(skipCount)
         .limit(pageSize)
         .lean();
@@ -139,15 +139,16 @@ export class PostsRepository {
       allPostsBlog = await this.postsRepository
         .find({}, '-_id -__v')
         // .sort({ [sort]: 1 })
-        .sort({ name: 1 })
+        .sort({ name: -1 })
         .skip(skipCount)
         .limit(pageSize)
         .lean();
     }
 
-    const allPostsBlogger = await this.postsRepository
+    const allPostsBlogger = await this.bloggersRepository
       .find({ blogId: blogId })
       .lean();
+
     // const post = await this.postsRepository
     //   .find({ bloggerId: bloggerId }, '-_id -__v')
     //   .skip(skipCount)
