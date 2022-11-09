@@ -17,11 +17,14 @@ export class CheckPostIdGuard implements CanActivate {
     @Inject('POSTS_MODEL')
     private postsRepository: Model<PostsSchemaInterface>,
   ) {}
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(
+    context: ExecutionContext, // : boolean | Promise<boolean> | Observable<boolean>
+  ) {
     const request = context.switchToHttp().getRequest();
-    const findPostId = this.postsRepository.findOne({ id: request.params.id });
+    const findPostId = await this.postsRepository.findOne({
+      id: request.params.id,
+    });
+    console.log('123', findPostId);
     if (findPostId) {
       return true;
     }

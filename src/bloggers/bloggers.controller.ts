@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { BloggersService } from './bloggers.service';
+import { BlogsService } from './bloggers.service';
 import { IsUrl, Length } from 'class-validator';
 import { CheckBloggerIdGuard } from '../guards/CheckBloggerId.guard';
 import { AuthBaseGuard } from '../guards/AuthBase.guard';
@@ -21,27 +21,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-export class Cat {
-  @ApiProperty()
-  id: number;
-
-  @ApiProperty()
-  name: string;
-
-  @ApiProperty()
-  age: number;
-
-  @ApiProperty()
-  breed: string;
-}
-
-export class InputBloggerType {
+export class InputBlogType {
   @ApiProperty()
   @Length(0, 15)
   name: string;
   @ApiProperty()
-  @Length(0, 100)
   @IsUrl()
+  @Length(0, 100)
   youtubeUrl: string;
 }
 class DTO_b {
@@ -74,8 +60,8 @@ class DTO_Blogger {
 
 @ApiTags('blogs')
 @Controller('blogs')
-export class BloggersController {
-  constructor(protected bloggerService: BloggersService) {}
+export class BlogsController {
+  constructor(protected blogsService: BlogsService) {}
 
   @Get('/')
   @ApiResponse({
@@ -92,39 +78,71 @@ export class BloggersController {
   ) {
     const by = sortBy !== undefined && sortBy.trim();
     const direction = sortDirection !== undefined && sortDirection.trim();
-    return this.bloggerService.getBlogs(
+    return this.blogsService.getBlogs(
       pageNumber,
       pageSize,
       searchNameTerm,
       by || direction || '',
     );
   }
-
+  @Get(':blogId')
   @UseGuards(CheckBloggerIdGuard)
   @ApiResponse({
     status: 200,
-    description: 'return all Bloggers',
+    description: 'return all BlogId',
     type: DTO_b,
   })
   @ApiResponse({
     status: 404,
     description: 'Not Found',
   })
-  @Get(':id')
-  async getBlog(@Param('id') blogId: string) {
-    return this.bloggerService.getBlogId(blogId);
+  async getBlogId(@Param('blogId') blogId: string) {
+    return this.blogsService.getBlogId(blogId);
   }
 
   @Get(':blogId/posts')
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    schema: {
+      example: {
+        pagesCount: 0,
+        page: 0,
+        pageSize: 0,
+        totalCount: 0,
+        items: [
+          {
+            id: 'string',
+            title: 'string',
+            shortDescription: 'string',
+            content: 'string',
+            blogId: 'string',
+            blogName: 'string',
+            createdAt: '2022-11-09T07:07:44.351Z',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+  })
   async getBloggerIdPosts(
     @Param('blogId') bloggerId: string,
-    @Query() pageNumber: string,
-    @Query() pageSize: string,
+    @Query('pageNumber') pageNumber: string,
+    @Query('pageSize') pageSize: string,
+    @Query('sortBy') sortBy: string,
+    @Query('sortDirection') sortDirection: string,
   ) {
-    return this.bloggerService.getBloggerIdPosts(
+    const by = sortBy !== undefined && sortBy.trim();
+    const direction = sortDirection !== undefined && sortDirection.trim();
+
+    return this.blogsService.getBlogIdPosts(
       bloggerId,
       pageNumber,
       pageSize,
+      by || direction || '',
     );
   }
 
@@ -142,6 +160,7 @@ export class BloggersController {
   })
   @ApiResponse({
     status: 201,
+    description: 'Returns the newly created blog',
     schema: {
       example: {
         id: 'string',
@@ -153,6 +172,7 @@ export class BloggersController {
   })
   @ApiResponse({
     status: 400,
+    description: 'If the inputModel has incorrect values',
     schema: {
       example: {
         errorsMessages: [
@@ -168,42 +188,132 @@ export class BloggersController {
     status: 401,
     description: 'Unauthorized',
   })
-  async createBlogger(@Body() inputBlogger: InputBloggerType) {
-    await this.bloggerService.createBlogger(inputBlogger);
-    return;
+  async createBlogger(@Body() inputBlogger: InputBlogType) {
+    return this.blogsService.createBlog(inputBlogger);
   }
   @ApiBasicAuth()
   @Post(':blogId/posts')
+  @ApiBody({
+    description: 'Data for constructing new post entity',
+    schema: {
+      example: {
+        title: 'string @Length(0, 30)',
+        shortDescription: 'string @Length(0, 100)',
+        content: 'string @Length(0, 1000)',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Returns the newly created post',
+    schema: {
+      example: {
+        id: 'string',
+        title: 'string',
+        shortDescription: 'string',
+        content: 'string',
+        blogId: 'string',
+        blogName: 'string',
+        createdAt: '2022-11-09T07:03:39.923Z',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'If the inputModel has incorrect values',
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 404,
+    description: "If specified blog doesn't exists",
+  })
   async createBloggerIdPosts(
-    @Param('blogId') bloggerId: string,
-    @Body() valueBloggerIdPost: ValueBloggerIdPostType,
+    @Param('blogId') blogId: string,
+    @Body() valueBlogIdPost: ValueBlogIdPostType,
   ) {
-    return this.bloggerService.createBloggerIdPosts(
-      bloggerId,
-      valueBloggerIdPost,
-    );
+    return this.blogsService.createBlogIdPosts(blogId, valueBlogIdPost);
   }
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
   @UseGuards(CheckBloggerIdGuard)
-  @Put(':id')
+  @ApiResponse({
+    status: 204,
+    description: 'No Content',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'If the inputModel has incorrect values',
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+  })
+  @ApiBody({
+    schema: {
+      example: {
+        name: 'string maxLength: 15',
+        youtubeUrl:
+          'string Length(0, 100) pattern ^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$\n',
+      },
+    },
+  })
+  @Put(':blogId')
   async updateBlogger(
-    @Param('id') bloggerId: string,
-    @Body() bloggerUpdate: InputBloggerType,
+    @Param('blogId') blogId: string,
+    @Body() blogUpdate: InputBlogType,
   ) {
-    await this.bloggerService.updateBloggerId(bloggerId, bloggerUpdate);
+    await this.blogsService.updateBlogId(blogId, blogUpdate);
     return;
   }
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
   @UseGuards(CheckBloggerIdGuard)
-  @Delete(':id')
-  async deleteBlogger(@Param('id') bloggerId: string) {
-    await this.bloggerService.deleteBloggerId(bloggerId);
+  @ApiResponse({
+    status: 204,
+    description: 'No Content',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+  })
+  @Delete(':blogId')
+  async deleteBlogger(@Param('blogId') blogId: string) {
+    await this.blogsService.deleteBlogId(blogId);
     return;
   }
 }
-export type ValueBloggerIdPostType = {
+export type ValueBlogIdPostType = {
   title: string;
   shortDescription: string;
   content: string;

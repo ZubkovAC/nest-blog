@@ -22,7 +22,6 @@ export class CheckBloggerIdGuard implements CanActivate {
     const findBloggerId = await this.blogService
       .findOne({ id: request.params.id }, '-_id -__v')
       .exec();
-    console.log(123);
     if (findBloggerId) {
       return true;
     }
@@ -47,7 +46,7 @@ export class CheckBloggerIdPostIdGuard implements CanActivate {
   ) {
     const request = context.switchToHttp().getRequest();
     const findBloggerId = await this.blogService
-      .findOne({ id: request.body.bloggerId })
+      .findOne({ id: request.body.blogId })
       .exec();
     if (findBloggerId) {
       return true;

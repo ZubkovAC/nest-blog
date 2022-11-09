@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InputBloggerType } from './bloggers.controller';
+import { InputBlogType } from './bloggers.controller';
 import { Model } from 'mongoose';
 import { bloggersSchema } from './blogger.schemas';
 
@@ -27,7 +27,7 @@ export class BloggerRepository {
     @Inject('BLOGGERS_MODEL')
     private blogRepository: Model<bloggersSchema>,
   ) {}
-  async getBloggers(
+  async getBlogs(
     pageNumber: number,
     pageSize: number,
     searchNameTerm: string,
@@ -38,16 +38,20 @@ export class BloggerRepository {
     const totalCount = await this.blogRepository.countDocuments(query);
 
     let bloggersRestrict;
-    console.log('sort', sort);
-    if (
-      !sort ||
-      sort === 'desc' ||
-      (sort !== 'asc' && sort !== 'createdAt' && sort !== 'createdOld')
-    ) {
+    // console.log('sort', sort);
+    if (!sort || sort === 'desc' || (sort !== 'asc' && sort !== 'createdOld')) {
       bloggersRestrict = await this.blogRepository
         .find({ query }, '-_id -__v')
         // .sort({ [sort]: 1 })
-        .sort({ name: 1 })
+        .sort({ createdAt: 1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean();
+    }
+    if (sort === 'createdOld') {
+      bloggersRestrict = await this.blogRepository
+        .find({ query }, '-_id -__v')
+        .sort({ createdAt: -1 })
         .skip(skipCount)
         .limit(pageSize)
         .lean();
@@ -60,18 +64,10 @@ export class BloggerRepository {
         .limit(pageSize)
         .lean();
     }
-    if (sort === 'createdAt') {
+    if (sort === 'desc') {
       bloggersRestrict = await this.blogRepository
         .find({ query }, '-_id -__v')
-        .sort({ youtubeUrl: 1 })
-        .skip(skipCount)
-        .limit(pageSize)
-        .lean();
-    }
-    if (sort === 'createdOld') {
-      bloggersRestrict = await this.blogRepository
-        .find({ query }, '-_id -__v')
-        .sort({ youtubeUrl: -1 })
+        .sort({ name: 1 })
         .skip(skipCount)
         .limit(pageSize)
         .lean();
@@ -88,11 +84,11 @@ export class BloggerRepository {
   async findBlogId(bloggerId: string) {
     return this.blogRepository.findOne({ id: bloggerId }, '-_id -__v').exec();
   }
-  async deleteBloggerId(bloggerId: string) {
+  async deleteBlogId(bloggerId: string) {
     await this.blogRepository.deleteOne({ id: bloggerId });
     return;
   }
-  async updateBloggerId(bloggerId: string, inputBloggerType: InputBloggerType) {
+  async updateBlogId(bloggerId: string, inputBloggerType: InputBlogType) {
     await this.blogRepository.updateOne({ id: bloggerId }, inputBloggerType);
     return {
       id: bloggerId,
@@ -100,12 +96,18 @@ export class BloggerRepository {
       youtubeUrl: inputBloggerType.youtubeUrl,
     };
   }
-  async createBlogger(inputBlogger: {
+  async createBlog(inputBlogger: {
     id: string;
     name: string;
     youtubeUrl: string;
     createdAt: string;
   }) {
-    return this.blogRepository.insertMany([inputBlogger]);
+    const res = await this.blogRepository.insertMany([inputBlogger]);
+    return res.map((blog) => ({
+      id: blog.id,
+      name: blog.name,
+      youtubeUrl: blog.youtubeUrl,
+      createdAt: blog.createdAt,
+    }))[0];
   }
 }

@@ -5,9 +5,9 @@ export const PostsSchema = new mongoose.Schema({
   title: String,
   shortDescription: String,
   content: String,
-  bloggerId: String,
-  bloggerName: String,
-  addedAt: String,
+  blogId: String,
+  blogName: String,
+  createdAt: String,
 });
 
 export interface PostsSchemaInterface {
@@ -15,7 +15,7 @@ export interface PostsSchemaInterface {
   title: string;
   shortDescription: string;
   content: string;
-  bloggerId: string;
-  bloggerName: string;
-  addedAt: string;
+  blogId: string;
+  blogName: string;
+  createdAt: string;
 }

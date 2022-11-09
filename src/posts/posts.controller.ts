@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Put,
@@ -19,38 +20,56 @@ import {
   CheckBloggerIdPostIdGuard,
 } from '../guards/CheckBloggerId.guard';
 import { CommentsService } from '../comments/comments.service';
-import { ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBasicAuth,
+  ApiBody,
+  ApiProperty,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 export class BodyCreatePostType {
+  @ApiProperty()
   @Length(0, 30)
   title: string;
+  @ApiProperty()
   @Length(0, 100)
   shortDescription: string;
+  @ApiProperty()
   @Length(0, 1000)
   content: string;
-  bloggerId: string;
+  @ApiProperty()
+  @Length(0, 30)
+  blogId: string;
 }
 
 class Post_Items {
+  @ApiProperty()
   id: string;
+  @ApiProperty()
   title: string;
+  @ApiProperty()
   shortDescription: string;
+  @ApiProperty()
   content: string;
-  bloggerId: string;
-  bloggerName: string;
-  addedAt: Date;
-  extendedLikesInfo: {
-    likesCount: number;
-    dislikesCount: number;
-    myStatus: string;
-    newestLikes: [
-      {
-        addedAt: Date;
-        userId: string;
-        login: string;
-      },
-    ];
-  };
+  @ApiProperty()
+  blogId: string;
+  @ApiProperty()
+  blogName: string;
+  @ApiProperty()
+  createdAt: Date;
+  // extendedLikesInfo: {
+  //   likesCount: number;
+  //   dislikesCount: number;
+  //   myStatus: string;
+  //   newestLikes: [
+  //     {
+  //       addedAt: Date;
+  //       userId: string;
+  //       login: string;
+  //     },
+  //   ];
+  // };
 }
 
 class DTO_Posts {
@@ -69,22 +88,22 @@ class DTO_Posts {
         title: 'string',
         shortDescription: 'string',
         content: 'string',
-        bloggerId: 'string',
-        bloggerName: 'string',
-        addedAt: '2022-11-05T05:27:41.215Z',
-        extendedLikesInfo: {
-          likesCount: 0,
-          dislikesCount: 0,
-          myStatus: 'None Like Dislike',
-          newestLikes: [
-            {
-              addedAt: '2022-11-05T05:27:41.215Z',
-              userId: 'string',
-              login: 'string',
-              createdAt: '2022-11-08T08:47:05.355Z',
-            },
-          ],
-        },
+        blogId: 'string',
+        blogName: 'string',
+        createdAt: '2022-11-05T05:27:41.215Z',
+        // extendedLikesInfo: {
+        //   likesCount: 0,
+        //   dislikesCount: 0,
+        //   myStatus: 'None Like Dislike',
+        //   newestLikes: [
+        //     {
+        //       addedAt: '2022-11-05T05:27:41.215Z',
+        //       userId: 'string',
+        //       login: 'string',
+        //       createdAt: '2022-11-08T08:47:05.355Z',
+        //     },
+        //   ],
+        // },
       },
     ],
     default: [Post_Items],
@@ -94,21 +113,21 @@ class DTO_Posts {
     title: string;
     shortDescription: string;
     content: string;
-    bloggerId: string;
-    bloggerName: string;
-    addedAt: Date;
-    extendedLikesInfo: {
-      likesCount: number;
-      dislikesCount: number;
-      myStatus: string;
-      newestLikes: [
-        {
-          addedAt: Date;
-          userId: string;
-          login: string;
-        },
-      ];
-    };
+    blogId: string;
+    blogName: string;
+    createdAt: Date;
+    // extendedLikesInfo: {
+    //   likesCount: number;
+    //   dislikesCount: number;
+    //   myStatus: string;
+    //   newestLikes: [
+    //     {
+    //       addedAt: Date;
+    //       userId: string;
+    //       login: string;
+    //     },
+    //   ];
+    // };
   };
 }
 
@@ -122,22 +141,92 @@ export class PostsController {
   @Get()
   @ApiResponse({
     status: 200,
-    description: 'return all Posts',
+    description: 'Success',
     type: DTO_Posts,
   })
   getPosts(
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
+    @Query('sortBy') sortBy: string,
+    @Query('sortDirection') sortDirection: string,
   ) {
-    return this.postsService.getPosts(pageNumber, pageSize);
+    const by = sortBy !== undefined && sortBy.trim();
+    const direction = sortDirection !== undefined && sortDirection.trim();
+
+    return this.postsService.getPosts(
+      pageNumber,
+      pageSize,
+      by || direction || '',
+    );
   }
   @UseGuards(CheckPostIdGuard)
   @Get(':id')
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    type: Post_Items,
+    schema: {
+      example: Post_Items,
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+  })
   getPostId(@Param('id') postId: string) {
     return this.postsService.getPostId(postId);
   }
+  @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
   @Post()
+  @ApiBody({
+    schema: {
+      example: {
+        id: 'string',
+        title: 'string @Length(0, 30)',
+        shortDescription: 'string @Length(0, 100)',
+        content: 'string @Length(0, 1000)',
+        blogId: 'string',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Returns the newly created post',
+    schema: {
+      example: {
+        id: 'string',
+        title: 'string ',
+        shortDescription: 'string ',
+        content: 'string ',
+        blogId: 'string',
+        blogName: 'string',
+        createdAt: '2022-11-09T04:08:32.749Z',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'If the inputModel has incorrect values',
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   createPost(@Body() bodyPosts: BodyCreatePostType) {
     return this.postsService.createPost(bodyPosts);
   }
@@ -150,6 +239,7 @@ export class PostsController {
     return this.postsService.getPostIdComments(postId, pageNumber, pageSize);
   }
   @Post(':postId/Comments')
+  @ApiBasicAuth()
   async createPostIdComment(
     @Param('postId') postId: string,
     @Body('content') content: string,
@@ -166,6 +256,43 @@ export class PostsController {
   @UseGuards(CheckPostIdGuard)
   @UseGuards(CheckBloggerIdPostIdGuard)
   @Put(':id')
+  @ApiBody({
+    schema: {
+      example: {
+        title: 'string @Length(0, 30)',
+        shortDescription: 'string @Length(0, 100)',
+        content: 'string @Length(0, 1000)',
+        blogId: 'string',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'No Content',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'If the inputModel has incorrect values',
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+  })
+  @ApiBasicAuth()
   async updatePost(
     @Param('id') postId: string,
     @Body() updatePost: BodyCreatePostType,
@@ -173,9 +300,26 @@ export class PostsController {
     await this.postsService.updatePost(postId, updatePost);
     return;
   }
-  @UseGuards(AuthBaseGuard)
+
   @Delete(':id')
-  deletePostId(@Param('id') deletePostId: string) {
-    return this.postsService.deletePostId(deletePostId);
+  @UseGuards(AuthBaseGuard)
+  @UseGuards(CheckPostIdGuard)
+  @ApiBasicAuth()
+  @ApiResponse({
+    status: 204,
+    description: 'No Content',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+  })
+  @HttpCode(204)
+  async deletePostId(@Param('id') deletePostId: string) {
+    await this.postsService.deletePostId(deletePostId);
+    return;
   }
 }

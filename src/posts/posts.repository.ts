@@ -18,20 +18,56 @@ export class PostsRepository {
     @Inject('COMMENTS_MODEL')
     private commentsRepository: Model<commentsSchemaInterface>,
   ) {}
-  async getPosts(pageNumber: number, pageSize: number) {
+  async getPosts(pageNumber: number, pageSize: number, sort: string) {
     const skipCount = (pageNumber - 1) * pageSize;
     const totalCount = await this.postsRepository.countDocuments();
-    const bloggersRestrict = await this.postsRepository
-      .find({}, '-_id -__v')
-      .skip(skipCount)
-      .limit(pageSize)
-      .lean();
+
+    let posts;
+
+    if (sort === 'asc') {
+      posts = await this.postsRepository
+        .find({}, '-_id -__v')
+        .sort({ name: -1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean();
+    }
+    if (sort === 'createdAt') {
+      posts = await this.postsRepository
+        .find({}, '-_id -__v')
+        .sort({ youtubeUrl: 1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean();
+    }
+    if (sort === 'createdOld') {
+      posts = await this.postsRepository
+        .find({}, '-_id -__v')
+        .sort({ youtubeUrl: -1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean();
+    }
+    if (
+      !sort ||
+      sort === 'desc' ||
+      (sort !== 'asc' && sort !== 'createdAt' && sort !== 'createdOld') ||
+      sort
+    ) {
+      posts = await this.postsRepository
+        .find({}, '-_id -__v')
+        // .sort({ [sort]: 1 })
+        .sort({ name: 1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean();
+    }
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
       pageSize: pageSize,
       totalCount: totalCount,
-      items: bloggersRestrict,
+      items: posts,
     };
   }
   async getPostId(postId: string) {
@@ -62,62 +98,106 @@ export class PostsRepository {
     };
   }
   async getBloggerIdPosts(
-    bloggerId: string,
+    blogId: string,
     pageNumber: number,
     pageSize: number,
+    sort: string,
   ) {
     const skipCount = (pageNumber - 1) * pageSize;
+
+    let allPostsBlog;
+    if (sort === 'asc') {
+      allPostsBlog = await this.postsRepository
+        .find({}, '-_id -__v')
+        .sort({ name: -1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean();
+    }
+    if (sort === 'createdAt') {
+      allPostsBlog = await this.postsRepository
+        .find({}, '-_id -__v')
+        .sort({ youtubeUrl: 1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean();
+    }
+    if (sort === 'createdOld') {
+      allPostsBlog = await this.postsRepository
+        .find({}, '-_id -__v')
+        .sort({ youtubeUrl: -1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean();
+    }
+    if (
+      !sort ||
+      sort === 'desc' ||
+      (sort !== 'asc' && sort !== 'createdAt' && sort !== 'createdOld') ||
+      sort
+    ) {
+      allPostsBlog = await this.postsRepository
+        .find({}, '-_id -__v')
+        // .sort({ [sort]: 1 })
+        .sort({ name: 1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean();
+    }
+
     const allPostsBlogger = await this.postsRepository
-      .find({ bloggerId: bloggerId })
+      .find({ blogId: blogId })
       .lean();
-    const post = await this.postsRepository
-      .find({ bloggerId: bloggerId }, '-_id -__v')
-      .skip(skipCount)
-      .limit(pageSize)
-      .lean();
+    // const post = await this.postsRepository
+    //   .find({ bloggerId: bloggerId }, '-_id -__v')
+    //   .skip(skipCount)
+    //   .limit(pageSize)
+    //   .lean();
     return {
       pagesCount: Math.ceil(allPostsBlogger.length / pageSize),
       page: pageNumber,
       pageSize: pageSize,
       totalCount: allPostsBlogger.length,
-      items: post,
+      items: allPostsBlog,
     };
   }
   async createPost(bodyPosts: BodyCreatePostType) {
     const blogger = await this.bloggersRepository.findOne({
-      id: bodyPosts.bloggerId,
+      id: bodyPosts.blogId,
     });
+    const id = new mongoose.Types.ObjectId().toString();
+    const createdAt = new Date().toISOString();
     await this.postsRepository.insertMany([
       {
-        id: new mongoose.Types.ObjectId().toString(),
+        id: id,
         title: bodyPosts.title,
         shortDescription: bodyPosts.shortDescription,
         content: bodyPosts.content,
-        bloggerId: bodyPosts.bloggerId,
-        bloggerName: blogger.name,
-        addedAt: new Date().toISOString(),
+        blogId: bodyPosts.blogId,
+        blogName: blogger.name,
+        createdAt: createdAt,
       },
     ]);
     return {
-      id: new mongoose.Types.ObjectId().toString(),
+      id: id,
       title: bodyPosts.title,
       shortDescription: bodyPosts.shortDescription,
       content: bodyPosts.content,
-      bloggerId: bodyPosts.bloggerId,
-      bloggerName: blogger.name,
-      addedAt: new Date().toISOString(),
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: 'None',
-        newestLikes: [],
-      },
+      blogId: bodyPosts.blogId,
+      blogName: blogger.name,
+      createdAt: createdAt,
+      // extendedLikesInfo: {
+      //   likesCount: 0,
+      //   dislikesCount: 0,
+      //   myStatus: 'None',
+      //   newestLikes: [],
+      // },
     };
   }
   async updatePostId(postId: string, updatePost: BodyCreatePostType) {
     // const post = await this.postsRepository.findOne({ id: postId });
     const blogger = await this.bloggersRepository.findOne({
-      id: updatePost.bloggerId,
+      id: updatePost.blogId,
     });
     await this.postsRepository.updateOne(
       { id: postId },
@@ -126,8 +206,8 @@ export class PostsRepository {
         title: updatePost.title,
         shortDescription: updatePost.shortDescription,
         content: updatePost.content,
-        bloggerId: updatePost.bloggerId,
-        bloggerName: blogger.name,
+        blogId: updatePost.blogId,
+        blogName: blogger.name,
       },
     );
     return;

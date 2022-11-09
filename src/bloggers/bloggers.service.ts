@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BloggerRepository } from './bloggers.repository';
-import {
-  InputBloggerType,
-  ValueBloggerIdPostType,
-} from './bloggers.controller';
+import { InputBlogType, ValueBlogIdPostType } from './bloggers.controller';
 import { Types } from 'mongoose';
 import {
   pageNumberValidate,
@@ -13,7 +10,7 @@ import {
 import { PostsRepository } from '../posts/posts.repository';
 
 @Injectable()
-export class BloggersService {
+export class BlogsService {
   constructor(
     protected bloggerRepository: BloggerRepository, // ???
     private postsRepository: PostsRepository,
@@ -27,40 +24,46 @@ export class BloggersService {
     const pNumber = pageNumberValidate(pageNumber);
     const pSize = pageSizeValidate(pageSize);
     const searchNT = termValidate(searchNameTerm);
-    return this.bloggerRepository.getBloggers(pNumber, pSize, searchNT, sort);
+    return this.bloggerRepository.getBlogs(pNumber, pSize, searchNT, sort);
   }
   async getBlogId(bloggerId: string) {
     return this.bloggerRepository.findBlogId(bloggerId);
   }
-  async getBloggerIdPosts(
+  async getBlogIdPosts(
     bloggerId: string,
     pageNumber: string,
     pageSize: string,
+    sort: string,
   ) {
     const pageN = pageNumberValidate(pageNumber);
     const pageS = pageSizeValidate(pageSize);
-    return this.postsRepository.getBloggerIdPosts(bloggerId, pageN, pageS);
+    return this.postsRepository.getBloggerIdPosts(
+      bloggerId,
+      pageN,
+      pageS,
+      sort,
+    );
   }
-  async createBloggerIdPosts(
-    bloggerId: string,
-    valueBloggerIdPost: ValueBloggerIdPostType,
+  async createBlogIdPosts(
+    blogId: string,
+    valueBloggerIdPost: ValueBlogIdPostType,
   ) {
     const bloggerPost = {
       title: valueBloggerIdPost.title,
       shortDescription: valueBloggerIdPost.shortDescription,
       content: valueBloggerIdPost.content,
-      bloggerId: bloggerId,
+      blogId: blogId,
     };
     return this.postsRepository.createPost(bloggerPost); // createPost = blogger/{bloggerId}/posts
   }
-  async deleteBloggerId(bloggerId: string) {
-    return this.bloggerRepository.deleteBloggerId(bloggerId);
+  async deleteBlogId(bloggerId: string) {
+    return this.bloggerRepository.deleteBlogId(bloggerId);
   }
-  async updateBloggerId(bloggerId: string, inputBloggerType: InputBloggerType) {
-    return this.bloggerRepository.updateBloggerId(bloggerId, inputBloggerType);
+  async updateBlogId(bloggerId: string, inputBlogType: InputBlogType) {
+    return this.bloggerRepository.updateBlogId(bloggerId, inputBlogType);
   }
-  async createBlogger(inputBlogger: InputBloggerType) {
-    return this.bloggerRepository.createBlogger({
+  async createBlog(inputBlogger: InputBlogType) {
+    return this.bloggerRepository.createBlog({
       id: new Types.ObjectId().toString(),
       name: inputBlogger.name,
       youtubeUrl: inputBlogger.youtubeUrl,

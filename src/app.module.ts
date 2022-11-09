@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BloggersController } from './bloggers/bloggers.controller';
-import { BloggersService } from './bloggers/bloggers.service';
+import { BlogsController } from './bloggers/bloggers.controller';
+import { BlogsService } from './bloggers/bloggers.service';
 import { BloggerRepository } from './bloggers/bloggers.repository';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
@@ -25,7 +25,7 @@ import { EmailService } from './auth/email.service';
   imports: [DatabaseModule, ConfigModule.forRoot()],
   controllers: [
     AppController,
-    BloggersController,
+    BlogsController,
     UsersController,
     PostsController,
     CommentsController,
@@ -34,7 +34,7 @@ import { EmailService } from './auth/email.service';
   providers: [
     ...firstProviders,
     AppService,
-    BloggersService,
+    BlogsService,
     BloggerRepository,
     UsersService,
     UsersRepository,
