@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Put,
@@ -39,6 +40,17 @@ class DTO_b {
   youtubeUrl: string;
   @ApiProperty()
   createdAt: Date;
+}
+export class ValueBlogIdPostType {
+  @ApiProperty()
+  @Length(0, 30)
+  title: string;
+  @ApiProperty()
+  @Length(0, 100)
+  shortDescription: string;
+  @ApiProperty()
+  @Length(0, 1000)
+  content: string;
 }
 
 class DTO_Blogger {
@@ -191,8 +203,8 @@ export class BlogsController {
   async createBlogger(@Body() inputBlogger: InputBlogType) {
     return this.blogsService.createBlog(inputBlogger);
   }
-  @ApiBasicAuth()
   @Post(':blogId/posts')
+  @ApiBasicAuth()
   @UseGuards(CheckBloggerIdGuard)
   @ApiBody({
     description: 'Data for constructing new post entity',
@@ -285,6 +297,7 @@ export class BlogsController {
       },
     },
   })
+  @HttpCode(204)
   @Put(':blogId')
   async updateBlogger(
     @Param('blogId') blogId: string,
@@ -314,8 +327,3 @@ export class BlogsController {
     return;
   }
 }
-export type ValueBlogIdPostType = {
-  title: string;
-  shortDescription: string;
-  content: string;
-};

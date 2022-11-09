@@ -16,10 +16,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const error: any = exception.getResponse();
     if (status === 400) {
+      const arrayField = error.message.map((m) => m.split(' ')[0]);
+      const filterField = Array.from(new Set(arrayField));
+      console.log('123123', filterField);
       response.status(status).json({
-        errorsMessages: error.message.map((m) => ({
-          message: m,
-          field: m.split(' ')[0],
+        errorsMessages: filterField.map((f) => ({
+          message: error.message
+            .map((m) => (m.split(' ')[0] !== f ? '' : m))
+            .join(', '),
+          field: f,
         })),
       });
     }
