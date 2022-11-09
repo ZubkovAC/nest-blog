@@ -294,6 +294,8 @@ export class PostsController {
     description: 'Not Found',
   })
   @ApiBasicAuth()
+  @UseGuards(CheckPostIdGuard)
+  @HttpCode(204)
   async updatePost(
     @Param('id') postId: string,
     @Body() updatePost: BodyCreatePostType,

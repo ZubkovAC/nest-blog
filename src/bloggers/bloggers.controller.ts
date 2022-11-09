@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BlogsService } from './bloggers.service';
-import { IsUrl, Length } from 'class-validator';
+import { IsNotEmpty, IsUrl, Length } from 'class-validator';
 import { CheckBloggerIdGuard } from '../guards/CheckBloggerId.guard';
 import { AuthBaseGuard } from '../guards/AuthBase.guard';
 import {
@@ -21,13 +21,18 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Transform, TransformFnParams } from 'class-transformer';
 
 export class InputBlogType {
   @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
   @Length(0, 15)
   name: string;
   @ApiProperty()
   @IsUrl()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
   @Length(0, 100)
   youtubeUrl: string;
 }
@@ -44,11 +49,17 @@ class DTO_b {
 export class ValueBlogIdPostType {
   @ApiProperty()
   @Length(0, 30)
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
   title: string;
   @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
   @Length(0, 100)
   shortDescription: string;
   @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
   @Length(0, 1000)
   content: string;
 }
@@ -113,6 +124,7 @@ export class BlogsController {
   }
 
   @Get(':blogId/posts')
+  @UseGuards(CheckBloggerIdGuard)
   @ApiResponse({
     status: 200,
     description: 'Success',
@@ -205,6 +217,7 @@ export class BlogsController {
   }
   @Post(':blogId/posts')
   @ApiBasicAuth()
+  @UseGuards(AuthBaseGuard)
   @UseGuards(CheckBloggerIdGuard)
   @ApiBody({
     description: 'Data for constructing new post entity',
@@ -322,6 +335,7 @@ export class BlogsController {
     description: 'Not Found',
   })
   @Delete(':blogId')
+  @HttpCode(204)
   async deleteBlogger(@Param('blogId') blogId: string) {
     await this.blogsService.deleteBlogId(blogId);
     return;
