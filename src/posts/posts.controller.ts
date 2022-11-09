@@ -159,6 +159,7 @@ export class PostsController {
       by || direction || '',
     );
   }
+
   @UseGuards(CheckPostIdGuard)
   @Get(':id')
   @ApiResponse({
