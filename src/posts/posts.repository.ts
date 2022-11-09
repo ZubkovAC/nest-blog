@@ -216,4 +216,8 @@ export class PostsRepository {
   async deletePost(deletePostId: string) {
     return this.postsRepository.deleteOne({ id: deletePostId });
   }
+  async deleteAll() {
+    await this.postsRepository.deleteMany({});
+    return;
+  }
 }

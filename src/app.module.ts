@@ -20,6 +20,7 @@ import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { AuthRepository } from './auth/auth.repository';
 import { EmailService } from './auth/email.service';
+import { TestingController } from './testing/testing.controller';
 
 @Module({
   imports: [DatabaseModule, ConfigModule.forRoot()],
@@ -30,6 +31,7 @@ import { EmailService } from './auth/email.service';
     PostsController,
     CommentsController,
     AuthController,
+    TestingController,
   ],
   providers: [
     ...firstProviders,

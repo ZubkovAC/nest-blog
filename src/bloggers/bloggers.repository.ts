@@ -110,4 +110,8 @@ export class BloggerRepository {
       createdAt: blog.createdAt,
     }))[0];
   }
+  async deleteAll() {
+    await this.blogRepository.deleteMany({});
+    return;
+  }
 }
