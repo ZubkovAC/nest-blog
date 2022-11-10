@@ -238,6 +238,7 @@ export class PostsController {
   ) {
     return this.postsService.getPostIdComments(postId, pageNumber, pageSize);
   }
+
   @Post(':postId/Comments')
   @ApiBasicAuth()
   async createPostIdComment(
@@ -252,6 +253,7 @@ export class PostsController {
       token,
     );
   }
+
   @Put(':id')
   @UseGuards(AuthBaseGuard)
   @UseGuards(CheckPostIdGuard)

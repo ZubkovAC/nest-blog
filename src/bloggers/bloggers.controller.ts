@@ -27,7 +27,7 @@ export class InputBlogType {
   @ApiProperty()
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  @Length(0, 15)
+  @Length(2, 15)
   name: string;
   @ApiProperty()
   @IsUrl()
