@@ -5,6 +5,8 @@ import { Types } from 'mongoose';
 import {
   pageNumberValidate,
   pageSizeValidate,
+  sortDirectionValidation,
+  sortBlogValidation,
   termValidate,
 } from '../query/query';
 import { PostsRepository } from '../posts/posts.repository';
@@ -20,11 +22,20 @@ export class BlogsService {
     pageSize: string,
     searchNameTerm: string,
     sort: string,
+    sortDirection: string,
   ) {
     const pNumber = pageNumberValidate(pageNumber);
     const pSize = pageSizeValidate(pageSize);
     const searchNT = termValidate(searchNameTerm);
-    return this.bloggerRepository.getBlogs(pNumber, pSize, searchNT, sort);
+    const sortV = sortBlogValidation(sort);
+    const sortD = sortDirectionValidation(sortDirection);
+    return this.bloggerRepository.getBlogs(
+      pNumber,
+      pSize,
+      searchNT,
+      sortV,
+      sortD,
+    );
   }
   async getBlogId(bloggerId: string) {
     return this.bloggerRepository.findBlogId(bloggerId);

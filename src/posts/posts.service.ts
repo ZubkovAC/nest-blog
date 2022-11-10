@@ -1,15 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { BodyCreatePostType } from './posts.controller';
-import { pageNumberValidate, pageSizeValidate } from '../query/query';
+import {
+  pageNumberValidate,
+  pageSizeValidate,
+  sortDirectionValidation,
+  sortBlogValidation,
+  sortPostsValidation,
+} from '../query/query';
 
 @Injectable()
 export class PostsService {
   constructor(protected postsRepository: PostsRepository) {}
-  async getPosts(pageNumber: string, pageSize: string, sort: string) {
+  async getPosts(
+    pageNumber: string,
+    pageSize: string,
+    sort: string,
+    sortDirection: string,
+  ) {
     const pNumber = pageNumberValidate(pageNumber);
     const pSize = pageSizeValidate(pageSize);
-    return this.postsRepository.getPosts(pNumber, pSize, sort);
+    const sortV = sortPostsValidation(sort);
+    const sortD = sortDirectionValidation(sortDirection);
+    return this.postsRepository.getPosts(pNumber, pSize, sortV, sortD);
   }
   async getPostId(userId: string) {
     return this.postsRepository.getPostId(userId);

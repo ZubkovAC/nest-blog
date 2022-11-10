@@ -150,13 +150,11 @@ export class PostsController {
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
   ) {
-    const by = sortBy !== undefined && sortBy.trim();
-    const direction = sortDirection !== undefined && sortDirection.trim();
-
     return this.postsService.getPosts(
       pageNumber,
       pageSize,
-      by || direction || '',
+      sortBy,
+      sortDirection,
     );
   }
 
@@ -182,8 +180,9 @@ export class PostsController {
     return this.postsService.getPostId(postId);
   }
   @ApiBasicAuth()
-  @UseGuards(AuthBaseGuard)
   @Post()
+  @UseGuards(AuthBaseGuard)
+  // @UseGuards(CheckBloggerIdPostIdGuard)
   @ApiBody({
     schema: {
       example: {
@@ -253,10 +252,10 @@ export class PostsController {
       token,
     );
   }
+  @Put(':id')
   @UseGuards(AuthBaseGuard)
   @UseGuards(CheckPostIdGuard)
-  @UseGuards(CheckBloggerIdPostIdGuard)
-  @Put(':id')
+  @UseGuards(CheckBloggerIdGuard)
   @ApiBody({
     schema: {
       example: {

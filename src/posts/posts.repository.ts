@@ -18,50 +18,22 @@ export class PostsRepository {
     @Inject('COMMENTS_MODEL')
     private commentsRepository: Model<commentsSchemaInterface>,
   ) {}
-  async getPosts(pageNumber: number, pageSize: number, sort: string) {
+  async getPosts(
+    pageNumber: number,
+    pageSize: number,
+    sort: any,
+    sortDirection: any,
+  ) {
     const skipCount = (pageNumber - 1) * pageSize;
     const totalCount = await this.postsRepository.countDocuments();
 
-    let posts;
+    const posts = await this.postsRepository
+      .find({}, '-_id -__v')
+      .sort({ [sort]: sortDirection })
+      .skip(skipCount)
+      .limit(pageSize)
+      .lean();
 
-    if (sort === 'asc') {
-      posts = await this.postsRepository
-        .find({}, '-_id -__v')
-        .sort({ name: -1 })
-        .skip(skipCount)
-        .limit(pageSize)
-        .lean();
-    }
-    if (sort === 'createdAt') {
-      posts = await this.postsRepository
-        .find({}, '-_id -__v')
-        .sort({ youtubeUrl: 1 })
-        .skip(skipCount)
-        .limit(pageSize)
-        .lean();
-    }
-    if (sort === 'createdOld') {
-      posts = await this.postsRepository
-        .find({}, '-_id -__v')
-        .sort({ youtubeUrl: -1 })
-        .skip(skipCount)
-        .limit(pageSize)
-        .lean();
-    }
-    if (
-      !sort ||
-      sort === 'desc' ||
-      (sort !== 'asc' && sort !== 'createdAt' && sort !== 'createdOld') ||
-      sort
-    ) {
-      posts = await this.postsRepository
-        .find({}, '-_id -__v')
-        // .sort({ [sort]: 1 })
-        .sort({ name: 1 })
-        .skip(skipCount)
-        .limit(pageSize)
-        .lean();
-    }
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
@@ -109,7 +81,7 @@ export class PostsRepository {
     if (sort === 'asc') {
       allPostsBlog = await this.postsRepository
         .find({}, '-_id -__v')
-        .sort({ name: 1 })
+        .sort({ name: -1 })
         .skip(skipCount)
         .limit(pageSize)
         .lean();
@@ -139,7 +111,7 @@ export class PostsRepository {
       allPostsBlog = await this.postsRepository
         .find({}, '-_id -__v')
         // .sort({ [sort]: 1 })
-        .sort({ name: -1 })
+        .sort({ name: 1 })
         .skip(skipCount)
         .limit(pageSize)
         .lean();

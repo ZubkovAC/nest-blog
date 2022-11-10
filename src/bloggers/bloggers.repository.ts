@@ -31,47 +31,19 @@ export class BloggerRepository {
     pageNumber: number,
     pageSize: number,
     searchNameTerm: string,
-    sort: string,
+    sort: any,
+    sortDirection: any,
   ) {
     const skipCount = (pageNumber - 1) * pageSize;
     const query = { name: { $regex: searchNameTerm } };
     const totalCount = await this.blogRepository.countDocuments(query);
 
-    let bloggersRestrict;
-    // console.log('sort', sort);
-    if (!sort || sort === 'desc' || (sort !== 'asc' && sort !== 'createdOld')) {
-      bloggersRestrict = await this.blogRepository
-        .find({ query }, '-_id -__v')
-        // .sort({ [sort]: 1 })
-        .sort({ createdAt: 1 })
-        .skip(skipCount)
-        .limit(pageSize)
-        .lean();
-    }
-    if (sort === 'createdOld') {
-      bloggersRestrict = await this.blogRepository
-        .find({ query }, '-_id -__v')
-        .sort({ createdAt: -1 })
-        .skip(skipCount)
-        .limit(pageSize)
-        .lean();
-    }
-    if (sort === 'asc') {
-      bloggersRestrict = await this.blogRepository
-        .find({ query }, '-_id -__v')
-        .sort({ name: -1 })
-        .skip(skipCount)
-        .limit(pageSize)
-        .lean();
-    }
-    if (sort === 'desc') {
-      bloggersRestrict = await this.blogRepository
-        .find({ query }, '-_id -__v')
-        .sort({ name: 1 })
-        .skip(skipCount)
-        .limit(pageSize)
-        .lean();
-    }
+    const bloggersRestrict = await this.blogRepository
+      .find({ query }, '-_id -__v')
+      .sort({ [sort]: sortDirection })
+      .skip(skipCount)
+      .limit(pageSize)
+      .lean();
 
     return {
       pagesCount: Math.ceil(totalCount / pageSize),

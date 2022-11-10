@@ -1,5 +1,3 @@
-import { bloggersSchema } from '../bloggers/blogger.schemas';
-
 export const pageNumberValidate = (pageNum: string): number => {
   return getMappedParam(pageNum, 1, 10);
 };
@@ -9,39 +7,43 @@ export const pageSizeValidate = (pageSize: string): number => {
 };
 
 // 1 sort name +- / sort direction +-
-
-export const sortBlogs = (typeSort: string, blogs: Array<bloggersSchema>) => {
-  if (!typeSort) return blogs;
-  if (
-    typeSort === 'asc' ||
-    typeSort === 'desc' ||
-    typeSort === 'createdAt' ||
-    typeSort === 'createdOld'
-  ) {
-    let sortValue = 'createdAt';
-    if (typeSort === 'asc' || typeSort === 'desc') sortValue = 'name';
-    let one = 1;
-    let two = -1;
-    if (typeSort === 'asc') {
-      one = -1;
-      two = 1;
-    }
-
-    return blogs.sort((a, b) => {
-      const nameA = a[sortValue].toUpperCase(); // ignore upper and lowercase
-      const nameB = b[sortValue].toUpperCase(); // ignore upper and lowercase
-      if (nameA > nameB) {
-        return one;
-      }
-      if (nameA < nameB) {
-        return two;
-      }
-
-      // names must be equal
-      return 0;
-    });
+export const sortBlogValidation = (sort: string) => {
+  switch (sort) {
+    case 'youtubeUrl':
+      return 'youtubeUrl';
+    case 'name':
+      return 'name';
+    case 'id':
+      return 'id';
+    default:
+      return 'createdAt';
   }
-  return blogs;
+};
+export const sortPostsValidation = (sort: string) => {
+  switch (sort) {
+    case 'title':
+      return 'title';
+    case 'shortDescription':
+      return 'shortDescription';
+    case 'id':
+      return 'id';
+    case 'content':
+      return 'content';
+    case 'blogId':
+      return 'blogId';
+    case 'blogName':
+      return 'blogName';
+    default:
+      return 'createdAt';
+  }
+};
+export const sortDirectionValidation = (sortDirection: string) => {
+  switch (sortDirection) {
+    case 'asc':
+      return -1;
+    default:
+      return 1;
+  }
 };
 
 const getMappedParam = (
