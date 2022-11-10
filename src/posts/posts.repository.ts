@@ -78,26 +78,22 @@ export class PostsRepository {
   ) {
     const skipCount = (pageNumber - 1) * pageSize;
     const allPostsBlog = await this.postsRepository
-      .find({}, '-_id -__v')
+      .find({ blogId: blogId }, '-_id -__v')
       .sort({ [sort]: sortDirection })
       .skip(skipCount)
       .limit(pageSize)
       .lean();
 
-    const allPostsBlogger = await this.bloggersRepository
-      .find({ blogId: blogId })
+    const post = await this.postsRepository
+      .find({ blogId: blogId }, '-_id -__v')
+      .skip(skipCount)
+      .limit(pageSize)
       .lean();
-
-    // const post = await this.postsRepository
-    //   .find({ bloggerId: bloggerId }, '-_id -__v')
-    //   .skip(skipCount)
-    //   .limit(pageSize)
-    //   .lean();
     return {
-      pagesCount: Math.ceil(allPostsBlogger.length / pageSize),
+      pagesCount: Math.ceil(post.length / pageSize),
       page: pageNumber,
       pageSize: pageSize,
-      totalCount: allPostsBlogger.length,
+      totalCount: post.length,
       items: allPostsBlog,
     };
   }

@@ -16,9 +16,9 @@ import { Length } from 'class-validator';
 import { CheckPostIdGuard } from '../guards/CheckPostId.guard';
 import { AuthBaseGuard } from '../guards/AuthBase.guard';
 import {
-  CheckBloggerIdGuard,
-  CheckBloggerIdPostIdGuard,
-} from '../guards/CheckBloggerId.guard';
+  CheckBloggerIdParamsGuard,
+  CheckBloggerIdBodyGuard,
+} from '../guards/check-blogger-id-params-guard.service';
 import { CommentsService } from '../comments/comments.service';
 import {
   ApiBasicAuth,
@@ -255,7 +255,7 @@ export class PostsController {
   @Put(':id')
   @UseGuards(AuthBaseGuard)
   @UseGuards(CheckPostIdGuard)
-  @UseGuards(CheckBloggerIdGuard)
+  @UseGuards(CheckBloggerIdBodyGuard)
   @ApiBody({
     schema: {
       example: {
@@ -293,7 +293,6 @@ export class PostsController {
     description: 'Not Found',
   })
   @ApiBasicAuth()
-  @UseGuards(CheckPostIdGuard)
   @HttpCode(204)
   async updatePost(
     @Param('id') postId: string,

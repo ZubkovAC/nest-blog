@@ -37,9 +37,9 @@ export class BloggerRepository {
     const skipCount = (pageNumber - 1) * pageSize;
     const query = { name: { $regex: searchNameTerm } };
     const totalCount = await this.blogRepository.countDocuments(query);
-
     const bloggersRestrict = await this.blogRepository
-      .find({ query }, '-_id -__v')
+      // .find({ query }, '-_id -__v')
+      .find({ name: { $regex: searchNameTerm } }, '-_id -__v')
       .sort({ [sort]: sortDirection })
       .skip(skipCount)
       .limit(pageSize)

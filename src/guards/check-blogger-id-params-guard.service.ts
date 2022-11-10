@@ -8,9 +8,10 @@ import {
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { bloggersSchema } from '../bloggers/blogger.schemas';
+import { PostsSchemaInterface } from '../posts/posts.schemas';
 
-@Injectable()
-export class CheckBloggerIdGuard implements CanActivate {
+@Injectable() // request.params
+export class CheckBloggerIdParamsGuard implements CanActivate {
   constructor(
     @Inject('BLOGGERS_MODEL')
     private blogService: Model<bloggersSchema>,
@@ -35,8 +36,8 @@ export class CheckBloggerIdGuard implements CanActivate {
   }
 }
 
-@Injectable()
-export class CheckBloggerIdPostIdGuard implements CanActivate {
+@Injectable() // request.body
+export class CheckBloggerIdBodyGuard implements CanActivate {
   constructor(
     @Inject('BLOGGERS_MODEL')
     private blogService: Model<bloggersSchema>,

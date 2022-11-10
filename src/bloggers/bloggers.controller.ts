@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { BlogsService } from './bloggers.service';
 import { IsNotEmpty, IsUrl, Length } from 'class-validator';
-import { CheckBloggerIdGuard } from '../guards/CheckBloggerId.guard';
+import { CheckBloggerIdParamsGuard } from '../guards/check-blogger-id-params-guard.service';
 import { AuthBaseGuard } from '../guards/AuthBase.guard';
 import {
   ApiBasicAuth,
@@ -85,8 +85,7 @@ class DTO_Blogger {
 @Controller('blogs')
 export class BlogsController {
   constructor(protected blogsService: BlogsService) {}
-
-  @Get('/')
+  @Get()
   @ApiResponse({
     status: 200,
     description: 'return all Bloggers',
@@ -108,7 +107,7 @@ export class BlogsController {
     );
   }
   @Get(':blogId')
-  @UseGuards(CheckBloggerIdGuard)
+  @UseGuards(CheckBloggerIdParamsGuard)
   @ApiResponse({
     status: 200,
     description: 'return all BlogId',
@@ -123,7 +122,7 @@ export class BlogsController {
   }
 
   @Get(':blogId/posts')
-  @UseGuards(CheckBloggerIdGuard)
+  @UseGuards(CheckBloggerIdParamsGuard)
   @ApiResponse({
     status: 200,
     description: 'Success',
@@ -215,7 +214,7 @@ export class BlogsController {
   @Post(':blogId/posts')
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
-  @UseGuards(CheckBloggerIdGuard)
+  @UseGuards(CheckBloggerIdParamsGuard)
   @ApiBody({
     description: 'Data for constructing new post entity',
     schema: {
@@ -271,7 +270,7 @@ export class BlogsController {
   }
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
-  @UseGuards(CheckBloggerIdGuard)
+  @UseGuards(CheckBloggerIdParamsGuard)
   @ApiResponse({
     status: 204,
     description: 'No Content',
@@ -318,7 +317,7 @@ export class BlogsController {
   }
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
-  @UseGuards(CheckBloggerIdGuard)
+  @UseGuards(CheckBloggerIdParamsGuard)
   @ApiResponse({
     status: 204,
     description: 'No Content',
