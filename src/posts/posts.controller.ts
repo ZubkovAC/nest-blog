@@ -182,7 +182,7 @@ export class PostsController {
   @ApiBasicAuth()
   @Post()
   @UseGuards(AuthBaseGuard)
-  // @UseGuards(CheckBloggerIdPostIdGuard)
+  @UseGuards(CheckBloggerIdBodyGuard)
   @ApiBody({
     schema: {
       example: {

@@ -18,6 +18,12 @@ export class AuthBaseGuard implements CanActivate {
     if (token === 'Basic YWRtaW46cXdlcnR5') {
       return true;
     }
-    throw new UnauthorizedException();
+    throw new HttpException(
+      {
+        status: HttpStatus.UNAUTHORIZED,
+        error: 'UNAUTHORIZED',
+      },
+      HttpStatus.UNAUTHORIZED,
+    );
   }
 }
