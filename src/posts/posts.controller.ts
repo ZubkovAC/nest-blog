@@ -255,9 +255,9 @@ export class PostsController {
   }
 
   @Put(':id')
-  @UseGuards(AuthBaseGuard)
   @UseGuards(CheckPostIdGuard)
   @UseGuards(CheckBloggerIdBodyGuard)
+  @UseGuards(AuthBaseGuard)
   @ApiBody({
     schema: {
       example: {

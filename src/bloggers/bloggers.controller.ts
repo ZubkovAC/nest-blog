@@ -308,6 +308,7 @@ export class BlogsController {
   })
   @HttpCode(204)
   @Put(':blogId')
+  @UseGuards(AuthBaseGuard)
   async updateBlogger(
     @Param('blogId') blogId: string,
     @Body() blogUpdate: InputBlogType,
