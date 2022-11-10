@@ -84,11 +84,10 @@ export class PostsRepository {
       .limit(pageSize)
       .lean();
 
-    const post = await this.postsRepository
-      .find({ blogId: blogId }, '-_id -__v')
-      .skip(skipCount)
-      .limit(pageSize)
-      .lean();
+    const post = await this.postsRepository.find(
+      { blogId: blogId },
+      '-_id -__v',
+    );
     return {
       pagesCount: Math.ceil(post.length / pageSize),
       page: pageNumber,
