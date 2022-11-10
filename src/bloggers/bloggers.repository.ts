@@ -36,11 +36,20 @@ export class BloggerRepository {
   ) {
     const skipCount = (pageNumber - 1) * pageSize;
     const totalCount = await this.blogRepository.countDocuments({
-      name: { $regex: searchNameTerm },
+      name: { $regex: searchNameTerm, $options: 'i' },
     });
 
     const bloggersRestrict = await this.blogRepository
-      .find({ name: { $regex: searchNameTerm } }, '-_id -__v')
+      // .find({ name: { $regex: searchNameTerm } }, '-_id -__v')
+      .find(
+        {
+          name: {
+            $regex: searchNameTerm,
+            $options: 'i',
+          },
+        },
+        '-_id -__v',
+      )
       .sort({ [sort]: sortDirection })
       .skip(skipCount)
       .limit(pageSize)
