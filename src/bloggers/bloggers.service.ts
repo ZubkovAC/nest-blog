@@ -8,6 +8,7 @@ import {
   sortDirectionValidation,
   sortBlogValidation,
   termValidate,
+  sortPostsValidation,
 } from '../query/query';
 import { PostsRepository } from '../posts/posts.repository';
 
@@ -45,14 +46,18 @@ export class BlogsService {
     pageNumber: string,
     pageSize: string,
     sort: string,
+    sortDirection: string,
   ) {
     const pageN = pageNumberValidate(pageNumber);
     const pageS = pageSizeValidate(pageSize);
+    const sortV = sortPostsValidation(sort);
+    const sortD = sortDirectionValidation(sortDirection);
     return this.postsRepository.getBloggerIdPosts(
       bloggerId,
       pageN,
       pageS,
-      sort,
+      sortV,
+      sortD,
     );
   }
   async createBlogIdPosts(

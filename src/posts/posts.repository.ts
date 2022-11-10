@@ -73,49 +73,16 @@ export class PostsRepository {
     blogId: string,
     pageNumber: number,
     pageSize: number,
-    sort: string,
+    sort: any,
+    sortDirection: any,
   ) {
     const skipCount = (pageNumber - 1) * pageSize;
-
-    let allPostsBlog;
-    if (sort === 'asc') {
-      allPostsBlog = await this.postsRepository
-        .find({}, '-_id -__v')
-        .sort({ name: -1 })
-        .skip(skipCount)
-        .limit(pageSize)
-        .lean();
-    }
-    if (sort === 'createdAt') {
-      allPostsBlog = await this.postsRepository
-        .find({}, '-_id -__v')
-        .sort({ createdAt: 1 })
-        .skip(skipCount)
-        .limit(pageSize)
-        .lean();
-    }
-    if (sort === 'createdOld') {
-      allPostsBlog = await this.postsRepository
-        .find({}, '-_id -__v')
-        .sort({ createdAt: -1 })
-        .skip(skipCount)
-        .limit(pageSize)
-        .lean();
-    }
-    if (
-      !sort ||
-      sort === 'desc' ||
-      (sort !== 'asc' && sort !== 'createdAt' && sort !== 'createdOld') ||
-      sort
-    ) {
-      allPostsBlog = await this.postsRepository
-        .find({}, '-_id -__v')
-        // .sort({ [sort]: 1 })
-        .sort({ name: 1 })
-        .skip(skipCount)
-        .limit(pageSize)
-        .lean();
-    }
+    const allPostsBlog = await this.postsRepository
+      .find({}, '-_id -__v')
+      .sort({ [sort]: sortDirection })
+      .skip(skipCount)
+      .limit(pageSize)
+      .lean();
 
     const allPostsBlogger = await this.bloggersRepository
       .find({ blogId: blogId })

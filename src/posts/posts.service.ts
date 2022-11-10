@@ -5,7 +5,6 @@ import {
   pageNumberValidate,
   pageSizeValidate,
   sortDirectionValidation,
-  sortBlogValidation,
   sortPostsValidation,
 } from '../query/query';
 

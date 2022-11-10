@@ -158,14 +158,12 @@ export class BlogsController {
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
   ) {
-    const by = sortBy !== undefined && sortBy.trim();
-    const direction = sortDirection !== undefined && sortDirection.trim();
-
     return this.blogsService.getBlogIdPosts(
       bloggerId,
       pageNumber,
       pageSize,
-      by || direction || '',
+      sortBy,
+      sortDirection,
     );
   }
 

@@ -21,12 +21,12 @@ export const sortBlogValidation = (sort: string) => {
 };
 export const sortPostsValidation = (sort: string) => {
   switch (sort) {
+    case 'id':
+      return 'id';
     case 'title':
       return 'title';
     case 'shortDescription':
       return 'shortDescription';
-    case 'id':
-      return 'id';
     case 'content':
       return 'content';
     case 'blogId':
@@ -40,9 +40,9 @@ export const sortPostsValidation = (sort: string) => {
 export const sortDirectionValidation = (sortDirection: string) => {
   switch (sortDirection) {
     case 'asc':
-      return -1;
-    default:
       return 1;
+    default:
+      return -1;
   }
 };
 
