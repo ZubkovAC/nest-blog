@@ -181,8 +181,8 @@ export class PostsController {
   }
   @ApiBasicAuth()
   @Post()
-  @UseGuards(AuthBaseGuard)
   @UseGuards(CheckBloggerIdBodyGuard)
+  @UseGuards(AuthBaseGuard)
   @ApiBody({
     schema: {
       example: {
@@ -305,8 +305,8 @@ export class PostsController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthBaseGuard)
   @UseGuards(CheckPostIdGuard)
+  @UseGuards(AuthBaseGuard)
   @ApiBasicAuth()
   @ApiResponse({
     status: 204,
