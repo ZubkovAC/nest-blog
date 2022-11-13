@@ -6,6 +6,12 @@ import mongoose from 'mongoose';
 export class PostsPOSTMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const errors = [];
+    const token = req.headers?.authorization;
+    if (token !== 'Basic YWRtaW46cXdlcnR5') {
+      res.status(401).json('Unauthorized');
+      return;
+    }
+
     const body = req.body;
     if (!body?.title || body?.title?.trim().length > 30) {
       errors.push({ message: 'title length > 30', field: 'title' });
@@ -14,10 +20,13 @@ export class PostsPOSTMiddleware implements NestMiddleware {
       !body?.shortDescription ||
       body?.shortDescription?.trim().length > 100
     ) {
-      errors.push({ message: 'title length > 100', field: 'shortDescription' });
+      errors.push({
+        message: 'shortDescription length > 100',
+        field: 'shortDescription',
+      });
     }
     if (!body?.content || body?.content?.trim().length > 1000) {
-      errors.push({ message: 'title length > 1000', field: 'content' });
+      errors.push({ message: 'content length > 1000', field: 'content' });
     }
     if (!body?.blogId || body?.blogId) {
       const blogId = mongoose.isValidObjectId(body?.blogId);
