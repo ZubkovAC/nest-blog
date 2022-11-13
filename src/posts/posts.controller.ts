@@ -39,7 +39,6 @@ export class BodyCreatePostType {
   @Length(0, 1000)
   content: string;
   @ApiProperty()
-  @Length(0, 30)
   blogId: string;
 }
 

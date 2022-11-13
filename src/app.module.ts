@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BlogsController } from './bloggers/bloggers.controller';
@@ -21,6 +26,7 @@ import { AuthService } from './auth/auth.service';
 import { AuthRepository } from './auth/auth.repository';
 import { EmailService } from './auth/email.service';
 import { TestingController } from './testing/testing.controller';
+import { LoggerMiddleware } from './middleware/middleware.module';
 
 @Module({
   imports: [DatabaseModule, ConfigModule.forRoot()],
@@ -50,4 +56,12 @@ import { TestingController } from './testing/testing.controller';
   ],
   exports: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes({ path: 'posts', method: RequestMethod.POST });
+  }
+}
+
+// export class AppModule
