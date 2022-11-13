@@ -29,7 +29,7 @@ export class PostsPOSTMiddleware implements NestMiddleware {
       if (!body?.content || body?.content?.trim().length > 1000) {
         errors.push({ message: 'content length > 1000', field: 'content' });
       }
-      if (!body?.blogId || body?.blogId) {
+      if (!body?.blogId || body.blogId) {
         const blogId = mongoose.isValidObjectId(body?.blogId);
         if (!blogId) {
           errors.push({ message: 'not found', field: 'blogId' });
@@ -47,6 +47,12 @@ export class PostsPOSTMiddleware implements NestMiddleware {
     }
 
     if (req.method === 'PUT') {
+      const token = req.headers?.authorization;
+      if (token !== 'Basic YWRtaW46cXdlcnR5') {
+        res.status(401).json('Unauthorized');
+        return;
+      }
+
       console.log('asdf');
       const postId = req.url.split('/')[1];
       if (postId) {
