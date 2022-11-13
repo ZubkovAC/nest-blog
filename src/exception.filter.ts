@@ -20,6 +20,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
       const arrayField = error.message.map((m) => m.split(' ')[0]);
       const filterField = Array.from(new Set(arrayField));
 
+      if (request.body.blogId) {
+        const blogId = mongoose.isValidObjectId(request.body.blogId);
+        if (!blogId) {
+          filterField.push('blogId');
+        }
+      }
       response.status(status).json({
         errorsMessages: filterField.map((f) => ({
           message: error.message
