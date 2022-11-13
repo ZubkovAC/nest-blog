@@ -1,6 +1,6 @@
 import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import mongoose, { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { PostsSchemaInterface } from '../posts/posts.schemas';
 import { bloggersSchema } from '../bloggers/blogger.schemas';
 
