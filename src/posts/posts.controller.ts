@@ -178,7 +178,16 @@ export class PostsController {
   getPostId(@Param('id') postId: string) {
     return this.postsService.getPostId(postId);
   }
-  @ApiBasicAuth()
+
+  @Get(':postId/Comments') // need fix
+  async getCommentsPostId(
+    @Param('postId') postId: string,
+    @Query('pageNumber') pageNumber: string,
+    @Query('pageSize') pageSize: string,
+  ) {
+    return this.postsService.getPostIdComments(postId, pageNumber, pageSize);
+  }
+
   @Post()
   // @UseGuards(CheckBloggerIdBodyGuard)
   @UseGuards(AuthBaseGuard)
@@ -226,18 +235,10 @@ export class PostsController {
     status: 401,
     description: 'Unauthorized',
   })
+  @ApiBasicAuth()
   createPost(@Body() bodyPosts: BodyCreatePostType) {
     return this.postsService.createPost(bodyPosts);
   }
-  @Get(':postId/Comments') // need fix
-  async getCommentsPostId(
-    @Param('postId') postId: string,
-    @Query('pageNumber') pageNumber: string,
-    @Query('pageSize') pageSize: string,
-  ) {
-    return this.postsService.getPostIdComments(postId, pageNumber, pageSize);
-  }
-
   @Post(':postId/Comments')
   @ApiBasicAuth()
   async createPostIdComment(
