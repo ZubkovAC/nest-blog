@@ -62,7 +62,7 @@ import {
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(PostsPOSTMiddleware, PostsPUTMiddleware)
+      .apply(PostsPOSTMiddleware)
       .forRoutes({
         path: 'posts',
         method: RequestMethod.POST,
