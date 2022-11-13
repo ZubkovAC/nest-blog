@@ -190,7 +190,7 @@ export class PostsController {
 
   @Post()
   // @UseGuards(CheckBloggerIdBodyGuard)
-  @UseGuards(AuthBaseGuard)
+  // @UseGuards(AuthBaseGuard)
   @ApiBody({
     schema: {
       example: {
@@ -235,7 +235,7 @@ export class PostsController {
     status: 401,
     description: 'Unauthorized',
   })
-  @ApiBasicAuth()
+  // @ApiBasicAuth()
   createPost(@Body() bodyPosts: BodyCreatePostType) {
     return this.postsService.createPost(bodyPosts);
   }

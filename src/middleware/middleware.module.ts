@@ -41,10 +41,13 @@ export class PostsPOSTMiddleware implements NestMiddleware {
         });
         return;
       }
+      console.log('asdfasdf');
       next();
+      return;
     }
 
     if (req.method === 'PUT') {
+      console.log('asdf');
       const postId = req.url.split('/')[1];
       if (postId) {
         const findPostId = mongoose.isValidObjectId(postId);
@@ -84,7 +87,9 @@ export class PostsPOSTMiddleware implements NestMiddleware {
         return;
       }
       next();
+      return;
     }
     next();
+    return;
   }
 }
