@@ -1,10 +1,18 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import mongoose from 'mongoose';
+import mongoose, { Model } from 'mongoose';
+import { PostsSchemaInterface } from '../posts/posts.schemas';
+import { bloggersSchema } from '../bloggers/blogger.schemas';
 
 @Injectable()
 export class PostsPOSTMiddleware implements NestMiddleware {
-  use(req: Request, res: Response, next: NextFunction) {
+  constructor(
+    @Inject('POSTS_MODEL')
+    private postsRepository: Model<PostsSchemaInterface>,
+    @Inject('BLOGGERS_MODEL')
+    private bloggersRepository: Model<bloggersSchema>,
+  ) {}
+  async use(req: Request, res: Response, next: NextFunction) {
     const errors = [];
     if (req.method === 'POST') {
       const token = req.headers?.authorization;
@@ -30,7 +38,9 @@ export class PostsPOSTMiddleware implements NestMiddleware {
         errors.push({ message: 'content length > 1000', field: 'content' });
       }
       if (!body?.blogId || body.blogId) {
-        const blogId = mongoose.isValidObjectId(body?.blogId);
+        const blogId = await this.bloggersRepository.findOne({
+          id: body?.blogId,
+        });
         if (!blogId) {
           errors.push({ message: 'not found', field: 'blogId' });
         }
@@ -41,7 +51,6 @@ export class PostsPOSTMiddleware implements NestMiddleware {
         });
         return;
       }
-      console.log('asdfasdf');
       next();
       return;
     }
@@ -53,7 +62,6 @@ export class PostsPOSTMiddleware implements NestMiddleware {
         return;
       }
 
-      console.log('asdf');
       const postId = req.url.split('/')[1];
       if (postId) {
         const findPostId = mongoose.isValidObjectId(postId);
@@ -81,7 +89,9 @@ export class PostsPOSTMiddleware implements NestMiddleware {
         errors.push({ message: 'title length > 1000', field: 'content' });
       }
       if (!body?.blogId || body?.blogId) {
-        const blogId = mongoose.isValidObjectId(body?.blogId);
+        const blogId = await this.bloggersRepository.findOne({
+          id: body?.blogId,
+        });
         if (!blogId) {
           errors.push({ message: 'not found blogId', field: 'blogId' });
         }

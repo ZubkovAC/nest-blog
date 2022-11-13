@@ -131,9 +131,13 @@ export class PostsRepository {
   }
   async updatePostId(postId: string, updatePost: BodyCreatePostType) {
     // const post = await this.postsRepository.findOne({ id: postId });
-    const blogger = await this.bloggersRepository.findOne({
-      id: updatePost.blogId,
-    });
+    console.log(1, updatePost.blogId);
+    const blogger = await this.bloggersRepository
+      .findOne({
+        id: updatePost.blogId,
+      })
+      .lean();
+    console.log(blogger);
     await this.postsRepository.updateOne(
       { id: postId },
       {
