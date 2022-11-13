@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 export class PostsPOSTMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const errors = [];
+    console.log('123333');
     const token = req.headers?.authorization;
     if (token !== 'Basic YWRtaW46cXdlcnR5') {
       res.status(401).json('Unauthorized');
@@ -47,6 +48,7 @@ export class PostsPOSTMiddleware implements NestMiddleware {
 @Injectable()
 export class PostsPUTMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
+    console.log('1234');
     const errors = [];
     const body = req.body;
     if (!body?.title || body?.title?.trim().length > 30) {

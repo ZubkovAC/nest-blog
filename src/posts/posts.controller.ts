@@ -180,7 +180,7 @@ export class PostsController {
   }
   @ApiBasicAuth()
   @Post()
-  @UseGuards(CheckBloggerIdBodyGuard)
+  // @UseGuards(CheckBloggerIdBodyGuard)
   @UseGuards(AuthBaseGuard)
   @ApiBody({
     schema: {
@@ -254,8 +254,8 @@ export class PostsController {
   }
 
   @Put(':id')
-  @UseGuards(CheckPostIdGuard)
-  @UseGuards(CheckBloggerIdBodyGuard)
+  // @UseGuards(CheckPostIdGuard)
+  // @UseGuards(CheckBloggerIdBodyGuard)
   @UseGuards(AuthBaseGuard)
   @ApiBody({
     schema: {
