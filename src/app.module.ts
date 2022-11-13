@@ -26,7 +26,10 @@ import { AuthService } from './auth/auth.service';
 import { AuthRepository } from './auth/auth.repository';
 import { EmailService } from './auth/email.service';
 import { TestingController } from './testing/testing.controller';
-import { LoggerMiddleware } from './middleware/middleware.module';
+import {
+  PostsPOSTMiddleware,
+  PostsPUTMiddleware,
+} from './middleware/middleware.module';
 
 @Module({
   imports: [DatabaseModule, ConfigModule.forRoot()],
@@ -59,8 +62,10 @@ import { LoggerMiddleware } from './middleware/middleware.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(LoggerMiddleware)
-      .forRoutes({ path: 'posts', method: RequestMethod.POST });
+      .apply(PostsPOSTMiddleware)
+      .forRoutes({ path: 'posts', method: RequestMethod.POST })
+      .apply(PostsPUTMiddleware)
+      .forRoutes({ path: 'posts', method: RequestMethod.PUT });
   }
 }
 
