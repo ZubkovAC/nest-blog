@@ -22,11 +22,11 @@ export class PostsPOSTMiddleware implements NestMiddleware {
       }
 
       const body = req.body;
-      if (!body?.title || body?.title?.trim().length > 30) {
+      if (!body?.title?.trim() || body?.title?.trim().length > 30) {
         errors.push({ message: 'title length > 30', field: 'title' });
       }
       if (
-        !body?.shortDescription ||
+        !body?.shortDescription?.trim() ||
         body?.shortDescription?.trim().length > 100
       ) {
         errors.push({
@@ -34,7 +34,7 @@ export class PostsPOSTMiddleware implements NestMiddleware {
           field: 'shortDescription',
         });
       }
-      if (!body?.content || body?.content?.trim().length > 1000) {
+      if (!body?.content?.trim() || body?.content?.trim().length > 1000) {
         errors.push({ message: 'content length > 1000', field: 'content' });
       }
       if (!body?.blogId || body.blogId) {
@@ -64,7 +64,7 @@ export class PostsPOSTMiddleware implements NestMiddleware {
 
       const postId = req.url.split('/')[1];
       if (postId) {
-        const findPostId = mongoose.isValidObjectId(postId);
+        const findPostId = await this.postsRepository.findOne({ id: postId });
         if (!findPostId) {
           res.status(404).json('not found');
           return;
@@ -73,7 +73,7 @@ export class PostsPOSTMiddleware implements NestMiddleware {
 
       const errors = [];
       const body = req.body;
-      if (!body?.title || body?.title?.trim().length > 30) {
+      if (!body?.title?.trim() || body?.title?.trim().length > 30) {
         errors.push({ message: 'title length > 30', field: 'title' });
       }
       if (
@@ -85,7 +85,7 @@ export class PostsPOSTMiddleware implements NestMiddleware {
           field: 'shortDescription',
         });
       }
-      if (!body?.content || body?.content?.trim().length > 1000) {
+      if (!body?.content?.trim() || body?.content?.trim().length > 1000) {
         errors.push({ message: 'title length > 1000', field: 'content' });
       }
       if (!body?.blogId || body?.blogId) {
