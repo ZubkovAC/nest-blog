@@ -33,11 +33,11 @@ import { PostsPOSTMiddleware } from './middleware/middleware.module';
   controllers: [
     AppController,
     BlogsController,
-    UsersController,
     PostsController,
+    UsersController,
     CommentsController,
     AuthController,
-    TestingController,
+    // TestingController,
   ],
   providers: [
     ...firstProviders,
@@ -59,11 +59,6 @@ import { PostsPOSTMiddleware } from './middleware/middleware.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(PostsPOSTMiddleware).forRoutes('posts');
-    // .forRoutes({
-    //   path: 'posts',
-    //   method: RequestMethod.POST,
-    // })
-    // .forRoutes({ path: 'posts', method: RequestMethod.PUT });
   }
 }
 
