@@ -20,7 +20,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     if (status === 400) {
       const arrayField = error.message.map((m) => m.split(' ')[0]);
       const filterField = Array.from(new Set(arrayField));
-      console.log('error', error);
       response.status(status).json({
         errorsMessages: filterField.map((f) => ({
           message: error.message

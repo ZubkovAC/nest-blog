@@ -2,6 +2,7 @@ import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { PostsRepository } from '../posts/posts.repository';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BloggerRepository } from '../bloggers/bloggers.repository';
+import { AuthRepository } from '../auth/auth.repository';
 
 @ApiTags('testing')
 @Controller('testing')
@@ -9,6 +10,7 @@ export class TestingController {
   constructor(
     protected postsRepository: PostsRepository,
     protected blogsRepository: BloggerRepository,
+    protected authRepository: AuthRepository,
   ) {}
   @Delete('/all-data')
   @ApiResponse({
@@ -19,6 +21,7 @@ export class TestingController {
   async deleteAllData() {
     await this.postsRepository.deleteAll();
     await this.blogsRepository.deleteAll();
+    await this.authRepository.deleteAll();
     return;
   }
 }

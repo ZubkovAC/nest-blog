@@ -56,4 +56,8 @@ export class AuthRepository {
   async findUser(login: string) {
     return this.authRepository.findOne({ 'accountData.login': login });
   }
+  async deleteAll() {
+    await this.authRepository.deleteMany({});
+    return;
+  }
 }
