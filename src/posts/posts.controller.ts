@@ -26,6 +26,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthBearerGuard } from '../guards/AuthBearer.guard';
+import { UsersRepository } from '../users/users.repository';
 
 export class BodyCreatePostType {
   @ApiProperty()
@@ -135,6 +136,7 @@ export class PostsController {
   constructor(
     protected postsService: PostsService,
     protected commentsService: CommentsService,
+    protected userRepository: UsersRepository,
   ) {}
   @Get()
   @ApiResponse({
@@ -183,6 +185,8 @@ export class PostsController {
     @Param('postId') postId: string,
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
+    @Query('sortBy') sortBy: string,
+    @Query('sortDirection') sortDirection: string,
   ) {
     const post = await this.postsService.getPostId(postId);
     if (!post) {
@@ -191,7 +195,13 @@ export class PostsController {
         HttpStatus.NOT_FOUND,
       );
     }
-    return this.postsService.getPostIdComments(postId, pageNumber, pageSize);
+    return this.postsService.getPostIdComments(
+      postId,
+      pageNumber,
+      pageSize,
+      sortBy,
+      sortDirection,
+    );
   }
 
   @Post()
@@ -251,6 +261,13 @@ export class PostsController {
     @Body('content') content: string,
     @Req() req: any,
   ) {
+    const post = await this.postsService.getPostId(postId);
+    if (!post) {
+      throw new HttpException(
+        { message: ['postId NOT_FOUND '] },
+        HttpStatus.NOT_FOUND,
+      );
+    }
     if (
       !content?.trim() ||
       content.trim().length < 20 ||

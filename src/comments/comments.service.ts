@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CommentsRepository } from './comments.repository';
 import { UsersRepository } from '../users/users.repository';
 import mongoose from 'mongoose';
@@ -18,7 +18,14 @@ export class CommentsService {
       token.split(' ')[1],
       process.env.SECRET_KEY,
     );
+
     const user = await this.userRepository.getUserId(userToken.userId);
+    if (!user) {
+      throw new HttpException(
+        { message: ['user not found'] },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const id = new mongoose.Types.ObjectId().toString();
     const newCommentPost = {
       idPostComment: postId,

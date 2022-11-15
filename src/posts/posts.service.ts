@@ -4,6 +4,7 @@ import { BodyCreatePostType } from './posts.controller';
 import {
   pageNumberValidate,
   pageSizeValidate,
+  sortCommentsValidation,
   sortDirectionValidation,
   sortPostsValidation,
 } from '../query/query';
@@ -30,10 +31,20 @@ export class PostsService {
     postId: string,
     pageNumber: string,
     pageSize: string,
+    sortBy: string,
+    sortDirection: string,
   ) {
     const pageN = pageNumberValidate(pageNumber);
     const pageS = pageSizeValidate(pageSize);
-    return this.postsRepository.getPostIdComments(postId, pageN, pageS);
+    const sortB = sortCommentsValidation(sortBy);
+    const sortD = sortDirectionValidation(sortDirection);
+    return this.postsRepository.getPostIdComments(
+      postId,
+      pageN,
+      pageS,
+      sortB,
+      sortD,
+    );
   }
   async createPost(bodyPosts: BodyCreatePostType) {
     return this.postsRepository.createPost(bodyPosts);

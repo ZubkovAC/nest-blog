@@ -49,6 +49,20 @@ export const sortPostsValidation = (sort: string) => {
       return 'createdAt';
   }
 };
+export const sortCommentsValidation = (sort: string) => {
+  switch (sort) {
+    case 'id':
+      return 'id';
+    case 'content':
+      return 'content';
+    case 'userId':
+      return 'userId';
+    case 'userLogin':
+      return 'userLogin';
+    default:
+      return 'createdAt';
+  }
+};
 export const sortDirectionValidation = (sortDirection: string) => {
   switch (sortDirection) {
     case 'asc':

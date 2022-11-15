@@ -50,6 +50,8 @@ export class PostsRepository {
     postId: string,
     pageNumber: number,
     pageSize: number,
+    sortBy: any,
+    sortDirection: any,
   ) {
     const allCommentsPost = await this.commentsRepository
       .find({ idPostComment: postId })
@@ -57,10 +59,10 @@ export class PostsRepository {
     const skipCount = (pageNumber - 1) * pageSize;
     const post = await this.commentsRepository
       .find({ idPostComment: postId }, '-_id -__v -idPostComment')
+      .sort({ [sortBy]: sortDirection })
       .skip(skipCount)
       .limit(pageSize)
       .lean();
-    console.log(post, allCommentsPost);
     return {
       pagesCount: Math.ceil(allCommentsPost.length / pageSize),
       page: pageNumber,
