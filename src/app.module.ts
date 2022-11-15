@@ -37,7 +37,7 @@ import { PostsPOSTMiddleware } from './middleware/middleware.module';
     UsersController,
     CommentsController,
     AuthController,
-    // TestingController,
+    TestingController,
   ],
   providers: [
     ...firstProviders,

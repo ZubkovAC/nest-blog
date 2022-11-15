@@ -24,7 +24,7 @@ export class EmailService {
         userId: userId,
         login: login,
         email: email,
-        createAt: new Date(),
+        createdAt: new Date(),
         passwordAccess: passwordAccess,
         passwordRefresh: passwordRefresh,
         hash: passwordHash,

@@ -5,7 +5,7 @@ export const UsersSchema = new mongoose.Schema({
     userId: String,
     login: String,
     email: String,
-    createAt: Date,
+    createdAt: Date,
     passwordAccess: String,
     passwordRefresh: String,
     hash: String,
@@ -23,7 +23,7 @@ export interface UsersSchemaInterface {
     userId: string;
     login: string;
     email: string;
-    createAt: Date;
+    createdAt: Date;
     passwordAccess: string;
     passwordRefresh: string;
     hash: string;

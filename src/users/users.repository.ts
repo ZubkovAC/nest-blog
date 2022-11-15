@@ -8,14 +8,33 @@ export class UsersRepository {
     @Inject('USERS_MODEL')
     private usersRepository: Model<UsersSchemaInterface>,
   ) {}
-  async getUsers(pageNumber: number, pageSize: number) {
+  async getUsers(
+    pageNumber: number,
+    pageSize: number,
+    sortBy: any,
+    sortDirection: any,
+    searchLoginTerm: string,
+    searchEmailTerm: string,
+  ) {
     const skipCount = (pageNumber - 1) * pageSize;
     const totalCount = await this.usersRepository.countDocuments();
+
     const users = await this.usersRepository
-      .find({})
+      .find({
+        'accountData.email': {
+          $regex: searchEmailTerm,
+          $options: 'i',
+        },
+        'accountData.login': {
+          $regex: searchLoginTerm,
+          $options: 'i',
+        },
+      })
+      .sort({ [sortBy]: sortDirection })
       .skip(skipCount)
       .limit(pageSize)
       .lean();
+
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
@@ -24,6 +43,8 @@ export class UsersRepository {
       items: users.map((u) => ({
         id: u.accountData.userId,
         login: u.accountData.login,
+        email: u.accountData.email,
+        createdAt: u.accountData.createdAt,
       })),
     };
   }
@@ -35,6 +56,8 @@ export class UsersRepository {
     return {
       id: createUserModel.accountData.userId,
       login: createUserModel.accountData.login,
+      email: createUserModel.accountData.email,
+      createdAt: createUserModel.accountData.createdAt,
     };
   }
   async deleteUser(deleteUserId: string) {

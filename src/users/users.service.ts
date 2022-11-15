@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { BodyCreateUserType } from './users.controller';
-import { pageNumberValidate, pageSizeValidate } from '../query/query';
+import {
+  pageNumberValidate,
+  pageSizeValidate,
+  searchValidation,
+  sortDirectionValidation,
+  sortUserValidation,
+} from '../query/query';
 import mongoose from 'mongoose';
 import { createJWT, dateExpired } from '../sup/jwt';
 import { v4 as uuidv4 } from 'uuid';
@@ -13,10 +19,28 @@ export class UsersService {
     protected usersRepository: UsersRepository,
     protected emailService: EmailService,
   ) {}
-  async getUsers(pageNumber: string, pageSize: string) {
+  async getUsers(
+    pageNumber: string,
+    pageSize: string,
+    sortBy: string,
+    sortDirection: string,
+    searchLoginTerm: string,
+    searchEmailTerm: string,
+  ) {
     const pNumber = pageNumberValidate(pageNumber);
     const pSize = pageSizeValidate(pageSize);
-    return this.usersRepository.getUsers(pNumber, pSize); // need class Repository / count + page +++
+    const sortB = sortUserValidation(sortBy);
+    const sortD = sortDirectionValidation(sortDirection);
+    const searchLTerm = searchValidation(searchLoginTerm);
+    const searchETerm = searchValidation(searchEmailTerm);
+    return this.usersRepository.getUsers(
+      pNumber,
+      pSize,
+      sortB,
+      sortD,
+      searchLTerm,
+      searchETerm,
+    ); // need class Repository / count + page +++
   }
   async createUser(bodyCreateUser: BodyCreateUserType) {
     const userId = new mongoose.Types.ObjectId().toString();

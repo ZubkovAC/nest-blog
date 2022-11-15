@@ -19,6 +19,18 @@ export const sortBlogValidation = (sort: string) => {
       return 'createdAt';
   }
 };
+export const sortUserValidation = (sort: string) => {
+  switch (sort) {
+    case 'userId':
+      return 'accountData.userId';
+    case 'login':
+      return 'accountData.login';
+    case 'email':
+      return 'accountData.email';
+    default:
+      return 'accountData.createdAt';
+  }
+};
 export const sortPostsValidation = (sort: string) => {
   switch (sort) {
     case 'id':
@@ -43,6 +55,14 @@ export const sortDirectionValidation = (sortDirection: string) => {
       return 1;
     default:
       return -1;
+  }
+};
+export const searchValidation = (sortDirection: string) => {
+  switch (sortDirection) {
+    case undefined:
+      return '';
+    default:
+      return sortDirection;
   }
 };
 
