@@ -17,7 +17,10 @@ export class UsersRepository {
     searchEmailTerm: string,
   ) {
     const skipCount = (pageNumber - 1) * pageSize;
-    const totalCount = await this.usersRepository.countDocuments();
+    const totalCount = await this.usersRepository.countDocuments({
+      'accountData.login': { $regex: searchLoginTerm, $options: 'i' },
+      'accountData.email': { $regex: searchEmailTerm, $options: 'i' },
+    });
 
     const users = await this.usersRepository
       .find({
