@@ -18,20 +18,38 @@ export class UsersRepository {
   ) {
     const skipCount = (pageNumber - 1) * pageSize;
     const totalCount = await this.usersRepository.countDocuments({
-      'accountData.login': { $regex: searchLoginTerm, $options: 'i' },
-      'accountData.email': { $regex: searchEmailTerm, $options: 'i' },
+      '@or': [
+        {
+          'accountData.email': {
+            $regex: searchEmailTerm,
+            $options: 'i',
+          },
+        },
+        {
+          'accountData.login': {
+            $regex: searchLoginTerm,
+            $options: 'i',
+          },
+        },
+      ],
     });
 
     const users = await this.usersRepository
       .find({
-        'accountData.email': {
-          $regex: searchEmailTerm,
-          $options: 'i',
-        },
-        'accountData.login': {
-          $regex: searchLoginTerm,
-          $options: 'i',
-        },
+        '@or': [
+          {
+            'accountData.email': {
+              $regex: searchEmailTerm,
+              $options: 'i',
+            },
+          },
+          {
+            'accountData.login': {
+              $regex: searchLoginTerm,
+              $options: 'i',
+            },
+          },
+        ],
       })
       .sort({ [sortBy]: sortDirection })
       .skip(skipCount)
