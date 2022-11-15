@@ -23,8 +23,8 @@ export class PostsService {
     const sortD = sortDirectionValidation(sortDirection);
     return this.postsRepository.getPosts(pNumber, pSize, sortV, sortD);
   }
-  async getPostId(userId: string) {
-    return this.postsRepository.getPostId(userId);
+  async getPostId(postId: string) {
+    return this.postsRepository.getPostId(postId);
   }
   async getPostIdComments(
     postId: string,

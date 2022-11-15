@@ -4,6 +4,8 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -15,10 +17,6 @@ import { PostsService } from './posts.service';
 import { Length } from 'class-validator';
 import { CheckPostIdGuard } from '../guards/CheckPostId.guard';
 import { AuthBaseGuard } from '../guards/AuthBase.guard';
-import {
-  CheckBloggerIdParamsGuard,
-  CheckBloggerIdBodyGuard,
-} from '../guards/check-blogger-id-params-guard.service';
 import { CommentsService } from '../comments/comments.service';
 import {
   ApiBasicAuth,
@@ -190,8 +188,7 @@ export class PostsController {
   }
 
   @Post()
-  // @UseGuards(CheckBloggerIdBodyGuard)
-  // @UseGuards(AuthBaseGuard)
+  @UseGuards(AuthBaseGuard)
   @ApiBody({
     schema: {
       example: {
@@ -236,7 +233,6 @@ export class PostsController {
     status: 401,
     description: 'Unauthorized',
   })
-  // @ApiBasicAuth()
   createPost(@Body() bodyPosts: BodyCreatePostType) {
     return this.postsService.createPost(bodyPosts);
   }
@@ -302,6 +298,10 @@ export class PostsController {
     @Param('id') postId: string,
     @Body() updatePost: BodyCreatePostType,
   ) {
+    const post = this.postsService.getPostId(postId);
+    if (post) {
+      throw new HttpException('not found postId', HttpStatus.NOT_FOUND);
+    }
     await this.postsService.updatePost(postId, updatePost);
     return;
   }

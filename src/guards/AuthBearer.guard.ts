@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { UsersSchemaInterface } from '../users/users.schemas';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthBearerGuard implements CanActivate {
@@ -30,8 +31,20 @@ export class AuthBearerGuard implements CanActivate {
       );
     }
     if (token) {
+      let userId;
+      try {
+        userId = jwt.verify(token, process.env.SECRET_KEY);
+      } catch (e) {
+        throw new HttpException(
+          {
+            status: HttpStatus.UNAUTHORIZED,
+            error: 'UNAUTHORIZED',
+          },
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
       const login = await this.authRepository.findOne({
-        'account.passwordAccess': token,
+        'account.userId': userId.userId,
       });
       if (login) {
         return true;

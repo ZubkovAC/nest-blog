@@ -14,11 +14,19 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { AuthBearerGuard } from '../guards/AuthBearer.guard';
 import { Model } from 'mongoose';
 import { commentsSchemaInterface } from './comments.schemas';
 import * as jwt from 'jsonwebtoken';
+import { Length } from 'class-validator';
+
+class Content {
+  @ApiProperty()
+  @Length(20, 300)
+  content: string;
+}
+
 @ApiTags('comments')
 @Controller('comments')
 export class CommentsController {
@@ -29,14 +37,18 @@ export class CommentsController {
   ) {}
   @Get(':id')
   async getComments(@Param('id') commentsId: string) {
-    return this.commentsService.getCommentsId(commentsId);
+    const comments = await this.commentsService.getCommentsId(commentsId);
+    if (!comments) {
+      throw new NotFoundException('not found commentId');
+    }
+    return comments;
   }
   @Put(':id')
   @HttpCode(204)
   @UseGuards(AuthBearerGuard)
   async updateCommentId(
     @Param('id') commentId: string,
-    @Body('content') content: string,
+    @Body('content') content: Content,
     @Req() req: any,
   ) {
     const comment = await this.commentsRepository.findOne({
@@ -48,7 +60,7 @@ export class CommentsController {
     const token = req.headers.authorization.split(' ')[1];
     const userData: any = await jwt.verify(token, process.env.SECRET_KEY);
     if (comment.userId === userData.userId) {
-      await this.commentsService.updateCommentId(commentId, content);
+      await this.commentsService.updateCommentId(commentId, content.content);
       return;
     }
     throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
