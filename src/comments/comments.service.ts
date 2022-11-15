@@ -26,7 +26,7 @@ export class CommentsService {
       content: content,
       userId: user.accountData.userId,
       userLogin: user.accountData.login,
-      addedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
     };
     await this.commentsRepository.createCommentsPost(newCommentPost);
     // await likesCollectionModel.insertMany([{   // need fix - create likes collection
@@ -38,17 +38,16 @@ export class CommentsService {
       content: content,
       userId: user.accountData.userId,
       userLogin: user.accountData.login,
-      addedAt: newCommentPost.addedAt,
-      likesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: 'None',
-      },
+      createdAt: newCommentPost.createdAt,
+      // likesInfo: {
+      //   likesCount: 0,
+      //   dislikesCount: 0,
+      //   myStatus: 'None',
+      // },
     };
   }
   async updateCommentId(commentsId: string, content: string) {
-    await this.commentsRepository.updateCommentsId(commentsId, content);
-    return;
+    return this.commentsRepository.updateCommentsId(commentsId, content);
   }
   async deleteCommentId(commentsId: string) {
     await this.commentsRepository.deleteCommentId(commentsId);

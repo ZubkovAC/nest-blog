@@ -6,7 +6,7 @@ export const CommentsSchema = new mongoose.Schema({
   content: String,
   userId: String,
   userLogin: String,
-  addedAt: String,
+  createdAt: String,
 });
 
 export interface commentsSchemaInterface {
@@ -15,5 +15,5 @@ export interface commentsSchemaInterface {
   content: string;
   userId: string;
   userLogin: string;
-  addedAt: string;
+  createdAt: string;
 }

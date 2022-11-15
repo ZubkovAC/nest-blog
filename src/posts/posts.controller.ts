@@ -27,6 +27,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { AuthBearerGuard } from '../guards/AuthBearer.guard';
 
 export class BodyCreatePostType {
   @ApiProperty()
@@ -179,7 +180,7 @@ export class PostsController {
     return this.postsService.getPostId(postId);
   }
 
-  @Get(':postId/Comments') // need fix
+  @Get(':postId/comments') // need fix
   async getCommentsPostId(
     @Param('postId') postId: string,
     @Query('pageNumber') pageNumber: string,
@@ -239,8 +240,9 @@ export class PostsController {
   createPost(@Body() bodyPosts: BodyCreatePostType) {
     return this.postsService.createPost(bodyPosts);
   }
-  @Post(':postId/Comments')
   @ApiBasicAuth()
+  @Post(':postId/comments')
+  @UseGuards(AuthBearerGuard)
   async createPostIdComment(
     @Param('postId') postId: string,
     @Body('content') content: string,

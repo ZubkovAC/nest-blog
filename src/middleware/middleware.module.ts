@@ -14,7 +14,11 @@ export class PostsPOSTMiddleware implements NestMiddleware {
   ) {}
   async use(req: Request, res: Response, next: NextFunction) {
     const errors = [];
-    if (req.method === 'POST') {
+    if (
+      req.method === 'POST' &&
+      req.path === 'posts' &&
+      req.path.split('/')[3] !== undefined
+    ) {
       const token = req.headers?.authorization;
       if (token !== 'Basic YWRtaW46cXdlcnR5') {
         res.status(401).json('Unauthorized');
@@ -55,7 +59,7 @@ export class PostsPOSTMiddleware implements NestMiddleware {
       return;
     }
 
-    if (req.method === 'PUT') {
+    if (req.method === 'PUT' && req.path === 'posts') {
       const token = req.headers?.authorization;
       if (token !== 'Basic YWRtaW46cXdlcnR5') {
         res.status(401).json('Unauthorized');

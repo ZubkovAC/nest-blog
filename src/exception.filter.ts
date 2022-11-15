@@ -30,10 +30,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
       });
     }
     if (status === 401) {
+      console.log('401401');
       response.status(401).json('Unauthorized');
     }
     if (status === 404) {
       response.status(404).json('Not Found');
+    }
+    if (status === 403) {
+      response.status(403).json('If try edit the comment that is not your own');
     }
   }
 }

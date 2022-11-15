@@ -4,14 +4,15 @@ import {
   Get,
   HttpCode,
   Post,
+  Req,
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthRepository } from './auth.repository';
+import * as bcrypt from 'bcrypt';
 import { createJWT } from '../sup/jwt';
 import * as jwt from 'jsonwebtoken';
-import * as bcrypt from 'bcrypt';
 
 @ApiTags('registration')
 @Controller('auth')
@@ -36,7 +37,7 @@ export class AuthController {
     return;
   }
   @Post('login') // fix
-  @HttpCode(204)
+  @HttpCode(200)
   async login(@Body() loginValue: LoginValueType) {
     const login = await this.authRepository.findUser(loginValue.login);
     if (!login) {
@@ -64,8 +65,19 @@ export class AuthController {
     return;
   }
   @Get('me') // fix
-  async me() {
-    return;
+  async me(@Req() req: any) {
+    const token = req.headers.authorization.split(' ')[1];
+    let info;
+    try {
+      info = jwt.verify(token, process.env.SECRET_KEY);
+    } catch (e) {
+      throw new UnauthorizedException();
+    }
+    return {
+      email: info.email,
+      login: info.login,
+      userId: info.userId,
+    };
   }
 }
 
