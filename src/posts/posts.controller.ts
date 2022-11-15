@@ -244,6 +244,16 @@ export class PostsController {
     @Body('content') content: string,
     @Req() req: any,
   ) {
+    if (
+      !content?.trim() ||
+      content.trim().length < 20 ||
+      content.trim().length > 300
+    ) {
+      throw new HttpException(
+        { message: ['content length > 20 && length  < 300'] },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const token: string = req.headers.authorization;
     return await this.commentsService.createCommentIdPost(
       postId,

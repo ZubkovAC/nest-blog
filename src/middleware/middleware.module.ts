@@ -14,10 +14,12 @@ export class PostsPOSTMiddleware implements NestMiddleware {
   ) {}
   async use(req: Request, res: Response, next: NextFunction) {
     const errors = [];
+
     if (
-      (req.method === 'POST' && req.path === 'posts') ||
+      (req.method === 'POST' && req.baseUrl.split('/')[1] === 'posts') ||
       req.path.split('/')[3] !== undefined
     ) {
+      console.log('3331');
       const token = req.headers?.authorization;
       if (token !== 'Basic YWRtaW46cXdlcnR5') {
         res.status(401).json('Unauthorized');
@@ -40,6 +42,7 @@ export class PostsPOSTMiddleware implements NestMiddleware {
       if (!body?.content?.trim() || body?.content?.trim().length > 1000) {
         errors.push({ message: 'content length > 1000', field: 'content' });
       }
+      console.log('333333');
       if (!body?.blogId || body.blogId) {
         const blogId = await this.bloggersRepository.findOne({
           id: body?.blogId,
@@ -58,7 +61,7 @@ export class PostsPOSTMiddleware implements NestMiddleware {
       return;
     }
 
-    if (req.method === 'PUT' && req.path === 'posts') {
+    if (req.method === 'PUT' && req.baseUrl.split('/')[1] === 'posts') {
       console.log(req.path, 'asdfasd');
       const token = req.headers?.authorization;
       if (token !== 'Basic YWRtaW46cXdlcnR5') {

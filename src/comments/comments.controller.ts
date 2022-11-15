@@ -48,7 +48,7 @@ export class CommentsController {
   @UseGuards(AuthBearerGuard)
   async updateCommentId(
     @Param('id') commentId: string,
-    @Body('content') content: Content,
+    @Body('content') content: string,
     @Req() req: any,
   ) {
     const comment = await this.commentsRepository.findOne({
@@ -57,10 +57,20 @@ export class CommentsController {
     if (!comment) {
       throw new NotFoundException('not found commentId');
     }
+    if (
+      !content?.trim() ||
+      content.trim().length < 20 ||
+      content.trim().length > 300
+    ) {
+      throw new HttpException(
+        { message: ['content length > 20 && length  < 300'] },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const token = req.headers.authorization.split(' ')[1];
     const userData: any = await jwt.verify(token, process.env.SECRET_KEY);
     if (comment.userId === userData.userId) {
-      await this.commentsService.updateCommentId(commentId, content.content);
+      await this.commentsService.updateCommentId(commentId, content);
       return;
     }
     throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
