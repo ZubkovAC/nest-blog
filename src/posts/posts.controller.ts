@@ -184,6 +184,13 @@ export class PostsController {
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
   ) {
+    const post = await this.postsService.getPostId(postId);
+    if (!post) {
+      throw new HttpException(
+        { message: ['postId NOT_FOUND '] },
+        HttpStatus.NOT_FOUND,
+      );
+    }
     return this.postsService.getPostIdComments(postId, pageNumber, pageSize);
   }
 
@@ -309,7 +316,7 @@ export class PostsController {
     @Body() updatePost: BodyCreatePostType,
   ) {
     const post = this.postsService.getPostId(postId);
-    if (post) {
+    if (!post) {
       throw new HttpException('not found postId', HttpStatus.NOT_FOUND);
     }
     await this.postsService.updatePost(postId, updatePost);

@@ -19,57 +19,57 @@ export class PostsPOSTMiddleware implements NestMiddleware {
       (req.method === 'POST' && req.baseUrl.split('/')[1] === 'posts') ||
       req.path.split('/')[3] !== undefined
     ) {
-      console.log('3331');
-      const token = req.headers?.authorization;
-      if (token !== 'Basic YWRtaW46cXdlcnR5') {
-        res.status(401).json('Unauthorized');
-        return;
-      }
-
-      const body = req.body;
-      if (!body?.title?.trim() || body?.title?.trim().length > 30) {
-        errors.push({ message: 'title length > 30', field: 'title' });
-      }
-      if (
-        !body?.shortDescription?.trim() ||
-        body?.shortDescription?.trim().length > 100
-      ) {
-        errors.push({
-          message: 'shortDescription length > 100',
-          field: 'shortDescription',
-        });
-      }
-      if (!body?.content?.trim() || body?.content?.trim().length > 1000) {
-        errors.push({ message: 'content length > 1000', field: 'content' });
-      }
-      console.log('333333');
-      if (!body?.blogId || body.blogId) {
-        const blogId = await this.bloggersRepository.findOne({
-          id: body?.blogId,
-        });
-        if (!blogId) {
-          errors.push({ message: 'not found', field: 'blogId' });
+      if (req.path.split('/')[2] !== 'comments') {
+        const token = req.headers?.authorization;
+        if (token !== 'Basic YWRtaW46cXdlcnR5') {
+          res.status(401).json('Unauthorized');
+          return;
         }
-      }
-      if (errors.length > 0) {
-        res.status(400).json({
-          errorsMessages: errors,
-        });
+
+        const body = req.body;
+        if (!body?.title?.trim() || body?.title?.trim().length > 30) {
+          errors.push({ message: 'title length > 30', field: 'title' });
+        }
+        if (
+          !body?.shortDescription?.trim() ||
+          body?.shortDescription?.trim().length > 100
+        ) {
+          errors.push({
+            message: 'shortDescription length > 100',
+            field: 'shortDescription',
+          });
+        }
+        if (!body?.content?.trim() || body?.content?.trim().length > 1000) {
+          errors.push({ message: 'content length > 1000', field: 'content' });
+        }
+        console.log('333333');
+        if (!body?.blogId || body.blogId) {
+          const blogId = await this.bloggersRepository.findOne({
+            id: body?.blogId,
+          });
+          if (!blogId) {
+            errors.push({ message: 'not found', field: 'blogId' });
+          }
+        }
+        if (errors.length > 0) {
+          res.status(400).json({
+            errorsMessages: errors,
+          });
+          return;
+        }
+        next();
         return;
       }
-      next();
-      return;
     }
 
     if (req.method === 'PUT' && req.baseUrl.split('/')[1] === 'posts') {
-      console.log(req.path, 'asdfasd');
       const token = req.headers?.authorization;
       if (token !== 'Basic YWRtaW46cXdlcnR5') {
         res.status(401).json('Unauthorized');
         return;
       }
 
-      const postId = req.url.split('/')[1];
+      const postId = req.path.split('/')[1];
       if (postId) {
         const findPostId = await this.postsRepository.findOne({ id: postId });
         if (!findPostId) {
