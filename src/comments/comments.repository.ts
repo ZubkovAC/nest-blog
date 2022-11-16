@@ -32,4 +32,7 @@ export class CommentsRepository {
   deleteCommentId(commentId: string) {
     return this.commentsRepository.deleteOne({ id: commentId });
   }
+  deleteAll() {
+    return this.commentsRepository.deleteMany({});
+  }
 }
