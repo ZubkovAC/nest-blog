@@ -54,6 +54,8 @@ export class EmailService {
       //  <p>To finish registration please follow the link below:
       //     <a href='https://nest-test-blog4412.vercel.app/auth/confirm-email?code=${conformationCode}'>complete registration</a>
       // </p>`,
+      body: `<h1>To confirm registration, please, press the link below </h1>
+      <a href='https://nest-test-blog4412.vercel.app/auth/registration-confirmation?code=${conformationCode}'>Confirm registration</a>`,
       html: `<h1>To confirm registration, please, press the link below </h1>
       <a href='https://nest-test-blog4412.vercel.app/auth/registration-confirmation?code=${conformationCode}'>Confirm registration</a>`,
 
