@@ -3,16 +3,56 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpException,
+  HttpStatus,
   Post,
   Req,
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { AuthRepository } from './auth.repository';
 import * as bcrypt from 'bcrypt';
-import { createJWT } from '../sup/jwt';
 import * as jwt from 'jsonwebtoken';
+import { IsEmail, IsNotEmpty, Length } from 'class-validator';
+import { Transform, TransformFnParams } from 'class-transformer';
+
+export class RegistrationValueType {
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @Length(3, 10)
+  login: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @Length(6, 20)
+  password: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @IsEmail()
+  email: string;
+}
+export class LoginValueType {
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @Length(3, 10)
+  login: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @Length(6, 20)
+  password: string;
+}
+class EmailValidation {
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @IsEmail()
+  email: string;
+}
 
 @ApiTags('registration')
 @Controller('auth')
@@ -21,25 +61,58 @@ export class AuthController {
     protected authService: AuthService,
     protected authRepository: AuthRepository,
   ) {}
+  @HttpCode(204)
   @Post('registration')
   async registration(@Body() registrationValueType: RegistrationValueType) {
+    const loginName = await this.authRepository.findUserLogin(
+      registrationValueType.login,
+    );
+    const loginEmail = await this.authRepository.findUserEmail(
+      registrationValueType.email,
+    );
+    const error = [];
+    if (loginName) {
+      error.push('login this one is registered');
+    }
+    if (loginEmail) {
+      error.push('email this one is registered');
+    }
+    if (error.length > 0) {
+      throw new HttpException({ message: error }, HttpStatus.BAD_REQUEST);
+    }
     await this.authService.registration(registrationValueType);
     return;
   }
+  @HttpCode(204)
   @Post('registration-confirmation')
-  async registrationConformation(@Body() code: string) {
+  async registrationConformation(@Body('code') code: string) {
+    const res = await this.authRepository.registrationConformationFind(code);
+    if (!res) {
+      throw new HttpException(
+        { message: ['code its not correct'] },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     await this.authService.registrationConformation(code);
     return;
   }
+  @HttpCode(204)
   @Post('registration-email-resending')
-  async registrationEmailResending(@Body() email: string) {
-    await this.authService.emailResending(email);
-    return;
+  async registrationEmailResending(@Body() email: EmailValidation) {
+    const emailF = this.authRepository.emailFindResending(email.email);
+    if (emailF) {
+      await this.authService.emailResending(email.email);
+      return;
+    }
+    throw new HttpException(
+      { message: ['email its not correct'] },
+      HttpStatus.BAD_REQUEST,
+    );
   }
   @Post('login') // fix
   @HttpCode(200)
   async login(@Body() loginValue: LoginValueType) {
-    const login = await this.authRepository.findUser(loginValue.login);
+    const login = await this.authRepository.findUserLogin(loginValue.login);
     if (!login) {
       throw new UnauthorizedException();
     }
@@ -80,13 +153,3 @@ export class AuthController {
     };
   }
 }
-
-export type LoginValueType = {
-  login: string;
-  password: string;
-};
-export type RegistrationValueType = {
-  login: string;
-  email: string;
-  password: string;
-};

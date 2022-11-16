@@ -17,7 +17,12 @@ export class AuthRepository {
       { 'emailConformation.conformationCode': code },
       { $set: { 'emailConformation.isConfirmed': true } },
     );
-    return;
+    return true;
+  }
+  async registrationConformationFind(code: string) {
+    return this.authRepository.findOne({
+      'emailConformation.conformationCode': code,
+    });
   }
   async emailResending(email: string, conformationCode: string) {
     await this.authRepository.updateOne(
@@ -31,6 +36,9 @@ export class AuthRepository {
       },
     );
     return;
+  }
+  async emailFindResending(email: string) {
+    return this.authRepository.findOne({ 'accountData.email': email });
   }
 
   async login(login: string, passwordAccess: string, passwordRefresh: string) {
@@ -53,8 +61,11 @@ export class AuthRepository {
     // this.authRepository
     return;
   }
-  async findUser(login: string) {
+  async findUserLogin(login: string) {
     return this.authRepository.findOne({ 'accountData.login': login });
+  }
+  async findUserEmail(email: string) {
+    return this.authRepository.findOne({ 'accountData.email': email });
   }
   async deleteAll() {
     await this.authRepository.deleteMany({});

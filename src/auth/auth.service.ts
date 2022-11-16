@@ -41,8 +41,7 @@ export class AuthService {
     return;
   }
   async registrationConformation(code: string) {
-    await this.authRepository.registrationConformation(code);
-    return;
+    return this.authRepository.registrationConformation(code);
   }
   async emailResending(email: string) {
     const conformationCode = uuidv4();
@@ -52,7 +51,7 @@ export class AuthService {
   }
   async login(loginValue: LoginValueType) {
     const { login, password } = loginValue; // need check password bcript
-    const user = await this.authRepository.findUser(login);
+    const user = await this.authRepository.findUserLogin(login);
     const { userId, email } = user.accountData;
     const passwordAccess = await createJWT(
       { userId, login, email },
