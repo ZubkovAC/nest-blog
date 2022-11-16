@@ -99,6 +99,9 @@ export class AuthController {
   @HttpCode(204)
   @Post('registration-email-resending')
   async registrationEmailResending(@Body() email: EmailValidation) {
+    // const rex = new RegExp('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$');
+    // const a = rex.test('vantreytest1@yandex.com');
+    // console.log(a);
     const emailF = this.authRepository.emailFindResending(email.email);
     if (emailF) {
       await this.authService.emailResending(email.email);

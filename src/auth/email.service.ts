@@ -49,8 +49,11 @@ export class EmailService {
       from: `3y6kob <${process.env.EMAIL}>`, // sender address
       to: emailTo, // list of receivers
       subject: 'Registration ✔', // Subject line
-      text: `https://some-front.com/confirm-registration?code=${conformationCode}`, // plain text body
-      // html: "https://ferst-back.herokuapp.com/ht_05/api/auth/confirm-registration?code=youtcodehere", // html body
+      text: `<h1>Thank for your registration</h1>
+       <p>To finish registration please follow the link below:
+          <a href='https://nest-test-blog4412.vercel.app/auth/registration-confirmation?code=${conformationCode}'>complete registration</a>
+      </p>`,
+      // text: `https://some-front.com/confirm-registration?code=${conformationCode}`, // plain text body
     });
     return;
   }
