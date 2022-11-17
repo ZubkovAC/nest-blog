@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BlogsService } from './bloggers.service';
-import { IsNotEmpty, IsUrl, Length } from 'class-validator';
+import { IsNotEmpty, IsUrl, Length, Matches } from 'class-validator';
 import { CheckBloggerIdParamsGuard } from '../guards/check-blogger-id-params-guard.service';
 import { AuthBaseGuard } from '../guards/AuthBase.guard';
 import {
@@ -41,7 +41,10 @@ class DTO_b {
   id: string;
   @ApiProperty()
   name: string;
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
   @ApiProperty()
+  // @Matches(/^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/)
   youtubeUrl: string;
   @ApiProperty()
   createdAt: Date;

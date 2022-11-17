@@ -14,7 +14,7 @@ import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { AuthRepository } from './auth.repository';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { IsEmail, IsNotEmpty, Length } from 'class-validator';
+import { IsEmail, IsNotEmpty, Length, Matches } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
 
 export class RegistrationValueType {
@@ -32,6 +32,7 @@ export class RegistrationValueType {
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   @IsEmail()
+  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;
 }
 export class LoginValueType {
@@ -87,7 +88,7 @@ export class AuthController {
   @Post('registration-confirmation')
   async registrationConformation(@Body('code') code: string) {
     const res = await this.authRepository.registrationConformationFind(code);
-    if (!res) {
+    if (!res || res.emailConformation.isConfirmed) {
       throw new HttpException(
         { message: ['code its not correct'] },
         HttpStatus.BAD_REQUEST,
@@ -99,11 +100,8 @@ export class AuthController {
   @HttpCode(204)
   @Post('registration-email-resending')
   async registrationEmailResending(@Body() email: EmailValidation) {
-    // const rex = new RegExp('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$');
-    // const a = rex.test('vantreytest1@yandex.com');
-    // console.log(a);
-    const emailF = this.authRepository.emailFindResending(email.email);
-    if (emailF) {
+    const emailF = await this.authRepository.emailFindResending(email.email);
+    if (emailF && !emailF.emailConformation.isConfirmed) {
       await this.authService.emailResending(email.email);
       return;
     }
