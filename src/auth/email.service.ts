@@ -45,7 +45,7 @@ export class EmailService {
         pass: process.env.PASSWORD,
       },
     });
-    transporter.sendMail({
+    await transporter.sendMail({
       from: `3y6kob <${process.env.EMAIL}>`, // sender address
       to: emailTo, // list of receivers
       subject: 'Registration ✔', // Subject line

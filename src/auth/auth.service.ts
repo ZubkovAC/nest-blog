@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { LoginValueType, RegistrationValueType } from './auth.controller';
 import { AuthRepository } from './auth.repository';
 import { v4 as uuidv4 } from 'uuid';
@@ -33,10 +33,18 @@ export class AuthService {
       userId,
       conformationCode,
     );
-    const telegramEmail = await this.emailService.sendEmail(
-      email,
-      conformationCode,
-    );
+    try {
+      const telegramEmail = await this.emailService.sendEmail(
+        email,
+        conformationCode,
+      );
+    } catch (e) {
+      throw new HttpException(
+        { message: ['sendmail'] },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     await this.authRepository.registration(newUser);
     return;
   }
