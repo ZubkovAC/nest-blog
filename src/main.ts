@@ -16,7 +16,7 @@ async function bootstrap() {
   // await app.register(fastifyCookie, {
   //   secret: 'my-secret', // for cookies signature
   // });
-
+  app.use(cookieParser());
   // swagger
   const config = new DocumentBuilder()
     .addSecurity('basic', {
@@ -39,7 +39,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.use(cookieParser());
+
   await app.listen(process.env.PORT || 3000);
 }
 
