@@ -170,6 +170,7 @@ export class AuthController {
     });
     response.cookie('refreshToken', resLogin.passwordRefresh, {
       httpOnly: true,
+      secure: true,
     });
     return response.send({ accessToken: resLogin.accessToken });
   }
@@ -201,6 +202,7 @@ export class AuthController {
     await this.authRepository.logout(refreshToken);
     response.cookie('refreshToken', '', {
       httpOnly: true,
+      secure: true,
     });
     return;
   }
