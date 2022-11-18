@@ -3,13 +3,13 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './exception.filter';
-import * as cookieParser from 'cookie-parser';
 
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { fastifyCookie } from '@fastify/cookie';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   // v1
@@ -23,7 +23,7 @@ async function bootstrap() {
   );
   // v2
   // const app = await NestFactory.create(AppModule);
-  // app.use(cookieParser());
+  app.use(cookieParser());
   // swagger
   const config = new DocumentBuilder()
     .addSecurity('basic', {
