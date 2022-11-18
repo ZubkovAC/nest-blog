@@ -5,15 +5,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './exception.filter';
 import * as cookieParser from 'cookie-parser';
 
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
-import { fastifyCookie } from '@fastify/cookie';
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(cookieParser());
   // swagger
   const config = new DocumentBuilder()
     .addSecurity('basic', {
@@ -29,7 +22,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
   app.enableCors();
-
+  app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
 
