@@ -42,6 +42,7 @@ export class PostsRepository {
       items: posts,
     };
   }
+
   async getPostId(postId: string) {
     // await this.likesRepository.find({ id: postId });
     return this.postsRepository.findOne({ id: postId }, '-_id -__v');

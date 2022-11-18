@@ -8,8 +8,6 @@ import {
   Post,
   Req,
   Res,
-  Request,
-  // Response,
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -20,6 +18,7 @@ import * as jwt from 'jsonwebtoken';
 import { IsEmail, IsNotEmpty, Length, Matches } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { Response } from 'express';
+import { FastifyRequest } from 'fastify';
 
 export class RegistrationValueType {
   @ApiProperty()
@@ -119,7 +118,7 @@ export class AuthController {
   async login(
     @Body() loginValue: LoginValueType,
     @Res({ passthrough: true }) response: Response,
-    @Request() req,
+    @Req() req: FastifyRequest,
   ) {
     const login = await this.authRepository.findUserLogin(loginValue.login);
     if (!login) {
@@ -135,13 +134,14 @@ export class AuthController {
     }
     const resLogin = await this.authService.login(loginValue);
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      httpOnly: true,
+      // httpOnly: true,
     });
+    console.log(req.cookies.refreshToken);
     return response.send({ accessToken: resLogin.accessToken });
   }
   @Post('refresh-token') // fix
   async refreshToken(
-    @Request() req,
+    @Req() req,
     @Res({ passthrough: true }) response: Response,
   ) {
     // need logic

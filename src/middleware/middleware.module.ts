@@ -3,7 +3,9 @@ import { NextFunction, Request, Response } from 'express';
 import { Model } from 'mongoose';
 import { PostsSchemaInterface } from '../posts/posts.schemas';
 import { bloggersSchema } from '../bloggers/blogger.schemas';
+import { FastifyRequest } from 'fastify';
 
+// need fix middleware
 @Injectable()
 export class PostsPOSTMiddleware implements NestMiddleware {
   constructor(
@@ -12,21 +14,21 @@ export class PostsPOSTMiddleware implements NestMiddleware {
     @Inject('BLOGGERS_MODEL')
     private bloggersRepository: Model<bloggersSchema>,
   ) {}
-  async use(req: Request, res: Response, next: NextFunction) {
+  async use(req: FastifyRequest, res: Response, next: NextFunction) {
     const errors = [];
 
     if (
-      (req.method === 'POST' && req.baseUrl.split('/')[1] === 'posts') ||
-      req.path.split('/')[3] !== undefined
+      (req.method === 'POST' && req.url.split('/')[1] === 'posts') ||
+      req.url.split('/')[3] !== undefined
     ) {
-      if (req.path.split('/')[2] !== 'comments') {
+      if (req.url.split('/')[2] !== 'comments') {
         const token = req.headers?.authorization;
         if (token !== 'Basic YWRtaW46cXdlcnR5') {
           res.status(401).json('Unauthorized');
           return;
         }
 
-        const body = req.body;
+        const body: any = req.body;
         if (!body?.title?.trim() || body?.title?.trim().length > 30) {
           errors.push({ message: 'title length > 30', field: 'title' });
         }
@@ -62,14 +64,14 @@ export class PostsPOSTMiddleware implements NestMiddleware {
       }
     }
 
-    if (req.method === 'PUT' && req.baseUrl.split('/')[1] === 'posts') {
+    if (req.method === 'PUT' && req.url.split('/')[1] === 'posts') {
       const token = req.headers?.authorization;
       if (token !== 'Basic YWRtaW46cXdlcnR5') {
         res.status(401).json('Unauthorized');
         return;
       }
 
-      const postId = req.path.split('/')[1];
+      const postId = req.url.split('/')[1];
       if (postId) {
         const findPostId = await this.postsRepository.findOne({ id: postId });
         if (!findPostId) {
@@ -79,7 +81,7 @@ export class PostsPOSTMiddleware implements NestMiddleware {
       }
 
       const errors = [];
-      const body = req.body;
+      const body: any = req.body;
       if (!body?.title?.trim() || body?.title?.trim().length > 30) {
         errors.push({ message: 'title length > 30', field: 'title' });
       }

@@ -1,9 +1,4 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BlogsController } from './bloggers/bloggers.controller';
@@ -62,4 +57,4 @@ export class AppModule implements NestModule {
   }
 }
 
-// export class AppModule
+// export class AppModule {}

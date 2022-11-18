@@ -10,6 +10,7 @@ import {
   Param,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -18,6 +19,7 @@ import { AuthBaseGuard } from '../guards/AuthBase.guard';
 import { ApiBasicAuth, ApiTags } from '@nestjs/swagger';
 import { Model } from 'mongoose';
 import { UsersSchemaInterface } from './users.schemas';
+import { Response } from 'express';
 
 export class BodyCreateUserType {
   @Length(3, 10)
@@ -38,14 +40,16 @@ export class UsersController {
   @Get()
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
-  getUsers(
+  async getUsers(
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
     @Query('searchLoginTerm') searchLoginTerm: string,
     @Query('searchEmailTerm') searchEmailTerm: string,
+    @Res({ passthrough: true }) response: Response,
   ) {
+    console.log('123');
     return this.usersService.getUsers(
       pageNumber,
       pageSize,

@@ -11,6 +11,7 @@ import {
   Put,
   Query,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
@@ -26,7 +27,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthBearerGuard } from '../guards/AuthBearer.guard';
-import { UsersRepository } from '../users/users.repository';
+import { Response } from 'express';
+import { FastifyRequest } from 'fastify';
 
 export class BodyCreatePostType {
   @ApiProperty()
@@ -135,21 +137,18 @@ class DTO_Posts {
 export class PostsController {
   constructor(
     protected postsService: PostsService,
-    protected commentsService: CommentsService,
-    protected userRepository: UsersRepository,
+    protected commentsService: CommentsService, // protected userRepository: UsersRepository,
   ) {}
+
   @Get()
-  @ApiResponse({
-    status: 200,
-    description: 'Success',
-    type: DTO_Posts,
-  })
-  getPosts(
+  async getPosts(
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
+    // @Res({ passthrough: true }) response: Response,
   ) {
+    console.log('getPosts');
     return this.postsService.getPosts(
       pageNumber,
       pageSize,
@@ -158,8 +157,8 @@ export class PostsController {
     );
   }
 
-  @UseGuards(CheckPostIdGuard)
   @Get(':id')
+  // @UseGuards(CheckPostIdGuard)
   @ApiResponse({
     status: 200,
     description: 'Success',
@@ -176,8 +175,15 @@ export class PostsController {
     status: 404,
     description: 'Not Found',
   })
-  getPostId(@Param('id') postId: string) {
-    return this.postsService.getPostId(postId);
+  async getPostId(@Param('id') postId: string) {
+    const post = await this.postsService.getPostId(postId);
+    if (!post) {
+      throw new HttpException(
+        { message: ['postId NOT_FOUND '] },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return post;
   }
 
   @Get(':postId/comments') // need fix
@@ -250,7 +256,7 @@ export class PostsController {
     status: 401,
     description: 'Unauthorized',
   })
-  createPost(@Body() bodyPosts: BodyCreatePostType) {
+  async createPost(@Body() bodyPosts: BodyCreatePostType) {
     return this.postsService.createPost(bodyPosts);
   }
   @ApiBasicAuth()
@@ -259,7 +265,7 @@ export class PostsController {
   async createPostIdComment(
     @Param('postId') postId: string,
     @Body('content') content: string,
-    @Req() req: any,
+    @Req() req: FastifyRequest,
   ) {
     const post = await this.postsService.getPostId(postId);
     if (!post) {

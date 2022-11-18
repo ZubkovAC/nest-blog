@@ -17,7 +17,6 @@ export class CommentsRepository {
         '-_id -__v -idPostComment',
       )
       .lean();
-    console.log('res', res, commentId);
     return res;
   }
   async createCommentsPost(newComment: commentsSchemaInterface) {

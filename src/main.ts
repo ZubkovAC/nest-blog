@@ -3,6 +3,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './exception.filter';
+import * as cookieParser from 'cookie-parser';
+
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -10,13 +12,18 @@ import {
 import { fastifyCookie } from '@fastify/cookie';
 
 async function bootstrap() {
+  // v1
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),
   );
-  await app.register(fastifyCookie, {
-    secret: 'my-secret', // for cookies signature
-  });
+  await app.register(
+    fastifyCookie,
+    { secret: 'my-secret' }, // for cookies signature}
+  );
+  // v2
+  // const app = await NestFactory.create(AppModule);
+  // app.use(cookieParser());
   // swagger
   const config = new DocumentBuilder()
     .addSecurity('basic', {

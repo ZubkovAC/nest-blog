@@ -27,15 +27,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
           field: f,
         })),
       });
+      return;
     }
     if (status === 401) {
       response.status(401);
+      return;
     }
     if (status === 404) {
-      response.status(404).json('Not Found');
+      response.status(404);
+      return;
     }
     if (status === 403) {
-      response.status(403).json('If try edit the comment that is not your own');
+      response.status(403);
+      return;
     }
   }
 }
