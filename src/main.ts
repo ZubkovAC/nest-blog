@@ -12,10 +12,13 @@ import {
 import { fastifyCookie } from '@fastify/cookie';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  // await app.register(fastifyCookie, {
-  //   secret: 'my-secret', // for cookies signature
-  // });
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter(),
+  );
+  await app.register(fastifyCookie, {
+    secret: 'my-secret', // for cookies signature
+  });
   app.use(cookieParser());
   // swagger
   const config = new DocumentBuilder()
@@ -31,10 +34,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-
-  // await app.register(fastifyCookie, {
-  //   secret: 'my-secret', // for cookies signature
-  // });
   app.enableCors();
 
   app.useGlobalPipes(new ValidationPipe());
