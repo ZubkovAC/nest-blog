@@ -25,6 +25,6 @@ export class TestingController {
     await this.blogsRepository.deleteAll();
     await this.authRepository.deleteAll();
     await this.commentsRepository.deleteAll();
-    return 'All data is deleted';
+    return;
   }
 }
