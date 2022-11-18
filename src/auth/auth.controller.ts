@@ -135,7 +135,7 @@ export class AuthController {
     }
     const resLogin = await this.authService.login(loginValue);
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      // httpOnly: true,
+      httpOnly: true,
     });
     return response.send({ accessToken: resLogin.accessToken });
   }
@@ -169,7 +169,7 @@ export class AuthController {
       password: 'mock',
     });
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      // httpOnly: true,
+      httpOnly: true,
     });
     return response.send({ accessToken: resLogin.accessToken });
   }
