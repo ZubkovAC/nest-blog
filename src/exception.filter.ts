@@ -16,7 +16,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
 
     const error: any = exception.getResponse();
-    console.log('error', error);
     if (status === 400) {
       const arrayField = error.message.map((m) => m.split(' ')[0]);
       const filterField = Array.from(new Set(arrayField));
@@ -30,8 +29,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       });
     }
     if (status === 401) {
-      console.log('401401');
-      response.status(401).json('Unauthorized');
+      response.status(401);
     }
     if (status === 404) {
       response.status(404).json('Not Found');

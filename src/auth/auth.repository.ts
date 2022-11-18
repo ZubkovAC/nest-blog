@@ -40,9 +40,14 @@ export class AuthRepository {
   async emailFindResending(email: string) {
     return this.authRepository.findOne({ 'accountData.email': email });
   }
+  async findRefreshToken(passwordRefresh: string) {
+    return this.authRepository.findOne({
+      'accountData.passwordRefresh': passwordRefresh,
+    });
+  }
 
   async login(login: string, passwordAccess: string, passwordRefresh: string) {
-    this.authRepository.updateOne(
+    await this.authRepository.updateOne(
       { 'accountData.login': login },
       {
         $set: {
@@ -57,8 +62,24 @@ export class AuthRepository {
     // this.authRepository
     return;
   }
-  async logout() {
-    // this.authRepository
+  async logout(token: string) {
+    this.authRepository.updateOne(
+      { 'accountData.passwordRefresh': token },
+      {
+        $set: {
+          'accountData.passwordAccess': (
+            Math.random() *
+            100 *
+            Math.random()
+          ).toString(),
+          'accountData.passwordRefresh': (
+            Math.random() *
+            100 *
+            Math.random()
+          ).toString(),
+        },
+      },
+    );
     return;
   }
   async findUserLogin(login: string) {

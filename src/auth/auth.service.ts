@@ -63,20 +63,22 @@ export class AuthService {
     const { userId, email } = user.accountData;
     const passwordAccess = await createJWT(
       { userId, login, email },
-      dateExpired['1h'],
+      // dateExpired['1h'],
+      dateExpired['10s'],
     );
     const passwordRefresh = await createJWT(
       { userId, login, email },
-      dateExpired['2h'],
+      // dateExpired['2h'],
+      dateExpired['20s'],
     );
     await this.authRepository.login(login, passwordAccess, passwordRefresh);
-    return { accessToken: passwordAccess };
+    return { accessToken: passwordAccess, passwordRefresh: passwordRefresh };
   }
   async refreshToken() {
     await this.authRepository.refreshToken();
     return;
   }
-  async logout() {
-    await this.authRepository.logout();
+  async logout(token: string) {
+    await this.authRepository.logout(token);
   }
 }
