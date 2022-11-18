@@ -12,14 +12,11 @@ import {
 import { fastifyCookie } from '@fastify/cookie';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-  );
-  await app.register(fastifyCookie, {
-    secret: 'my-secret', // for cookies signature
-  });
-  app.use(cookieParser());
+  const app = await NestFactory.create(AppModule);
+  // await app.register(fastifyCookie, {
+  //   secret: 'my-secret', // for cookies signature
+  // });
+
   // swagger
   const config = new DocumentBuilder()
     .addSecurity('basic', {
@@ -42,7 +39,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
-
+  app.use(cookieParser());
   await app.listen(process.env.PORT || 3000);
 }
 
