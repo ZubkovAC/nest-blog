@@ -134,9 +134,9 @@ export class AuthController {
     }
     const resLogin = await this.authService.login(loginValue);
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      // httpOnly: true,
+      httpOnly: true,
     });
-    console.log(req.cookies.refreshToken);
+    // console.log(req.cookies.refreshToken);
     return response.send({ accessToken: resLogin.accessToken });
   }
   @Post('refresh-token') // fix
