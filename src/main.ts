@@ -19,7 +19,7 @@ async function bootstrap() {
   await app.register(fastifyCookie, {
     secret: 'my-secret', // for cookies signature
   });
-  app.use(cookieParser());
+  // app.use(cookieParser());
   // swagger
   const config = new DocumentBuilder()
     .addSecurity('basic', {
