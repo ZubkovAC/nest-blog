@@ -141,6 +141,7 @@ export class AuthController {
     // console.log(req.cookies.refreshToken);
     return response.send({ accessToken: resLogin.accessToken });
   }
+  @HttpCode(200)
   @Post('refresh-token') // fix
   async refreshToken(
     @Req() req,

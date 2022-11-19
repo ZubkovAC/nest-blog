@@ -63,13 +63,13 @@ export class AuthService {
     const { userId, email, login } = user.accountData;
     const passwordAccess = await createJWT(
       { userId, login, email },
-      dateExpired['1h'],
-      // dateExpired['10s'],
+      // dateExpired['1h'],
+      dateExpired['10s'],
     );
     const passwordRefresh = await createJWT(
       { userId, login, email },
-      dateExpired['2h'],
-      // dateExpired['20s'],
+      // dateExpired['2h'],
+      dateExpired['20s'],
     );
     await this.authRepository.login(login, passwordAccess, passwordRefresh);
     return { accessToken: passwordAccess, passwordRefresh: passwordRefresh };
