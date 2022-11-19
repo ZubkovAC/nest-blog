@@ -150,6 +150,7 @@ export class AuthController {
     const findRefreshToken = await this.authRepository.findRefreshToken(
       token.refreshToken,
     );
+
     if (!findRefreshToken) {
       throw new HttpException(
         { message: ['unauthorized'] },
@@ -210,7 +211,7 @@ export class AuthController {
 
   @Get('me') // fix
   async me(@Req() req: any) {
-    const token = req.headers.authorization.split(' ')[1];
+    const token = req.headers.authorization?.split(' ')[1];
     let info;
     try {
       info = jwt.verify(token, process.env.SECRET_KEY);
