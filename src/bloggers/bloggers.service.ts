@@ -82,7 +82,8 @@ export class BlogsService {
     return this.bloggerRepository.createBlog({
       id: new Types.ObjectId().toString(),
       name: inputBlogger.name,
-      youtubeUrl: inputBlogger.youtubeUrl,
+      description: inputBlogger.description,
+      websiteUrl: inputBlogger.websiteUrl,
       createdAt: new Date().toISOString(),
     });
   }

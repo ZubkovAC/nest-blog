@@ -13,16 +13,16 @@ import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   // v1
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-  );
-  await app.register(
-    fastifyCookie,
-    { secret: 'my-secret' }, // for cookies signature}
-  );
+  // const app = await NestFactory.create<NestFastifyApplication>(
+  //   AppModule,
+  //   new FastifyAdapter(),
+  // );
+  // await app.register(
+  //   fastifyCookie,
+  //   { secret: 'my-secret' }, // for cookies signature}
+  // );
   // v2
-  // const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
   // swagger
   const config = new DocumentBuilder()

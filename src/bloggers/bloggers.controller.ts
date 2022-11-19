@@ -30,11 +30,16 @@ export class InputBlogType {
   @Length(2, 15)
   name: string;
   @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @Length(0, 500)
+  description: string;
+  @ApiProperty()
   @IsUrl()
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   @Length(0, 100)
-  youtubeUrl: string;
+  websiteUrl: string;
 }
 class DTO_b {
   @ApiProperty()
@@ -176,7 +181,8 @@ export class BlogsController {
     schema: {
       example: {
         name: 'string Length(0, 15)',
-        youtubeUrl:
+        description: 'string Length(0, 500)',
+        websiteUrl:
           'string Length(0, 100) pattern ^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$\n',
       },
     },
@@ -188,7 +194,8 @@ export class BlogsController {
       example: {
         id: 'string',
         name: 'string',
-        youtubeUrl: 'string',
+        description: 'string',
+        websiteUrl: 'string',
         createdAt: '2022-11-08T08:53:15.121Z',
       },
     },

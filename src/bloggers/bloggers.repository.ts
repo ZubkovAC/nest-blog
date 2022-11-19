@@ -75,20 +75,23 @@ export class BloggerRepository {
     return {
       id: bloggerId,
       name: inputBloggerType.name,
-      youtubeUrl: inputBloggerType.youtubeUrl,
+      description: inputBloggerType.description,
+      websiteUrl: inputBloggerType.websiteUrl,
     };
   }
   async createBlog(inputBlogger: {
     id: string;
     name: string;
-    youtubeUrl: string;
+    description: string;
+    websiteUrl: string;
     createdAt: string;
   }) {
     const res = await this.blogRepository.insertMany([inputBlogger]);
     return res.map((blog) => ({
       id: blog.id,
       name: blog.name,
-      youtubeUrl: blog.youtubeUrl,
+      description: blog.description,
+      websiteUrl: blog.websiteUrl,
       createdAt: blog.createdAt,
     }))[0];
   }

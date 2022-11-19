@@ -3,7 +3,6 @@ import { NextFunction, Request, Response } from 'express';
 import { Model } from 'mongoose';
 import { PostsSchemaInterface } from '../posts/posts.schemas';
 import { bloggersSchema } from '../bloggers/blogger.schemas';
-import { FastifyRequest } from 'fastify';
 
 // need fix middleware
 @Injectable()
@@ -14,7 +13,7 @@ export class PostsPOSTMiddleware implements NestMiddleware {
     @Inject('BLOGGERS_MODEL')
     private bloggersRepository: Model<bloggersSchema>,
   ) {}
-  async use(req: FastifyRequest, res: Response, next: NextFunction) {
+  async use(req: Request, res: Response, next: NextFunction) {
     const errors = [];
 
     if (
