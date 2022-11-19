@@ -58,9 +58,9 @@ export class AuthService {
     return;
   }
   async login(loginValue: LoginValueType) {
-    const { login, password } = loginValue; // need check password bcript
-    const user = await this.authRepository.findUserLogin(login);
-    const { userId, email } = user.accountData;
+    const { loginOrEmail, password } = loginValue; // need check password bcript
+    const user = await this.authRepository.findUserLogin(loginOrEmail);
+    const { userId, email, login } = user.accountData;
     const passwordAccess = await createJWT(
       { userId, login, email },
       dateExpired['1h'],

@@ -17,8 +17,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { IsEmail, IsNotEmpty, Length, Matches } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
-import { Response } from 'express';
-import { FastifyRequest } from 'fastify';
+import { Response, Request } from 'express';
 
 export class RegistrationValueType {
   @ApiProperty()
@@ -42,8 +41,8 @@ export class LoginValueType {
   @ApiProperty()
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  @Length(3, 10)
-  login: string;
+  @Length(3, 30)
+  loginOrEmail: string;
   @ApiProperty()
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
@@ -118,9 +117,11 @@ export class AuthController {
   async login(
     @Body() loginValue: LoginValueType,
     @Res({ passthrough: true }) response: Response,
-    @Req() req: FastifyRequest,
+    @Req() req: Request,
   ) {
-    const login = await this.authRepository.findUserLogin(loginValue.login);
+    const login = await this.authRepository.findUserLogin(
+      loginValue.loginOrEmail,
+    );
     if (!login) {
       throw new UnauthorizedException();
     }
@@ -167,7 +168,7 @@ export class AuthController {
       );
     }
     const resLogin = await this.authService.login({
-      login: tokenValidate.login,
+      loginOrEmail: tokenValidate.login,
       password: 'mock',
     });
     response.cookie('refreshToken', resLogin.passwordRefresh, {
