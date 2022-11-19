@@ -63,7 +63,7 @@ export class AuthRepository {
     return;
   }
   async logout(token: string) {
-    this.authRepository.updateOne(
+    await this.authRepository.updateOne(
       { 'accountData.passwordRefresh': token },
       {
         $set: {
