@@ -30,15 +30,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return;
     }
     if (status === 401) {
-      response.status(401);
+      response.status(401).json('Unauthorized');
       return;
     }
     if (status === 404) {
-      response.status(404);
+      response.status(404).json('Not Found');
       return;
     }
     if (status === 403) {
-      response.status(403);
+      response.status(403).json('Forbidden');
       return;
     }
   }

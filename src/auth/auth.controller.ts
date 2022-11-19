@@ -213,13 +213,20 @@ export class AuthController {
   }
 
   @Get('me') // fix
-  async me(@Req() req: any) {
-    const token = req.headers.authorization?.split(' ')[1];
+  async me(@Req() req: Request) {
+    const token = req.headers?.authorization?.split(' ')[1];
     let info;
     try {
+      console.log('1233');
       info = jwt.verify(token, process.env.SECRET_KEY);
+      console.log('5555');
     } catch (e) {
-      throw new UnauthorizedException();
+      console.log('12555');
+      throw new HttpException(
+        { message: ['Unauthorized'] },
+        HttpStatus.UNAUTHORIZED,
+      );
+      return;
     }
     return {
       email: info.email,
