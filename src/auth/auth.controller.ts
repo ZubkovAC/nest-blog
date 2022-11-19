@@ -176,6 +176,7 @@ export class AuthController {
     });
     return response.send({ accessToken: resLogin.accessToken });
   }
+
   @HttpCode(204)
   @Post('logout') // fix
   async logout(
