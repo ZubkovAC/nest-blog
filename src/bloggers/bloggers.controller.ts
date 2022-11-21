@@ -42,6 +42,7 @@ export class InputBlogType {
   @Length(0, 100)
   websiteUrl: string;
 }
+
 class DTO_b {
   @ApiProperty()
   id: string;
@@ -55,6 +56,7 @@ class DTO_b {
   @ApiProperty()
   createdAt: Date;
 }
+
 export class ValueBlogIdPostType {
   @ApiProperty()
   @Length(0, 30)
