@@ -21,8 +21,10 @@ import { AuthBaseGuard } from '../guards/AuthBase.guard';
 import { CommentsService } from '../comments/comments.service';
 import {
   ApiBasicAuth,
+  ApiBearerAuth,
   ApiBody,
   ApiProperty,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -141,6 +143,33 @@ export class PostsController {
   ) {}
 
   @Get()
+  @ApiQuery({ name: 'pageSize', required: false, type: Number })
+  @ApiQuery({ name: 'pageNumber', required: false, type: Number })
+  @ApiQuery({ name: 'sortBy', required: false, type: 'asc || desc' })
+  @ApiQuery({ name: 'sortDirection', required: false, type: 'params Object' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    schema: {
+      example: {
+        pagesCount: 0,
+        page: 0,
+        pageSize: 0,
+        totalCount: 0,
+        items: [
+          {
+            id: 'string',
+            title: 'string',
+            shortDescription: 'string',
+            content: 'string',
+            blogId: 'string',
+            blogName: 'string',
+            createdAt: '2022-11-21T10:11:46.633Z',
+          },
+        ],
+      },
+    },
+  })
   async getPosts(
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
@@ -148,7 +177,6 @@ export class PostsController {
     @Query('sortDirection') sortDirection: string,
     // @Res({ passthrough: true }) response: Response,
   ) {
-    console.log('getPosts');
     return this.postsService.getPosts(
       pageNumber,
       pageSize,
@@ -187,6 +215,35 @@ export class PostsController {
   }
 
   @Get(':postId/comments') // need fix
+  @ApiQuery({ name: 'pageSize', required: false, type: Number })
+  @ApiQuery({ name: 'pageNumber', required: false, type: Number })
+  @ApiQuery({ name: 'sortBy', required: false, type: 'asc || desc' })
+  @ApiQuery({ name: 'sortDirection', required: false, type: 'params Object' })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    schema: {
+      example: {
+        pagesCount: 0,
+        page: 0,
+        pageSize: 0,
+        totalCount: 0,
+        items: [
+          {
+            id: 'string',
+            content: 'string',
+            userId: 'string',
+            userLogin: 'string',
+            createdAt: '2022-11-21T10:14:21.053Z',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+  })
   async getCommentsPostId(
     @Param('postId') postId: string,
     @Query('pageNumber') pageNumber: string,
@@ -259,8 +316,50 @@ export class PostsController {
   async createPost(@Body() bodyPosts: BodyCreatePostType) {
     return this.postsService.createPost(bodyPosts);
   }
-  @ApiBasicAuth()
+  @ApiBearerAuth()
   @Post(':postId/comments')
+  @ApiBody({
+    schema: {
+      example: {
+        content: 'stringstringstringst',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Returns the newly created post',
+    schema: {
+      example: {
+        id: 'string',
+        content: 'string',
+        userId: 'string',
+        userLogin: 'string',
+        createdAt: '2022-11-21T10:15:36.069Z',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'If the inputModel has incorrect values',
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 404,
+    description: "If post with specified postId doesn't exists",
+  })
   @UseGuards(AuthBearerGuard)
   async createPostIdComment(
     @Param('postId') postId: string,

@@ -17,10 +17,10 @@ export class PostsPOSTMiddleware implements NestMiddleware {
     const errors = [];
 
     if (
-      (req.method === 'POST' && req.url.split('/')[1] === 'posts') ||
-      req.url.split('/')[3] !== undefined
+      (req.method === 'POST' && req.baseUrl.split('/')[1] === 'posts') ||
+      req.baseUrl.split('/')[3] !== undefined
     ) {
-      if (req.url.split('/')[2] !== 'comments') {
+      if (req.baseUrl.split('/')[2] !== 'comments') {
         const token = req.headers?.authorization;
         if (token !== 'Basic YWRtaW46cXdlcnR5') {
           res.status(401).json('Unauthorized');
@@ -43,7 +43,6 @@ export class PostsPOSTMiddleware implements NestMiddleware {
         if (!body?.content?.trim() || body?.content?.trim().length > 1000) {
           errors.push({ message: 'content length > 1000', field: 'content' });
         }
-        console.log('333333');
         if (!body?.blogId || body.blogId) {
           const blogId = await this.bloggersRepository.findOne({
             id: body?.blogId,
@@ -63,14 +62,14 @@ export class PostsPOSTMiddleware implements NestMiddleware {
       }
     }
 
-    if (req.method === 'PUT' && req.url.split('/')[1] === 'posts') {
+    if (req.method === 'PUT' && req.baseUrl.split('/')[1] === 'posts') {
       const token = req.headers?.authorization;
       if (token !== 'Basic YWRtaW46cXdlcnR5') {
         res.status(401).json('Unauthorized');
         return;
       }
 
-      const postId = req.url.split('/')[1];
+      const postId = req.baseUrl.split('/')[2];
       if (postId) {
         const findPostId = await this.postsRepository.findOne({ id: postId });
         if (!findPostId) {
@@ -78,7 +77,6 @@ export class PostsPOSTMiddleware implements NestMiddleware {
           return;
         }
       }
-
       const errors = [];
       const body: any = req.body;
       if (!body?.title?.trim() || body?.title?.trim().length > 30) {

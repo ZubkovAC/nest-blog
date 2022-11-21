@@ -16,7 +16,13 @@ import {
 import { UsersService } from './users.service';
 import { IsEmail, Length } from 'class-validator';
 import { AuthBaseGuard } from '../guards/AuthBase.guard';
-import { ApiBasicAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBasicAuth,
+  ApiBody,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Model } from 'mongoose';
 import { UsersSchemaInterface } from './users.schemas';
 import { Response } from 'express';
@@ -40,6 +46,36 @@ export class UsersController {
   @Get()
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
+  @ApiQuery({ name: 'pageSize', required: false, type: Number })
+  @ApiQuery({ name: 'pageNumber', required: false, type: Number })
+  @ApiQuery({ name: 'sortBy', required: false, type: 'asc || desc' })
+  @ApiQuery({ name: 'sortDirection', required: false, type: 'params Object' })
+  @ApiQuery({ name: 'searchLoginTerm', required: false, type: String })
+  @ApiQuery({ name: 'searchEmailTerm', required: false, type: String })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    schema: {
+      example: {
+        pagesCount: 0,
+        page: 0,
+        pageSize: 0,
+        totalCount: 0,
+        items: [
+          {
+            id: 'string',
+            login: 'string',
+            email: 'string',
+            createdAt: '2022-11-21T10:29:17.548Z',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async getUsers(
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
@@ -49,7 +85,6 @@ export class UsersController {
     @Query('searchEmailTerm') searchEmailTerm: string,
     @Res({ passthrough: true }) response: Response,
   ) {
-    console.log('123');
     return this.usersService.getUsers(
       pageNumber,
       pageSize,
@@ -60,6 +95,37 @@ export class UsersController {
     );
   }
   @Post()
+  @ApiBody({
+    schema: {
+      example: { login: 'string', password: 'string', email: 'string' },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Returns the newly created user',
+    schema: {
+      example: {
+        id: 'string',
+        login: 'string',
+        email: 'string',
+        createdAt: '2022-11-21T10:30:14.631Z',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'If the inputModel has incorrect values',
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
   async createUser(@Body() bodyCreateUser: BodyCreateUserType) {
@@ -82,6 +148,18 @@ export class UsersController {
     return this.usersService.createUser(bodyCreateUser);
   }
   @Delete(':id')
+  @ApiResponse({
+    status: 204,
+    description: 'No Content',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'If specified user is not exists',
+  })
   @UseGuards(AuthBaseGuard)
   @ApiBasicAuth()
   @HttpCode(204)

@@ -17,4 +17,6 @@ export const dateExpired = {
   '20s': '20sec',
   '1h': '1h',
   '2h': '2h',
+  '24h': '24h',
+  '48h': '48h',
 };

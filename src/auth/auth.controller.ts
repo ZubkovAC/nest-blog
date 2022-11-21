@@ -11,7 +11,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthRepository } from './auth.repository';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
@@ -65,6 +65,34 @@ export class AuthController {
     protected authRepository: AuthRepository,
   ) {}
   @HttpCode(204)
+  @ApiBody({
+    schema: {
+      example: {
+        login: 'string Length(3, 10)',
+        password: 'string Length(6, 20)',
+        email: 'string ^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 204,
+    description:
+      'Input data is accepted. Email with confirmation code will be send to passed email address',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Not Found',
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
   @Post('registration')
   async registration(@Body() registrationValueType: RegistrationValueType) {
     const loginName = await this.authRepository.findUserLogin(
@@ -88,6 +116,31 @@ export class AuthController {
   }
   @HttpCode(204)
   @Post('registration-confirmation')
+  @ApiResponse({
+    status: 204,
+    description: 'Email was verified. Account was activated',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Not Found',
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
+  @ApiBody({
+    schema: {
+      example: {
+        code: 'string',
+      },
+    },
+  })
   async registrationConformation(@Body('code') code: string) {
     const res = await this.authRepository.registrationConformationFind(code);
     if (!res || res.emailConformation.isConfirmed) {
@@ -101,6 +154,32 @@ export class AuthController {
   }
   @HttpCode(204)
   @Post('registration-email-resending')
+  @ApiResponse({
+    status: 204,
+    description:
+      'Input data is accepted. Email with confirmation code will be send to passed email address.',
+  })
+  @ApiBody({
+    schema: {
+      example: {
+        email: 'string',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Not Found',
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
   async registrationEmailResending(@Body() email: EmailValidation) {
     const emailF = await this.authRepository.emailFindResending(email.email);
     if (emailF && !emailF.emailConformation.isConfirmed) {
@@ -114,6 +193,31 @@ export class AuthController {
   }
   @Post('login') // fix
   @HttpCode(200)
+  @ApiBody({
+    schema: {
+      example: {
+        accessToken: 'string',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Not Found',
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'If the password or login is wrong',
+  })
   async login(
     @Body() loginValue: LoginValueType,
     @Res({ passthrough: true }) response: Response,
@@ -138,11 +242,23 @@ export class AuthController {
       httpOnly: true,
       secure: true,
     });
-    // console.log(req.cookies.refreshToken);
     return response.send({ accessToken: resLogin.accessToken });
   }
   @HttpCode(200)
   @Post('refresh-token') // fix
+  @ApiResponse({
+    status: 200,
+    schema: {
+      example: {
+        accessToken: 'string',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description:
+      'If the JWT refreshToken inside cookie is missing, expired or incorrect',
+  })
   async refreshToken(
     @Req() req,
     @Res({ passthrough: true }) response: Response,
@@ -152,7 +268,6 @@ export class AuthController {
     const findRefreshToken = await this.authRepository.findRefreshToken(
       token.refreshToken,
     );
-
     if (!findRefreshToken) {
       throw new HttpException(
         { message: ['unauthorized'] },
@@ -181,6 +296,15 @@ export class AuthController {
 
   @HttpCode(204)
   @Post('logout') // fix
+  @ApiResponse({
+    status: 204,
+    description: 'No Content',
+  })
+  @ApiResponse({
+    status: 401,
+    description:
+      'If the JWT refreshToken inside cookie is missing, expired or incorrect',
+  })
   async logout(
     @Res({ passthrough: true }) response: Response,
     @Req() req: any,
@@ -213,20 +337,27 @@ export class AuthController {
   }
 
   @Get('me') // fix
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    schema: {
+      example: { email: 'string', login: 'string', userId: 'string' },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async me(@Req() req: Request) {
     const token = req.headers?.authorization?.split(' ')[1];
     let info;
     try {
-      console.log('1233');
       info = jwt.verify(token, process.env.SECRET_KEY);
-      console.log('5555');
     } catch (e) {
-      console.log('12555');
       throw new HttpException(
         { message: ['Unauthorized'] },
         HttpStatus.UNAUTHORIZED,
       );
-      return;
     }
     return {
       email: info.email,

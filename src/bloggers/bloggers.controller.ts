@@ -18,6 +18,7 @@ import {
   ApiBasicAuth,
   ApiBody,
   ApiProperty,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -73,13 +74,13 @@ export class ValueBlogIdPostType {
 }
 
 class DTO_Blogger {
-  @ApiProperty({ type: Number })
+  @ApiProperty({ type: Number, required: false })
   pagesCount: number;
 
-  @ApiProperty({ type: Number })
+  @ApiProperty({ type: Number, required: false })
   page: number;
 
-  @ApiProperty({ type: Number })
+  @ApiProperty({ type: Number, required: false })
   pageSize: number;
 
   @ApiProperty({ type: Number })
@@ -99,6 +100,11 @@ export class BlogsController {
     description: 'return all Bloggers',
     type: DTO_Blogger,
   })
+  @ApiQuery({ name: 'pageNumber', required: false, type: Number })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number })
+  @ApiQuery({ name: 'searchNameTerm', required: false, type: String })
+  @ApiQuery({ name: 'sortBy', required: false, type: 'asc || desc' })
+  @ApiQuery({ name: 'sortDirection', required: false, type: 'params Object' })
   async getBloggers(
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
@@ -130,6 +136,10 @@ export class BlogsController {
   }
 
   @Get(':blogId/posts')
+  @ApiQuery({ name: 'pageSize', required: false, type: Number })
+  @ApiQuery({ name: 'pageNumber', required: false, type: Number })
+  @ApiQuery({ name: 'sortBy', required: false, type: 'asc || desc' })
+  @ApiQuery({ name: 'sortDirection', required: false, type: 'params Object' })
   @UseGuards(CheckBloggerIdParamsGuard)
   @ApiResponse({
     status: 200,

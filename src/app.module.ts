@@ -27,11 +27,11 @@ import { PostsPOSTMiddleware } from './middleware/middleware.module';
   imports: [DatabaseModule, ConfigModule.forRoot()],
   controllers: [
     AppController,
+    AuthController,
     BlogsController,
     PostsController,
     UsersController,
     CommentsController,
-    AuthController,
     TestingController,
   ],
   providers: [
