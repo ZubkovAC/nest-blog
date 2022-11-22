@@ -4,12 +4,13 @@ import { PostsSchema } from './posts/posts.schemas';
 import { UsersSchema } from './users/users.schemas';
 import { CommentsSchema } from './comments/comments.schemas';
 import { LikesSchema } from './likes/likes.schemas';
+import { DevicesAuthSchemas } from './authDevices/devicesAuth.schemas';
 
 export const firstProviders = [
   {
     provide: 'BLOGGERS_MODEL',
     useFactory: (connection: Connection) =>
-      connection.model('bloggers', BloggersSchema),
+      connection.model('blogs', BloggersSchema),
     inject: ['DATABASE_CONNECTION'],
   },
   {
@@ -34,6 +35,12 @@ export const firstProviders = [
     provide: 'LIKES_MODEL',
     useFactory: (connection: Connection) =>
       connection.model('likes', LikesSchema),
+    inject: ['DATABASE_CONNECTION'],
+  },
+  {
+    provide: 'DEVICES_AUTH',
+    useFactory: (connection: Connection) =>
+      connection.model('devicesAuth', DevicesAuthSchemas),
     inject: ['DATABASE_CONNECTION'],
   },
 ];

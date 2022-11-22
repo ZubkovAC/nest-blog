@@ -46,13 +46,21 @@ export class AuthRepository {
     });
   }
 
-  async login(login: string, passwordAccess: string, passwordRefresh: string) {
+  async login(
+    login: string,
+    passwordAccess: string,
+    passwordRefresh: string,
+    ip: string,
+    title: string,
+  ) {
     await this.authRepository.updateOne(
       { 'accountData.login': login },
       {
         $set: {
           'accountData.passwordAccess': passwordAccess,
           'accountData.passwordRefresh': passwordRefresh,
+          'accountData.ip': ip,
+          'accountData.title': title,
         },
       },
     );

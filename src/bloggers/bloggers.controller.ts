@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { BlogsService } from './bloggers.service';
@@ -23,6 +24,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Transform, TransformFnParams } from 'class-transformer';
+import { Request } from 'express';
 
 export class InputBlogType {
   @ApiProperty()

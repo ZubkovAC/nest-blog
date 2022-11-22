@@ -3,6 +3,8 @@ import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { AuthRepository } from './auth.repository';
+import { v4 as uuidv4 } from 'uuid';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class EmailService {
@@ -15,20 +17,33 @@ export class EmailService {
     passwordRefresh: string,
     userId: string,
     conformationCode: string,
+    ip: string,
+    title: string,
     isConfirmed?: boolean,
   ) {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hashSync(password, salt);
+    // const deviceId = uuidv4();
+    const refresh = await jwt.verify(passwordRefresh, process.env.SECRET_KEY);
+    // const lastActive = new Date().toISOString();
+    //@ts-ignore
+    const expDate = new Date(refresh.exp * 1000).toISOString();
+
     return {
       accountData: {
         userId: userId,
         login: login,
         email: email,
         createdAt: new Date(),
-        passwordAccess: passwordAccess,
-        passwordRefresh: passwordRefresh,
+        // passwordAccess: passwordAccess,
+        // passwordRefresh: passwordRefresh,
         hash: passwordHash,
         salt: salt,
+        // lastActive: lastActive,
+        // expActive: expDate,
+        // ip: ip,
+        // title: title,
+        // deviceId: deviceId,
       },
       emailConformation: {
         conformationCode: conformationCode,

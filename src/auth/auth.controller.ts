@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
+  Ip,
   Post,
   Req,
   Res,
@@ -18,6 +19,7 @@ import * as jwt from 'jsonwebtoken';
 import { IsEmail, IsNotEmpty, Length, Matches } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { Response, Request } from 'express';
+import { DevicesAuthService } from '../authDevices/devicesAuth.service';
 
 export class RegistrationValueType {
   @ApiProperty()
@@ -63,6 +65,7 @@ export class AuthController {
   constructor(
     protected authService: AuthService,
     protected authRepository: AuthRepository,
+    protected devicesAuthService: DevicesAuthService,
   ) {}
   @HttpCode(204)
   @ApiBody({
@@ -94,7 +97,11 @@ export class AuthController {
     },
   })
   @Post('registration')
-  async registration(@Body() registrationValueType: RegistrationValueType) {
+  async registration(
+    @Body() registrationValueType: RegistrationValueType,
+    @Req() req: Request,
+    @Ip() ip,
+  ) {
     const loginName = await this.authRepository.findUserLogin(
       registrationValueType.login,
     );
@@ -111,7 +118,8 @@ export class AuthController {
     if (error.length > 0) {
       throw new HttpException({ message: error }, HttpStatus.BAD_REQUEST);
     }
-    await this.authService.registration(registrationValueType);
+    const title = req.headers['user-agent'];
+    await this.authService.registration(registrationValueType, ip, title);
     return;
   }
   @HttpCode(204)
@@ -222,6 +230,7 @@ export class AuthController {
     @Body() loginValue: LoginValueType,
     @Res({ passthrough: true }) response: Response,
     @Req() req: Request,
+    @Ip() ip,
   ) {
     const login = await this.authRepository.findUserLogin(
       loginValue.loginOrEmail,
@@ -237,10 +246,17 @@ export class AuthController {
     if (!verifyPassword) {
       throw new UnauthorizedException();
     }
-    const resLogin = await this.authService.login(loginValue);
+    const title = req.headers['user-agent'];
+    const resLogin = await this.devicesAuthService.loginDevices(
+      token.userId,
+      ip,
+      token.login,
+      token.email,
+      title,
+    );
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      httpOnly: true,
-      secure: true,
+      // httpOnly: true,
+      // secure: true,
     });
     return response.send({ accessToken: resLogin.accessToken });
   }
@@ -262,10 +278,11 @@ export class AuthController {
   async refreshToken(
     @Req() req,
     @Res({ passthrough: true }) response: Response,
+    @Ip() ip,
   ) {
     // need logic
     const token = req.cookies;
-    const findRefreshToken = await this.authRepository.findRefreshToken(
+    const findRefreshToken = await this.devicesAuthService.findRefreshToken(
       token.refreshToken,
     );
     if (!findRefreshToken) {
@@ -283,13 +300,15 @@ export class AuthController {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    const resLogin = await this.authService.login({
-      loginOrEmail: tokenValidate.login,
-      password: 'mock',
-    });
+    const title = req.headers['user-agent'];
+    const resLogin = await this.devicesAuthService.updateDeviseId(
+      token.refreshToken,
+      ip,
+      title,
+    );
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      httpOnly: true,
-      secure: true,
+      // httpOnly: true,
+      // secure: true,
     });
     return response.send({ accessToken: resLogin.accessToken });
   }
@@ -311,7 +330,7 @@ export class AuthController {
   ) {
     // need logic - black list ?
     const refreshToken = req.cookies.refreshToken;
-    const refreshTokenUser = await this.authRepository.findRefreshToken(
+    const refreshTokenUser = await this.devicesAuthService.findRefreshToken(
       refreshToken,
     );
     if (!refreshTokenUser) {
@@ -328,7 +347,7 @@ export class AuthController {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    await this.authRepository.logout(refreshToken);
+    await this.devicesAuthService.logoutDevice(refreshToken);
     response.cookie('refreshToken', '', {
       httpOnly: true,
       secure: true,

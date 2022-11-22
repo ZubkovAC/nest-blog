@@ -6,10 +6,15 @@ export const UsersSchema = new mongoose.Schema({
     login: String,
     email: String,
     createdAt: Date,
-    passwordAccess: String,
-    passwordRefresh: String,
+    // passwordAccess: String,
+    // passwordRefresh: String,
     hash: String,
     salt: String,
+    // lastActive: String, // new
+    // expActive: String, // new
+    // ip: String, // new
+    // title: String, // new
+    // deviceId: String, // new
   },
   emailConformation: {
     conformationCode: String,
@@ -24,10 +29,15 @@ export interface UsersSchemaInterface {
     login: string;
     email: string;
     createdAt: Date;
-    passwordAccess: string;
-    passwordRefresh: string;
+    // passwordAccess: string;
+    // passwordRefresh: string;
     hash: string;
     salt: string;
+    // lastActive: string; // new
+    // expActive: string; // new
+    // ip: string; // new
+    // title: string; // new
+    // deviceId: string; // new
   };
   emailConformation: {
     conformationCode: string;

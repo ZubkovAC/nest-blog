@@ -42,15 +42,16 @@ export class UsersService {
       searchETerm,
     ); // need class Repository / count + page +++
   }
-  async createUser(bodyCreateUser: BodyCreateUserType) {
+  async createUser(bodyCreateUser: BodyCreateUserType, ip, title) {
     const userId = new mongoose.Types.ObjectId().toString();
     const { login, email, password } = bodyCreateUser;
+    const deviceId = uuidv4();
     const passwordAccess = await createJWT(
-      { userId, login, email },
+      { deviceId, userId, login, email },
       dateExpired['1h'],
     );
     const passwordRefresh = await createJWT(
-      { userId, login, email },
+      { deviceId, userId, login, email },
       dateExpired['2h'],
     );
     const conformitedCode = uuidv4();
@@ -62,6 +63,8 @@ export class UsersService {
       passwordRefresh,
       userId,
       conformitedCode,
+      ip,
+      title,
       true,
     );
     return this.usersRepository.createUser(createUserModel); // need class Repository / count + page +++

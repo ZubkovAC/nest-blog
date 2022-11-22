@@ -6,10 +6,12 @@ import {
   Get,
   HttpCode,
   Inject,
+  Ip,
   NotFoundException,
   Param,
   Post,
   Query,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -25,7 +27,7 @@ import {
 } from '@nestjs/swagger';
 import { Model } from 'mongoose';
 import { UsersSchemaInterface } from './users.schemas';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 export class BodyCreateUserType {
   @Length(3, 10)
@@ -128,7 +130,11 @@ export class UsersController {
   })
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
-  async createUser(@Body() bodyCreateUser: BodyCreateUserType) {
+  async createUser(
+    @Body() bodyCreateUser: BodyCreateUserType,
+    @Req() req: Request,
+    @Ip() ip,
+  ) {
     const login = await this.usersRepository.findOne({
       'accountData.login': bodyCreateUser.login,
     });
@@ -145,7 +151,8 @@ export class UsersController {
       }
       throw new BadRequestException({ message: error });
     }
-    return this.usersService.createUser(bodyCreateUser);
+    const title = req.headers['user-agent'];
+    return this.usersService.createUser(bodyCreateUser, ip, title);
   }
   @Delete(':id')
   @ApiResponse({

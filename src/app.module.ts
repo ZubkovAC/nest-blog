@@ -22,6 +22,9 @@ import { AuthRepository } from './auth/auth.repository';
 import { EmailService } from './auth/email.service';
 import { TestingController } from './testing/testing.controller';
 import { PostsPOSTMiddleware } from './middleware/middleware.module';
+import { DevicesAuthController } from './authDevices/devicesAuth.controller';
+import { DevicesAuthService } from './authDevices/devicesAuth.service';
+import { DevicesAuthRepository } from './authDevices/devicesAuth.repository';
 
 @Module({
   imports: [DatabaseModule, ConfigModule.forRoot()],
@@ -32,6 +35,7 @@ import { PostsPOSTMiddleware } from './middleware/middleware.module';
     PostsController,
     UsersController,
     CommentsController,
+    DevicesAuthController,
     TestingController,
   ],
   providers: [
@@ -47,6 +51,8 @@ import { PostsPOSTMiddleware } from './middleware/middleware.module';
     CommentsRepository,
     AuthService,
     AuthRepository,
+    DevicesAuthService,
+    DevicesAuthRepository,
     EmailService,
   ],
   exports: [],

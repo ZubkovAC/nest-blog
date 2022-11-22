@@ -12,16 +12,21 @@ export class AuthService {
     protected authRepository: AuthRepository,
     protected emailService: EmailService,
   ) {}
-  async registration(registrationValueType: RegistrationValueType) {
+  async registration(
+    registrationValueType: RegistrationValueType,
+    ip: string,
+    title: string,
+  ) {
     const { login, email, password } = registrationValueType;
     const userId = new mongoose.Types.ObjectId().toString();
     const conformationCode = uuidv4();
+    const deviceId = uuidv4();
     const passwordAccess = await createJWT(
-      { userId, login, email },
+      { deviceId, userId, login, email },
       dateExpired['1h'],
     );
     const passwordRefresh = await createJWT(
-      { userId, login, email },
+      { deviceId, userId, login, email },
       dateExpired['2h'],
     );
     const newUser = await this.emailService.createUser(
@@ -32,6 +37,8 @@ export class AuthService {
       passwordRefresh,
       userId,
       conformationCode,
+      ip,
+      title,
     );
     try {
       const telegramEmail = await this.emailService.sendEmail(
@@ -57,21 +64,28 @@ export class AuthService {
     await this.emailService.sendEmail(email, conformationCode);
     return;
   }
-  async login(loginValue: LoginValueType) {
+  async login(loginValue: LoginValueType, ip, title) {
     const { loginOrEmail, password } = loginValue; // need check password bcript
     const user = await this.authRepository.findUserLogin(loginOrEmail);
     const { userId, email, login } = user.accountData;
+    const deviceId = uuidv4();
     const passwordAccess = await createJWT(
-      { userId, login, email },
-      dateExpired['2h'],
-      // dateExpired['10s'],
+      { deviceId, userId, login, email },
+      // dateExpired['2h'],
+      dateExpired['10s'],
     );
     const passwordRefresh = await createJWT(
-      { userId, login, email },
-      dateExpired['48h'],
-      // dateExpired['20s'],
+      { deviceId, userId, login, email },
+      // dateExpired['48h'],
+      dateExpired['20s'],
     );
-    await this.authRepository.login(login, passwordAccess, passwordRefresh);
+    await this.authRepository.login(
+      login,
+      passwordAccess,
+      passwordRefresh,
+      ip,
+      title,
+    );
     return { accessToken: passwordAccess, passwordRefresh: passwordRefresh };
   }
   async refreshToken() {
