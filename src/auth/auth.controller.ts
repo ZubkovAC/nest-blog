@@ -341,6 +341,7 @@ export class AuthController {
         HttpStatus.UNAUTHORIZED,
       );
     }
+
     try {
       const login = jwt.verify(refreshToken, process.env.SECRET_KEY);
     } catch (e) {

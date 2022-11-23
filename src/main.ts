@@ -4,7 +4,12 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './exception.filter';
 import cookieParser from 'cookie-parser';
-import { signUpRequestLimit } from './rate-limit/rate-limit';
+import {
+  signUpRequestLimit,
+  signUpRequestLimitRC,
+  signUpRequestLimitRegistration,
+  signUpRequestLimitRER,
+} from './rate-limit/rate-limit';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,9 +27,9 @@ async function bootstrap() {
     .addTag('cats')
     .build();
   app.use('/auth/login', signUpRequestLimit);
-  app.use('/auth/registration', signUpRequestLimit);
-  app.use('/auth/registration-confirmation', signUpRequestLimit);
-  app.use('/auth/registration-email-resending', signUpRequestLimit);
+  app.use('/auth/registration', signUpRequestLimitRegistration);
+  app.use('/auth/registration-confirmation', signUpRequestLimitRC);
+  app.use('/auth/registration-email-resending', signUpRequestLimitRER);
   // app.use(
   //   rateLimit({
   //     windowMs: 10 * 1000, // 15 minutes

@@ -66,7 +66,7 @@ export class DevicesAuthService {
       refreshToken,
       process.env.SECRET_KEY,
     );
-    await this.devicesAuthRepository.deleteToken(deviceId);
+    await this.devicesAuthRepository.deleteToken(deviceId.deviceId);
     return;
   }
   async deleteTokenDevices(deviceId: string) {
