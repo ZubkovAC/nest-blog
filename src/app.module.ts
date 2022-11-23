@@ -24,18 +24,9 @@ import { TestingController } from './testing/testing.controller';
 import { DevicesAuthController } from './authDevices/devicesAuth.controller';
 import { DevicesAuthService } from './authDevices/devicesAuth.service';
 import { DevicesAuthRepository } from './authDevices/devicesAuth.repository';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    ConfigModule.forRoot(),
-    // ThrottlerModule.forRoot({
-    //   ttl: 10,
-    //   limit: 5,
-    // }),
-  ],
+  imports: [DatabaseModule, ConfigModule.forRoot()],
   controllers: [
     AppController,
     AuthController,
@@ -62,10 +53,6 @@ import { APP_GUARD } from '@nestjs/core';
     DevicesAuthService,
     DevicesAuthRepository,
     EmailService,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard,
-    // },
   ],
   exports: [],
 })

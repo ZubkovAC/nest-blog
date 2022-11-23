@@ -20,7 +20,6 @@ import { IsEmail, IsNotEmpty, Length, Matches } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { Response, Request } from 'express';
 import { DevicesAuthService } from '../authDevices/devicesAuth.service';
-import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
 export class RegistrationValueType {
   @ApiProperty()
