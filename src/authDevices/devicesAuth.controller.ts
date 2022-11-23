@@ -12,7 +12,6 @@ import {
 import { DevicesAuthService } from './devicesAuth.service';
 import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { AuthBearerGuard } from '../guards/AuthBearer.guard';
 
 @Controller('security')
 export class DevicesAuthController {
@@ -32,11 +31,14 @@ export class DevicesAuthController {
     const tokens = await this.devicesAuthService.getAllToken(
       userIdToken.userId,
     );
-    if (!tokens || tokens.length === 0) {
+    if (!tokens) {
       throw new HttpException(
         { message: ['refreshToken inside cookie is missing'] },
         HttpStatus.UNAUTHORIZED,
       );
+    }
+    if (tokens.length === 0) {
+      return [];
     }
     return tokens.map((t) => ({
       ip: t.ip,
