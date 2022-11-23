@@ -18,11 +18,10 @@ import { AuthBearerGuard } from '../guards/AuthBearer.guard';
 export class DevicesAuthController {
   constructor(protected devicesAuthService: DevicesAuthService) {}
   @Get('/devices')
-  @UseGuards(AuthBearerGuard)
   async getDeviseActive(@Req() req: Request) {
     const token = req.cookies.refreshToken;
     const tokens = await this.devicesAuthService.getAllToken(token);
-    if (tokens.length === 0) {
+    if (!tokens || tokens.length === 0) {
       throw new HttpException(
         { message: ['not token'] },
         HttpStatus.BAD_REQUEST,

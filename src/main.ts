@@ -4,20 +4,9 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './exception.filter';
 import cookieParser from 'cookie-parser';
-import rateLimit from 'express-rate-limit';
 import { signUpRequestLimit } from './rate-limit/rate-limit';
 
 async function bootstrap() {
-  // v1
-  // const app = await NestFactory.create<NestFastifyApplication>(
-  //   AppModule,
-  //   new FastifyAdapter(),
-  // );
-  // await app.register(
-  //   fastifyCookie,
-  //   { secret: 'my-secret' }, // for cookies signature}
-  // );
-  // v2
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
   // swagger
