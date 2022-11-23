@@ -21,13 +21,21 @@ import { AuthService } from './auth/auth.service';
 import { AuthRepository } from './auth/auth.repository';
 import { EmailService } from './auth/email.service';
 import { TestingController } from './testing/testing.controller';
-import { PostsPOSTMiddleware } from './middleware/middleware.module';
 import { DevicesAuthController } from './authDevices/devicesAuth.controller';
 import { DevicesAuthService } from './authDevices/devicesAuth.service';
 import { DevicesAuthRepository } from './authDevices/devicesAuth.repository';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
-  imports: [DatabaseModule, ConfigModule.forRoot()],
+  imports: [
+    DatabaseModule,
+    ConfigModule.forRoot(),
+    // ThrottlerModule.forRoot({
+    //   ttl: 10,
+    //   limit: 5,
+    // }),
+  ],
   controllers: [
     AppController,
     AuthController,
@@ -54,13 +62,16 @@ import { DevicesAuthRepository } from './authDevices/devicesAuth.repository';
     DevicesAuthService,
     DevicesAuthRepository,
     EmailService,
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
   exports: [],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(PostsPOSTMiddleware).forRoutes('posts');
-  }
-}
-
-// export class AppModule {}
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer.apply(PostsPOSTMiddleware).forRoutes('posts');
+//   }
+// }
+export class AppModule {}

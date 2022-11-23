@@ -20,6 +20,7 @@ import { IsEmail, IsNotEmpty, Length, Matches } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { Response, Request } from 'express';
 import { DevicesAuthService } from '../authDevices/devicesAuth.service';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
 export class RegistrationValueType {
   @ApiProperty()
@@ -60,6 +61,7 @@ class EmailValidation {
 }
 
 @ApiTags('registration')
+// @SkipThrottle()
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -199,6 +201,7 @@ export class AuthController {
       HttpStatus.BAD_REQUEST,
     );
   }
+  // @Throttle(5, 10)
   @Post('login') // fix
   @HttpCode(200)
   @ApiBody({
@@ -261,6 +264,7 @@ export class AuthController {
     return response.send({ accessToken: resLogin.accessToken });
   }
   @HttpCode(200)
+  // @Throttle(5, 10)
   @Post('refresh-token') // fix
   @ApiResponse({
     status: 200,

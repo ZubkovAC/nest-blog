@@ -29,8 +29,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthBearerGuard } from '../guards/AuthBearer.guard';
-import { Response } from 'express';
-import { FastifyRequest } from 'fastify';
+import { Request } from 'express';
+import { BlogsService } from '../bloggers/bloggers.service';
 
 export class BodyCreatePostType {
   @ApiProperty()
@@ -139,6 +139,7 @@ class DTO_Posts {
 export class PostsController {
   constructor(
     protected postsService: PostsService,
+    protected blogsService: BlogsService,
     protected commentsService: CommentsService, // protected userRepository: UsersRepository,
   ) {}
 
@@ -314,6 +315,13 @@ export class PostsController {
     description: 'Unauthorized',
   })
   async createPost(@Body() bodyPosts: BodyCreatePostType) {
+    const blog = await this.blogsService.getBlogId(bodyPosts.blogId);
+    if (!blog) {
+      throw new HttpException(
+        { message: ['blogs not found'] },
+        HttpStatus.NOT_FOUND,
+      );
+    }
     return this.postsService.createPost(bodyPosts);
   }
   @ApiBearerAuth()
@@ -364,7 +372,7 @@ export class PostsController {
   async createPostIdComment(
     @Param('postId') postId: string,
     @Body('content') content: string,
-    @Req() req: FastifyRequest,
+    @Req() req: Request,
   ) {
     const post = await this.postsService.getPostId(postId);
     if (!post) {
@@ -383,7 +391,7 @@ export class PostsController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const token: string = req.headers.authorization;
+    const token: any = req.headers.authorization;
     return await this.commentsService.createCommentIdPost(
       postId,
       content,
@@ -392,8 +400,6 @@ export class PostsController {
   }
 
   @Put(':id')
-  // @UseGuards(CheckPostIdGuard)
-  // @UseGuards(CheckBloggerIdBodyGuard)
   @UseGuards(AuthBaseGuard)
   @ApiBody({
     schema: {

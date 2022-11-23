@@ -9,12 +9,14 @@ import {
 import { Model } from 'mongoose';
 import { UsersSchemaInterface } from '../users/users.schemas';
 import * as jwt from 'jsonwebtoken';
+import { devicesAuthSchemasInterface } from '../authDevices/devicesAuth.schemas';
+import { DevicesAuthRepository } from '../authDevices/devicesAuth.repository';
 
 @Injectable()
 export class AuthBearerGuard implements CanActivate {
   constructor(
-    @Inject('USERS_MODEL')
-    private authRepository: Model<UsersSchemaInterface>,
+    // @Inject('DEVICES_AUTH')
+    private devicesAuthRepository: DevicesAuthRepository,
   ) {}
   async canActivate(context: ExecutionContext): Promise<any> {
     const request = context.switchToHttp().getRequest();
@@ -33,7 +35,7 @@ export class AuthBearerGuard implements CanActivate {
     if (token) {
       let userId;
       try {
-        userId = jwt.verify(token, process.env.SECRET_KEY);
+        userId = await jwt.verify(token, process.env.SECRET_KEY);
       } catch (e) {
         throw new HttpException(
           {
@@ -43,9 +45,7 @@ export class AuthBearerGuard implements CanActivate {
           HttpStatus.UNAUTHORIZED,
         );
       }
-      const login = await this.authRepository.findOne({
-        'account.userId': userId.userId,
-      });
+      const login = await this.devicesAuthRepository.getAccessToken(token);
       if (login) {
         return true;
       }

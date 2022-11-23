@@ -15,14 +15,15 @@ export class PostsPOSTMiddleware implements NestMiddleware {
   ) {}
   async use(req: Request, res: Response, next: NextFunction) {
     const errors = [];
-
     if (
-      (req.method === 'POST' && req.baseUrl.split('/')[1] === 'posts') ||
-      req.baseUrl.split('/')[3] !== undefined
+      (req.method === 'POST' && req.path.split('/')[1] === 'posts') ||
+      req.path.split('/')[2] !== undefined
     ) {
+      console.log(req.path.split('/'));
       if (req.baseUrl.split('/')[2] !== 'comments') {
         const token = req.headers?.authorization;
         if (token !== 'Basic YWRtaW46cXdlcnR5') {
+          console.log('3111');
           res.status(401).json('Unauthorized');
           return;
         }
