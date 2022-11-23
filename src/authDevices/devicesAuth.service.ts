@@ -22,13 +22,13 @@ export class DevicesAuthService {
     const lastActive = new Date().toISOString();
     const accessPassword = await createJWT(
       { deviceId, userId, login, email },
-      dateExpired['10s'],
-      // dateExpired['1h'],
+      // dateExpired['10s'],
+      dateExpired['1h'],
     );
     const refreshPassword = await createJWT(
       { deviceId, userId, login, email },
-      dateExpired['20s'],
-      // dateExpired['2h'],
+      // dateExpired['20s'],
+      dateExpired['2h'],
     );
     const expDate = await jwt.verify(refreshPassword, process.env.SECRET_KEY);
     //@ts-ignore
@@ -47,6 +47,9 @@ export class DevicesAuthService {
   }
   async findRefreshToken(refreshToken: string) {
     return this.devicesAuthRepository.getToken(refreshToken);
+  }
+  async findTokenDeviceId(deviceTokenId: string) {
+    return this.devicesAuthRepository.getTokenDeviceId(deviceTokenId);
   }
   async updateDeviseId(refreshToken: string, ip: string, title: string) {
     const token: any = await jwt.verify(refreshToken, process.env.SECRET_KEY);
@@ -68,8 +71,7 @@ export class DevicesAuthService {
     return;
   }
   async deleteTokenDevices(deviceId: string) {
-    await this.devicesAuthRepository.deleteToken(deviceId);
-    return true;
+    return await this.devicesAuthRepository.deleteToken(deviceId);
   }
   async deleteAllTokenDevices(userId: string) {
     await this.devicesAuthRepository.deleteAllToken(userId);

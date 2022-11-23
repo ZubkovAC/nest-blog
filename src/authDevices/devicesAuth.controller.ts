@@ -7,15 +7,18 @@ import {
   HttpStatus,
   Param,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { DevicesAuthService } from './devicesAuth.service';
 import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
+import { AuthBearerGuard } from '../guards/AuthBearer.guard';
 
 @Controller('security')
 export class DevicesAuthController {
   constructor(protected devicesAuthService: DevicesAuthService) {}
   @Get('/devices')
+  @UseGuards(AuthBearerGuard)
   async getDeviseActive(@Req() req: Request) {
     const token = req.cookies.refreshToken;
     const tokens = await this.devicesAuthService.getAllToken(token);
@@ -72,15 +75,7 @@ export class DevicesAuthController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    if (deviceTokenId !== deviceId) {
-      throw new HttpException(
-        {
-          message: ['If try to delete the deviceId of other user'],
-        },
-        HttpStatus.FORBIDDEN,
-      );
-    }
-    const res = await this.devicesAuthService.deleteTokenDevices(token);
+    const res = await this.devicesAuthService.findTokenDeviceId(deviceId);
     if (!res) {
       throw new HttpException(
         {
@@ -89,6 +84,15 @@ export class DevicesAuthController {
         HttpStatus.NOT_FOUND,
       );
     }
+    if (res.userId !== deviceTokenId.userId) {
+      throw new HttpException(
+        {
+          message: ['If try to delete the deviceId of other user'],
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
+    await this.devicesAuthService.deleteTokenDevices(deviceId);
     return;
   }
 }

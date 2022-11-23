@@ -255,8 +255,8 @@ export class AuthController {
       title,
     );
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      httpOnly: true,
-      secure: true,
+      // httpOnly: true,
+      // secure: true,
     });
 
     return response.send({ accessToken: resLogin.accessToken });

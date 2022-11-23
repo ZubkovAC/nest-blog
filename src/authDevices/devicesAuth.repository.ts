@@ -75,13 +75,18 @@ export class DevicesAuthRepository {
       refreshPassword: refreshToken,
     });
   }
+  async getTokenDeviceId(deviceTokenId: string) {
+    return this.devicesAuthRepository.findOne({
+      deviceId: deviceTokenId,
+    });
+  }
   async getAccessToken(accessPassword: string) {
     return this.devicesAuthRepository.findOne({
       accessPassword: accessPassword,
     });
   }
   async deleteToken(deviceId: string) {
-    return this.devicesAuthRepository.deleteMany({ deviceId: deviceId });
+    return this.devicesAuthRepository.deleteOne({ deviceId: deviceId });
   }
   async deleteAllToken(userId: string) {
     return this.devicesAuthRepository.deleteMany({ userId: userId });
