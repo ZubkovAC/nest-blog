@@ -21,7 +21,10 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('cats')
     .build();
-  app.use('/auth', signUpRequestLimit);
+  app.use('/auth/login', signUpRequestLimit);
+  app.use('/auth/registration', signUpRequestLimit);
+  app.use('/auth/registration-confirmation', signUpRequestLimit);
+  app.use('/auth/registration-email-resending', signUpRequestLimit);
   // app.use(
   //   rateLimit({
   //     windowMs: 10 * 1000, // 15 minutes
