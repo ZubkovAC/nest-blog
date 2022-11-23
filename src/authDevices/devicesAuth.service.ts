@@ -7,9 +7,8 @@ import * as jwt from 'jsonwebtoken';
 @Injectable()
 export class DevicesAuthService {
   constructor(protected devicesAuthRepository: DevicesAuthRepository) {}
-  async getAllToken(token: string) {
-    const userIdToken: any = await jwt.verify(token, process.env.SECRET_KEY);
-    return this.devicesAuthRepository.getAllToken(userIdToken.userId);
+  async getAllToken(userId: string) {
+    return this.devicesAuthRepository.getAllToken(userId);
   }
   async loginDevices(
     userId: string,

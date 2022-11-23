@@ -20,11 +20,22 @@ export class DevicesAuthController {
   @Get('/devices')
   async getDeviseActive(@Req() req: Request) {
     const token = req.cookies.refreshToken;
-    const tokens = await this.devicesAuthService.getAllToken(token);
+    let userIdToken;
+    try {
+      userIdToken = await jwt.verify(token, process.env.SECRET_KEY);
+    } catch (e) {
+      throw new HttpException(
+        { massage: ['refreshToken inside cookie is missing'] },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    const tokens = await this.devicesAuthService.getAllToken(
+      userIdToken.userId,
+    );
     if (!tokens || tokens.length === 0) {
       throw new HttpException(
-        { message: ['not token'] },
-        HttpStatus.BAD_REQUEST,
+        { message: ['refreshToken inside cookie is missing'] },
+        HttpStatus.UNAUTHORIZED,
       );
     }
     return tokens.map((t) => ({
