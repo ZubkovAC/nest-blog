@@ -7,7 +7,6 @@ import {
   HttpStatus,
   Param,
   Req,
-  UseGuards,
 } from '@nestjs/common';
 import { DevicesAuthService } from './devicesAuth.service';
 import { Request } from 'express';
