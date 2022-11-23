@@ -82,7 +82,7 @@ export class DevicesAuthController {
             'If the JWT refreshToken inside cookie is missing, expired or incorrect',
           ],
         },
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.UNAUTHORIZED,
       );
     }
     const res = await this.devicesAuthService.findTokenDeviceId(deviceId);
