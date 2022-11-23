@@ -60,7 +60,6 @@ class EmailValidation {
 }
 
 @ApiTags('registration')
-// @SkipThrottle()
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -200,7 +199,6 @@ export class AuthController {
       HttpStatus.BAD_REQUEST,
     );
   }
-  // @Throttle(5, 10)
   @Post('login') // fix
   @HttpCode(200)
   @ApiBody({
@@ -260,6 +258,7 @@ export class AuthController {
       // httpOnly: true,
       // secure: true,
     });
+
     return response.send({ accessToken: resLogin.accessToken });
   }
   @HttpCode(200)

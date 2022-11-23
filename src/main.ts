@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './exception.filter';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+import { signUpRequestLimit } from './rate-limit/rate-limit';
 
 async function bootstrap() {
   // v1
@@ -31,12 +32,13 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('cats')
     .build();
-  app.use(
-    rateLimit({
-      windowMs: 10 * 1000, // 15 minutes
-      max: 5, // limit each IP to 100 requests per windowMs
-    }),
-  );
+  app.use('/auth', signUpRequestLimit);
+  // app.use(
+  //   rateLimit({
+  //     windowMs: 10 * 1000, // 15 minutes
+  //     max: 5, // limit each IP to 100 requests per windowMs
+  //   }),
+  // );
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
   app.enableCors();
