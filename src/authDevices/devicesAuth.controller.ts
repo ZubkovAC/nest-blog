@@ -39,10 +39,10 @@ export class DevicesAuthController {
     // if (tokens.length === 0) {
     //   return [];
     // }
-    const filterTokens = tokens.filter(
-      (t) => t.expActive > new Date().toISOString(),
-    );
-    return filterTokens.map((t) => ({
+    // const filterTokens = tokens.filter(
+    //   (t) => t.expActive > new Date().toISOString(),
+    // );
+    return tokens.map((t) => ({
       ip: t.ip,
       title: t.title,
       lastActiveDate: t.lastActive,
