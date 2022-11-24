@@ -30,6 +30,7 @@ async function bootstrap() {
   app.use('/auth/password-recovery', signUpRequestLimit);
   app.use('/auth/registration', signUpRequestLimitRegistration);
   app.use('/auth/registration-confirmation', signUpRequestLimitRC);
+  app.use('/auth/new-password', signUpRequestLimitRC);
   app.use('/auth/registration-email-resending', signUpRequestLimitRER);
 
   const document = SwaggerModule.createDocument(app, config);

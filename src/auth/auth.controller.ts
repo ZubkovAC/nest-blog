@@ -55,7 +55,7 @@ class EmailValidation {
   @ApiProperty()
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  @IsEmail()
+  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;
 }
 class NewPasswordRecoveryInput {
@@ -67,7 +67,6 @@ class NewPasswordRecoveryInput {
   @ApiProperty()
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  @IsEmail()
   recoveryCode: string;
 }
 @ApiTags('registration')
