@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import mongoose from 'mongoose';
 import { createJWT, dateExpired } from '../sup/jwt';
 import { EmailService } from './email.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -88,11 +89,15 @@ export class AuthService {
     );
     return { accessToken: passwordAccess, passwordRefresh: passwordRefresh };
   }
-  async refreshToken() {
-    await this.authRepository.refreshToken();
-    return;
+  async newPasswordCode(email: string) {
+    const conformationCode = uuidv4();
+    await this.emailService.sendNewPasswordEmail(email, conformationCode);
+    await this.authRepository.newPasswordCode(email, conformationCode);
   }
-  async logout(token: string) {
-    await this.authRepository.logout(token);
+  async newPassword(recoveryCode: string, password: string) {
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hashSync(password, salt);
+    await this.authRepository.newPassword(recoveryCode, salt, passwordHash);
+    return;
   }
 }

@@ -58,7 +58,18 @@ class EmailValidation {
   @IsEmail()
   email: string;
 }
-
+class NewPasswordRecoveryInput {
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @Length(6, 20)
+  newPassword: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @IsEmail()
+  recoveryCode: string;
+}
 @ApiTags('registration')
 @Controller('auth')
 export class AuthController {
@@ -315,7 +326,7 @@ export class AuthController {
   }
 
   @HttpCode(204)
-  @Post('logout') // fix
+  @Post('logout')
   @ApiResponse({
     status: 204,
     description: 'No Content',
@@ -354,6 +365,40 @@ export class AuthController {
       httpOnly: true,
       secure: true,
     });
+    return;
+  }
+
+  @HttpCode(204)
+  @Post('password-recovery')
+  async passwordRecovery(@Body() email: EmailValidation) {
+    const loginEmail = await this.authRepository.findUserEmail(email.email);
+    if (!loginEmail) {
+      throw new HttpException(
+        { message: ['email is not registered'] },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    await this.authService.newPasswordCode(email.email);
+    return;
+  }
+
+  @HttpCode(204)
+  @Post('new-password')
+  async newPassword(@Body() newPasswordModel: NewPasswordRecoveryInput) {
+    const loginEmail = await this.authRepository.registrationConformationFind(
+      newPasswordModel.recoveryCode,
+    );
+    if (!loginEmail) {
+      throw new HttpException(
+        { message: ['RecoveryCode is incorrect or expired'] },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    // need fix for new code only one
+    await this.authService.newPassword(
+      newPasswordModel.recoveryCode,
+      newPasswordModel.newPassword,
+    );
     return;
   }
 

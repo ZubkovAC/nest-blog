@@ -27,6 +27,7 @@ async function bootstrap() {
     .addTag('cats')
     .build();
   app.use('/auth/login', signUpRequestLimit);
+  app.use('/auth/password-recovery', signUpRequestLimit);
   app.use('/auth/registration', signUpRequestLimitRegistration);
   app.use('/auth/registration-confirmation', signUpRequestLimitRC);
   app.use('/auth/registration-email-resending', signUpRequestLimitRER);

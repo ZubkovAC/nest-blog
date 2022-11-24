@@ -66,10 +66,6 @@ export class AuthRepository {
     );
     return;
   }
-  async refreshToken() {
-    // this.authRepository
-    return;
-  }
   async logout(token: string) {
     await this.authRepository.updateOne(
       { 'accountData.passwordRefresh': token },
@@ -97,6 +93,34 @@ export class AuthRepository {
   }
   async findUserEmail(email: string) {
     return this.authRepository.findOne({ 'accountData.email': email });
+  }
+  async newPasswordCode(email: string, conformationCode: string) {
+    await this.authRepository.updateOne(
+      { 'accountData.email': email },
+      {
+        $set: {
+          'emailConformation.conformationCode': conformationCode,
+        },
+      },
+    );
+    return;
+  }
+  async newPassword(recoveryCode: string, salt: string, passwordHash: string) {
+    await this.authRepository.updateOne(
+      { 'emailConformation.conformationCode': recoveryCode },
+      {
+        $set: {
+          'emailConformation.conformationCode': (
+            Math.random() *
+            100 *
+            Math.random()
+          ).toString(),
+          'accountData.salt': salt,
+          'accountData.hash': passwordHash,
+        },
+      },
+    );
+    return;
   }
   async deleteAll() {
     await this.authRepository.deleteMany({});

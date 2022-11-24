@@ -30,19 +30,12 @@ export class DevicesAuthController {
     const tokens = await this.devicesAuthService.getAllToken(
       userIdToken.userId,
     );
-    console.log('tokens ~~~~~~~~~~~~~~~~~~~~~', tokens);
     if (!tokens) {
       throw new HttpException(
         { message: ['refreshToken inside cookie is missing'] },
         HttpStatus.UNAUTHORIZED,
       );
     }
-    // if (tokens.length === 0) {
-    //   return [];
-    // }
-    // const filterTokens = tokens.filter(
-    //   (t) => t.expActive >= new Date().toISOString(),
-    // );
     return tokens.map((t) => ({
       ip: t.ip,
       title: t.title,
