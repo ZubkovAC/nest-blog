@@ -350,8 +350,7 @@ export class AuthController {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    // for test
-    // await this.devicesAuthService.logoutDevice(refreshToken);
+    await this.devicesAuthService.logoutDevice(refreshToken);
     response.cookie('refreshToken', '', {
       httpOnly: true,
       secure: true,

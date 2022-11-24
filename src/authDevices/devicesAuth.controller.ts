@@ -40,7 +40,7 @@ export class DevicesAuthController {
     //   return [];
     // }
     // const filterTokens = tokens.filter(
-    //   (t) => t.expActive > new Date().toISOString(),
+    //   (t) => t.expActive >= new Date().toISOString(),
     // );
     return tokens.map((t) => ({
       ip: t.ip,
