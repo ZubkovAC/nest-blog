@@ -17,6 +17,7 @@ export class DevicesAuthController {
   constructor(protected devicesAuthService: DevicesAuthService) {}
   @Get('/devices')
   async getDeviseActive(@Req() req: Request) {
+    // assecc Token test
     const token = req.cookies.refreshToken;
     let userIdToken;
     try {

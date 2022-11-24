@@ -30,12 +30,7 @@ async function bootstrap() {
   app.use('/auth/registration', signUpRequestLimitRegistration);
   app.use('/auth/registration-confirmation', signUpRequestLimitRC);
   app.use('/auth/registration-email-resending', signUpRequestLimitRER);
-  // app.use(
-  //   rateLimit({
-  //     windowMs: 10 * 1000, // 15 minutes
-  //     max: 5, // limit each IP to 100 requests per windowMs
-  //   }),
-  // );
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
   app.enableCors();

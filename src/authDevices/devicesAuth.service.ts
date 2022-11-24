@@ -8,7 +8,7 @@ import * as jwt from 'jsonwebtoken';
 export class DevicesAuthService {
   constructor(protected devicesAuthRepository: DevicesAuthRepository) {}
   async getAllToken(userId: string) {
-    return this.devicesAuthRepository.getAllToken(userId);
+    return await this.devicesAuthRepository.getAllToken(userId);
   }
   async loginDevices(
     userId: string,
