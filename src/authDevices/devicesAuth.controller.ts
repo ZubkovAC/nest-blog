@@ -19,9 +19,11 @@ export class DevicesAuthController {
   async getDeviseActive(@Req() req: Request) {
     // assecc Token test
     const token = req.cookies.refreshToken;
+    const tokenv2 = req.headers?.authorization?.split(' ')[1];
     let userIdToken;
+
     try {
-      userIdToken = await jwt.verify(token, process.env.SECRET_KEY);
+      userIdToken = await jwt.verify(tokenv2, process.env.SECRET_KEY);
     } catch (e) {
       throw new HttpException(
         { massage: ['refreshToken inside cookie is missing'] },
