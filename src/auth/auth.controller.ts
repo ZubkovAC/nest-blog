@@ -370,12 +370,14 @@ export class AuthController {
   @HttpCode(204)
   @Post('password-recovery')
   async passwordRecovery(@Body() email: EmailValidation) {
+    console.log('email', email.email);
     const loginEmail = await this.authRepository.findUserEmail(email.email);
     if (!loginEmail) {
-      throw new HttpException(
-        { message: ['email is not registered'] },
-        HttpStatus.BAD_REQUEST,
-      );
+      // throw new HttpException(
+      //   { message: ['email is not registered!!!'] },
+      //   HttpStatus.BAD_REQUEST,
+      // );
+      return;
     }
     await this.authService.newPasswordCode(email.email);
     return;
