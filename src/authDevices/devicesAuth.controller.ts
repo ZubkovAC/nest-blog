@@ -17,13 +17,10 @@ export class DevicesAuthController {
   constructor(protected devicesAuthService: DevicesAuthService) {}
   @Get('/devices')
   async getDeviseActive(@Req() req: Request) {
-    // assecc Token test
     const token = req.cookies.refreshToken;
-    const tokenv2 = req.headers?.authorization?.split(' ')[1];
     let userIdToken;
-
     try {
-      userIdToken = await jwt.verify(tokenv2, process.env.SECRET_KEY);
+      userIdToken = await jwt.verify(token, process.env.SECRET_KEY);
     } catch (e) {
       throw new HttpException(
         { massage: ['refreshToken inside cookie is missing'] },
@@ -39,9 +36,9 @@ export class DevicesAuthController {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    if (tokens.length === 0) {
-      return [];
-    }
+    // if (tokens.length === 0) {
+    //   return [];
+    // }
     const filterTokens = tokens.filter(
       (t) => t.expActive > new Date().toISOString(),
     );
