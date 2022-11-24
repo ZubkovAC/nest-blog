@@ -55,7 +55,7 @@ class EmailValidation {
   @ApiProperty()
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  // @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;
 }
 class NewPasswordRecoveryInput {
@@ -389,7 +389,7 @@ export class AuthController {
     );
     if (!loginEmail) {
       throw new HttpException(
-        { message: ['RecoveryCode is incorrect or expired'] },
+        { message: ['recoveryCode is incorrect or expired'] },
         HttpStatus.BAD_REQUEST,
       );
     }
