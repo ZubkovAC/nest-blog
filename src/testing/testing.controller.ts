@@ -4,6 +4,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BloggerRepository } from '../bloggers/bloggers.repository';
 import { AuthRepository } from '../auth/auth.repository';
 import { CommentsRepository } from '../comments/comments.repository';
+import { DevicesAuthRepository } from '../authDevices/devicesAuth.repository';
 
 @ApiTags('testing')
 @Controller('testing')
@@ -13,6 +14,7 @@ export class TestingController {
     protected blogsRepository: BloggerRepository,
     protected authRepository: AuthRepository,
     protected commentsRepository: CommentsRepository,
+    protected devicesAuthRepository: DevicesAuthRepository,
   ) {}
   @Delete('/all-data')
   @ApiResponse({
@@ -25,6 +27,7 @@ export class TestingController {
     await this.blogsRepository.deleteAll();
     await this.authRepository.deleteAll();
     await this.commentsRepository.deleteAll();
+    await this.devicesAuthRepository.deleteAll();
     return;
   }
 }

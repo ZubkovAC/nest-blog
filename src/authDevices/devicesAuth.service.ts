@@ -72,8 +72,8 @@ export class DevicesAuthService {
   async deleteTokenDevices(deviceId: string) {
     return await this.devicesAuthRepository.deleteToken(deviceId);
   }
-  async deleteAllTokenDevices(userId: string) {
-    await this.devicesAuthRepository.deleteAllToken(userId);
+  async deleteAllTokenDevices(userId: string, deviceId: string) {
+    await this.devicesAuthRepository.deleteAllToken(userId, deviceId);
     return true;
   }
 }

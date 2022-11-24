@@ -30,6 +30,7 @@ export class DevicesAuthController {
     const tokens = await this.devicesAuthService.getAllToken(
       userIdToken.userId,
     );
+    console.log('tokens ~~~~~~~~~~~~~~~~~~~~~', tokens);
     if (!tokens) {
       throw new HttpException(
         { message: ['refreshToken inside cookie is missing'] },
@@ -66,7 +67,10 @@ export class DevicesAuthController {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    await this.devicesAuthService.deleteAllTokenDevices(userId.userId);
+    await this.devicesAuthService.deleteAllTokenDevices(
+      userId.userId,
+      userId.deviceId,
+    );
     return;
   }
 

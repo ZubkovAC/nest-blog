@@ -262,7 +262,6 @@ export class AuthController {
     return response.send({ accessToken: resLogin.accessToken });
   }
   @HttpCode(200)
-  // @Throttle(5, 10)
   @Post('refresh-token') // fix
   @ApiResponse({
     status: 200,

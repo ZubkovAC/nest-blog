@@ -88,10 +88,18 @@ export class DevicesAuthRepository {
   async deleteToken(deviceId: string) {
     return this.devicesAuthRepository.deleteOne({ deviceId: deviceId });
   }
-  async deleteAllToken(userId: string) {
-    return this.devicesAuthRepository.deleteMany({ userId: userId });
+  async deleteAllToken(userId: string, deviceId: string) {
+    const oneDeviceId = await this.devicesAuthRepository.findOne({
+      deviceId: deviceId,
+    });
+    await this.devicesAuthRepository.deleteMany({ userId: userId });
+    await this.devicesAuthRepository.insertMany([oneDeviceId]);
+    return;
   }
   async getAllToken(userId: string) {
     return this.devicesAuthRepository.find({ userId: userId });
+  }
+  async deleteAll() {
+    return this.devicesAuthRepository.deleteMany({});
   }
 }
