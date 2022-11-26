@@ -80,7 +80,18 @@ export class CommentsRepository {
       );
     } else {
       await this.commentsRepository.updateOne(
-        { 'newestLikes.userId': userId },
+        // { 'newestLikes.userId': userId },
+        // {
+        //   $set: {
+        //     'newestLikes.$': {
+        //       addedAt: new Date().toISOString(),
+        //       userId: userId,
+        //       login: login,
+        //       myStatus: status,
+        //     },
+        //   },
+        // },
+        { $and: [{ id: commentId }, { 'newestLikes.userId': userId }] },
         {
           $set: {
             'newestLikes.$': {
