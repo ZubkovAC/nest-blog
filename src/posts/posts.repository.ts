@@ -66,8 +66,6 @@ export class PostsRepository {
       .limit(pageSize)
       .lean();
 
-    const userId1 = '112';
-
     const searchLike = post.map((p) => ({
       id: p.id,
       content: p.content,
@@ -76,9 +74,13 @@ export class PostsRepository {
       createdAt: p.createdAt,
       likesInfo: {
         likesCount:
-          p.newestLikes?.filter((s) => s.myStatus !== 'Like')?.length || 0,
+          p.newestLikes?.filter(
+            (s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike',
+          )?.length || 0,
         dislikesCount:
-          p.newestLikes?.filter((s) => s.myStatus !== 'Dislike')?.length || 0,
+          p.newestLikes?.filter(
+            (s) => s.myStatus !== 'Like' && s.myStatus !== 'None',
+          )?.length || 0,
         myStatus:
           p.newestLikes?.find((u) => u.userId === userId)?.myStatus || 'None',
       },
