@@ -58,7 +58,6 @@ export class CommentsRepository {
       id: commentId,
       newestLikes: { $elemMatch: { userId: userId } },
     });
-    console.log('123');
     if (!like) {
       await this.commentsRepository.updateOne(
         { id: commentId },

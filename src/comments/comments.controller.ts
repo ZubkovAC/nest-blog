@@ -35,16 +35,11 @@ class Content {
   @Length(20, 300)
   content: string;
 }
-enum lStatus {
-  'None' = 'None',
-  'Like' = 'Like',
-  'Dislike' = 'Dislike',
-}
 class LikeStatus {
   @ApiProperty()
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  likeStatus: lStatus;
+  likeStatus: string;
 }
 
 @ApiTags('comments')
@@ -166,8 +161,18 @@ export class CommentsController {
     const comment = await this.commentsRepository.findOne({
       id: commentId,
     });
+    if (
+      likeStatus.likeStatus !== 'None' &&
+      likeStatus.likeStatus !== 'Like' &&
+      likeStatus.likeStatus !== 'Dislike'
+    ) {
+      throw new HttpException(
+        { message: ['likeStatus only Like,Dislike,None'] },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     if (!comment) {
-      throw new NotFoundException('not found commentId');
+      throw new HttpException('Forbidden', HttpStatus.NOT_FOUND);
     }
     const token = req.headers.authorization.split(' ')[1];
     let userToken;
