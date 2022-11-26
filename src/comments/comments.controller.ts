@@ -154,7 +154,7 @@ export class CommentsController {
   @Put(':commentId/like-status')
   @UseGuards(AuthBearerGuard)
   async likeStatus(
-    @Body('likeStatus') likeStatus: LikeStatus,
+    @Body('likeStatus') likeStatus: string,
     @Param('commentId') commentId: string,
     @Req() req: Request,
   ) {
@@ -162,10 +162,11 @@ export class CommentsController {
       id: commentId,
     });
     if (
-      likeStatus.likeStatus !== 'None' &&
-      likeStatus.likeStatus !== 'Like' &&
-      likeStatus.likeStatus !== 'Dislike'
+      likeStatus !== 'None' &&
+      likeStatus !== 'Like' &&
+      likeStatus !== 'Dislike'
     ) {
+      console.log(likeStatus);
       throw new HttpException(
         { message: ['likeStatus only Like,Dislike,None'] },
         HttpStatus.BAD_REQUEST,
@@ -184,7 +185,7 @@ export class CommentsController {
       userToken.userId,
       userToken.login,
       comment.id,
-      likeStatus.likeStatus,
+      likeStatus,
     );
     return;
   }
