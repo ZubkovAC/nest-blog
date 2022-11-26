@@ -31,6 +31,7 @@ import {
 import { AuthBearerGuard } from '../guards/AuthBearer.guard';
 import { Request } from 'express';
 import { BlogsService } from '../bloggers/bloggers.service';
+import * as jwt from 'jsonwebtoken';
 
 export class BodyCreatePostType {
   @ApiProperty()
@@ -251,7 +252,13 @@ export class PostsController {
     @Query('pageSize') pageSize: string,
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
+    @Req() req: Request,
   ) {
+    const token = req.headers.authorization?.split(' ')[1];
+    let userId;
+    try {
+      userId = await jwt.verify(token, process.env.SECRET_KEY);
+    } catch (e) {}
     const post = await this.postsService.getPostId(postId);
     if (!post) {
       throw new HttpException(
@@ -265,6 +272,7 @@ export class PostsController {
       pageSize,
       sortBy,
       sortDirection,
+      userId?.userId || '333',
     );
   }
 

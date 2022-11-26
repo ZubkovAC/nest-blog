@@ -53,6 +53,7 @@ export class PostsRepository {
     pageSize: number,
     sortBy: any,
     sortDirection: any,
+    userId: string,
   ) {
     const allCommentsPost = await this.commentsRepository
       .find({ idPostComment: postId })
@@ -64,12 +65,32 @@ export class PostsRepository {
       .skip(skipCount)
       .limit(pageSize)
       .lean();
+
+    const userId1 = '112';
+
+    const searchLike = post.map((p) => ({
+      id: p.id,
+      content: p.content,
+      userId: p.userId,
+      userLogin: p.userLogin,
+      createdAt: p.createdAt,
+      likesInfo: {
+        likesCount:
+          p.newestLikes?.filter((s) => s.myStatus !== 'Like')?.length || 0,
+        dislikesCount:
+          p.newestLikes?.filter((s) => s.myStatus !== 'Dislike')?.length || 0,
+        myStatus:
+          p.newestLikes?.find((u) => u.userId === userId)?.myStatus || 'None',
+      },
+    }));
+
     return {
       pagesCount: Math.ceil(allCommentsPost.length / pageSize),
       page: pageNumber,
       pageSize: pageSize,
       totalCount: allCommentsPost.length,
-      items: post,
+      items: searchLike,
+      // items: post,
     };
   }
   async getBloggerIdPosts(
@@ -134,13 +155,11 @@ export class PostsRepository {
   }
   async updatePostId(postId: string, updatePost: BodyCreatePostType) {
     // const post = await this.postsRepository.findOne({ id: postId });
-    console.log(1, updatePost.blogId);
     const blogger = await this.bloggersRepository
       .findOne({
         id: updatePost.blogId,
       })
       .lean();
-    console.log(blogger);
     await this.postsRepository.updateOne(
       { id: postId },
       {

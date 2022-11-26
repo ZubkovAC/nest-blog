@@ -33,6 +33,7 @@ export class PostsService {
     pageSize: string,
     sortBy: string,
     sortDirection: string,
+    userId: string,
   ) {
     const pageN = pageNumberValidate(pageNumber);
     const pageS = pageSizeValidate(pageSize);
@@ -44,6 +45,7 @@ export class PostsService {
       pageS,
       sortB,
       sortD,
+      userId,
     );
   }
   async createPost(bodyPosts: BodyCreatePostType) {

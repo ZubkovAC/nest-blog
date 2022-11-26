@@ -7,6 +7,15 @@ export const CommentsSchema = new mongoose.Schema({
   userId: String,
   userLogin: String,
   createdAt: String,
+  newestLikes: [
+    {
+      addedAt: String,
+      userId: String,
+      login: String,
+      myStatus: String,
+      // myStatus: "None" || "Like" || "Dislike",
+    },
+  ],
 });
 
 export interface commentsSchemaInterface {
@@ -16,4 +25,13 @@ export interface commentsSchemaInterface {
   userId: string;
   userLogin: string;
   createdAt: string;
+  newestLikes: [
+    {
+      addedAt: string;
+      userId: string;
+      login: string;
+      myStatus: string;
+      // myStatus: "None" || "Like" || "Dislike",
+    },
+  ];
 }

@@ -25,12 +25,26 @@ import { AuthBearerGuard } from '../guards/AuthBearer.guard';
 import { Model } from 'mongoose';
 import { commentsSchemaInterface } from './comments.schemas';
 import * as jwt from 'jsonwebtoken';
-import { Length } from 'class-validator';
+import { IsNotEmpty, Length } from 'class-validator';
+import { Request } from 'express';
+import { CommentsRepository } from './comments.repository';
+import { Transform, TransformFnParams } from 'class-transformer';
 
 class Content {
   @ApiProperty()
   @Length(20, 300)
   content: string;
+}
+enum lStatus {
+  'None' = 'None',
+  'Like' = 'Like',
+  'Dislike' = 'Dislike',
+}
+class LikeStatus {
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  likeStatus: lStatus;
 }
 
 @ApiTags('comments')
@@ -40,6 +54,7 @@ export class CommentsController {
     protected commentsService: CommentsService,
     @Inject('COMMENTS_MODEL')
     private commentsRepository: Model<commentsSchemaInterface>,
+    private commentsRepository1: CommentsRepository,
   ) {}
   @Get(':id')
   @ApiResponse({
@@ -59,8 +74,16 @@ export class CommentsController {
     status: 404,
     description: 'Not Found',
   })
-  async getComments(@Param('id') commentsId: string) {
-    const comments = await this.commentsService.getCommentsId(commentsId);
+  async getComments(@Param('id') commentsId: string, @Req() req: Request) {
+    const token = req.headers.authorization?.split(' ')[1];
+    let userId;
+    try {
+      userId = await jwt.verify(token, process.env.SECRET_KEY);
+    } catch (e) {}
+    const comments = await this.commentsService.getCommentsId(
+      commentsId,
+      userId?.userId || '333',
+    );
     if (!comments) {
       throw new NotFoundException('not found commentId');
     }
@@ -106,7 +129,7 @@ export class CommentsController {
   async updateCommentId(
     @Param('id') commentId: string,
     @Body('content') content: string,
-    @Req() req: any,
+    @Req() req: Request,
   ) {
     const comment = await this.commentsRepository.findOne({
       id: commentId,
@@ -131,6 +154,34 @@ export class CommentsController {
       return;
     }
     throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+  }
+  @HttpCode(204)
+  @Put(':commentId/like-status')
+  @UseGuards(AuthBearerGuard)
+  async likeStatus(
+    @Body('likeStatus') likeStatus: LikeStatus,
+    @Param('commentId') commentId: string,
+    @Req() req: Request,
+  ) {
+    const comment = await this.commentsRepository.findOne({
+      id: commentId,
+    });
+    if (!comment) {
+      throw new NotFoundException('not found commentId');
+    }
+    const token = req.headers.authorization.split(' ')[1];
+    let userToken;
+    try {
+      userToken = await jwt.verify(token, process.env.SECRET_KEY);
+    } catch (e) {}
+
+    await this.commentsRepository1.updateStatus(
+      userToken.userId,
+      userToken.login,
+      comment.id,
+      likeStatus.likeStatus,
+    );
+    return;
   }
   @Delete(':id')
   @ApiResponse({

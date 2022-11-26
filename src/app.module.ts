@@ -24,6 +24,7 @@ import { TestingController } from './testing/testing.controller';
 import { DevicesAuthController } from './authDevices/devicesAuth.controller';
 import { DevicesAuthService } from './authDevices/devicesAuth.service';
 import { DevicesAuthRepository } from './authDevices/devicesAuth.repository';
+import { LikesRepository } from './likes/likes.repository';
 
 @Module({
   imports: [DatabaseModule, ConfigModule.forRoot()],
@@ -53,6 +54,7 @@ import { DevicesAuthRepository } from './authDevices/devicesAuth.repository';
     DevicesAuthService,
     DevicesAuthRepository,
     EmailService,
+    LikesRepository,
   ],
   exports: [],
 })
