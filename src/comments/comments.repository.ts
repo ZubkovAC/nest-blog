@@ -25,14 +25,19 @@ export class CommentsRepository {
       createdAt: res.createdAt,
       likesInfo: {
         likesCount:
-          res.newestLikes?.filter((s) => s.myStatus !== 'Like')?.length || 0,
+          res.newestLikes?.filter(
+            (s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike',
+          )?.length || 0,
         dislikesCount:
-          res.newestLikes?.filter((s) => s.myStatus !== 'Dislike')?.length || 0,
+          res.newestLikes?.filter(
+            (s) => s.myStatus !== 'Like' && s.myStatus !== 'None',
+          )?.length || 0,
         myStatus:
           res.newestLikes?.find((u) => u.userId === userId)?.myStatus || 'None',
       },
     };
   }
+
   async createCommentsPost(newComment: commentsSchemaInterface) {
     return this.commentsRepository.insertMany([newComment]);
   }
@@ -56,9 +61,10 @@ export class CommentsRepository {
   ) {
     const like = await this.commentsRepository.findOne({
       id: commentId,
-      newestLikes: { $elemMatch: { userId: userId } },
+      // newestLikes: { $elemMatch: { userId: userId } },
     });
-    if (!like) {
+    const findUserId = like.newestLikes.find((t) => t.userId === userId);
+    if (!findUserId) {
       await this.commentsRepository.updateOne(
         { id: commentId },
         {
@@ -74,7 +80,7 @@ export class CommentsRepository {
       );
     } else {
       await this.commentsRepository.updateOne(
-        { id: commentId },
+        { 'newestLikes.userId': userId },
         {
           $set: {
             'newestLikes.$': {

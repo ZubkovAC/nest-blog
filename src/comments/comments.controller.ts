@@ -154,7 +154,7 @@ export class CommentsController {
   @Put(':commentId/like-status')
   @UseGuards(AuthBearerGuard)
   async likeStatus(
-    @Body('likeStatus') likeStatus: string,
+    @Body() likeStatus: LikeStatus,
     @Param('commentId') commentId: string,
     @Req() req: Request,
   ) {
@@ -162,30 +162,34 @@ export class CommentsController {
       id: commentId,
     });
     if (
-      likeStatus !== 'None' &&
-      likeStatus !== 'Like' &&
-      likeStatus !== 'Dislike'
+      likeStatus.likeStatus !== 'None' &&
+      likeStatus.likeStatus !== 'Like' &&
+      likeStatus.likeStatus !== 'Dislike'
     ) {
-      console.log(likeStatus);
       throw new HttpException(
-        { message: ['likeStatus only Like,Dislike,None'] },
+        { message: ['likeStatus only Like, Dislike, None'] },
         HttpStatus.BAD_REQUEST,
       );
     }
     if (!comment) {
       throw new HttpException('Forbidden', HttpStatus.NOT_FOUND);
     }
-    const token = req.headers.authorization.split(' ')[1];
+    const token = req.headers.authorization?.split(' ')[1];
     let userToken;
     try {
       userToken = await jwt.verify(token, process.env.SECRET_KEY);
     } catch (e) {}
-
+    console.log(
+      userToken.userId,
+      userToken.login,
+      comment.id,
+      likeStatus.likeStatus,
+    );
     await this.commentsRepository1.updateStatus(
       userToken.userId,
       userToken.login,
       comment.id,
-      likeStatus,
+      likeStatus.likeStatus,
     );
     return;
   }
