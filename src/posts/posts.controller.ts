@@ -177,13 +177,19 @@ export class PostsController {
     @Query('pageSize') pageSize: string,
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
-    // @Res({ passthrough: true }) response: Response,
+    @Req() req: Request,
   ) {
+    const token = req.headers.authorization?.split(' ')[1];
+    let userId;
+    try {
+      userId = jwt.verify(token, process.env.SECRET_KEY);
+    } catch (e) {}
     return this.postsService.getPosts(
       pageNumber,
       pageSize,
       sortBy,
       sortDirection,
+      userId?.userId || '123',
     );
   }
 
@@ -205,8 +211,16 @@ export class PostsController {
     status: 404,
     description: 'Not Found',
   })
-  async getPostId(@Param('id') postId: string) {
-    const post = await this.postsService.getPostId(postId);
+  async getPostId(@Param('id') postId: string, @Req() req: Request) {
+    const token = req.headers.authorization?.split(' ')[1];
+    let userId;
+    try {
+      userId = jwt.verify(token, process.env.SECRET_KEY);
+    } catch (e) {}
+    const post = await this.postsService.getPostId(
+      postId,
+      userId?.userId || '123',
+    );
     if (!post) {
       throw new HttpException(
         { message: ['postId NOT_FOUND '] },
@@ -259,7 +273,7 @@ export class PostsController {
     try {
       userId = await jwt.verify(token, process.env.SECRET_KEY);
     } catch (e) {}
-    const post = await this.postsService.getPostId(postId);
+    const post = await this.postsService.getPostId(postId, '123');
     if (!post) {
       throw new HttpException(
         { message: ['postId NOT_FOUND '] },
@@ -382,7 +396,7 @@ export class PostsController {
     @Body('content') content: string,
     @Req() req: Request,
   ) {
-    const post = await this.postsService.getPostId(postId);
+    const post = await this.postsService.getPostId(postId, '123');
     if (!post) {
       throw new HttpException(
         { message: ['postId NOT_FOUND '] },
@@ -451,11 +465,50 @@ export class PostsController {
     @Param('id') postId: string,
     @Body() updatePost: BodyCreatePostType,
   ) {
-    const post = this.postsService.getPostId(postId);
+    const post = this.postsService.getPostId(postId, '123');
     if (!post) {
       throw new HttpException('not found postId', HttpStatus.NOT_FOUND);
     }
     await this.postsService.updatePost(postId, updatePost);
+    return;
+  }
+
+  @Put(':postId/like-status')
+  @HttpCode(204)
+  @UseGuards(AuthBearerGuard)
+  async likeStatusPost(
+    @Body('likeStatus') likeStatus: string,
+    @Param('postId') postId: string,
+    @Req() req: Request,
+  ) {
+    const post = this.postsService.getPostId(postId, '123');
+    if (!post) {
+      throw new HttpException(
+        { message: 'post not found' },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const token = req.headers.authorization?.split(' ')[1];
+    let user;
+    try {
+      user = jwt.verify(token, process.env.SECRET_KEY);
+    } catch (e) {}
+    if (
+      likeStatus !== 'None' &&
+      likeStatus !== 'Like' &&
+      likeStatus !== 'Dislike'
+    ) {
+      throw new HttpException(
+        { message: ['likeStatus only Like, Dislike, None'] },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    await this.postsService.likeStatusPost(
+      postId,
+      user.userId,
+      user.login,
+      likeStatus,
+    );
     return;
   }
 

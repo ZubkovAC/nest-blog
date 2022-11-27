@@ -8,6 +8,14 @@ export const PostsSchema = new mongoose.Schema({
   blogId: String,
   blogName: String,
   createdAt: String,
+  newestLikes: [
+    {
+      addedAt: String,
+      userId: String,
+      login: String,
+      myStatus: String,
+    },
+  ],
 });
 
 export interface PostsSchemaInterface {
@@ -18,4 +26,12 @@ export interface PostsSchemaInterface {
   blogId: string;
   blogName: string;
   createdAt: string;
+  newestLikes: [
+    {
+      addedAt: string;
+      userId: string;
+      login: string;
+      myStatus: string;
+    },
+  ];
 }

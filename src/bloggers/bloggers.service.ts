@@ -47,6 +47,7 @@ export class BlogsService {
     pageSize: string,
     sort: string,
     sortDirection: string,
+    userId: string,
   ) {
     const pageN = pageNumberValidate(pageNumber);
     const pageS = pageSizeValidate(pageSize);
@@ -58,6 +59,7 @@ export class BlogsService {
       pageS,
       sortV,
       sortD,
+      userId,
     );
   }
   async createBlogIdPosts(

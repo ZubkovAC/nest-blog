@@ -17,15 +17,16 @@ export class PostsService {
     pageSize: string,
     sort: string,
     sortDirection: string,
+    userId: string,
   ) {
     const pNumber = pageNumberValidate(pageNumber);
     const pSize = pageSizeValidate(pageSize);
     const sortV = sortPostsValidation(sort);
     const sortD = sortDirectionValidation(sortDirection);
-    return this.postsRepository.getPosts(pNumber, pSize, sortV, sortD);
+    return this.postsRepository.getPosts(pNumber, pSize, sortV, sortD, userId);
   }
-  async getPostId(postId: string) {
-    return this.postsRepository.getPostId(postId);
+  async getPostId(postId: string, userId: string) {
+    return this.postsRepository.getPostId(postId, userId);
   }
   async getPostIdComments(
     postId: string,
@@ -54,6 +55,15 @@ export class PostsService {
   async updatePost(postId: string, updatePost: BodyCreatePostType) {
     return this.postsRepository.updatePostId(postId, updatePost);
   }
+  async likeStatusPost(
+    postId: string,
+    userId: string,
+    login: string,
+    status: string,
+  ) {
+    return this.postsRepository.likeStatusPost(postId, userId, login, status);
+  }
+
   async deletePostId(deletePostId: string) {
     return this.postsRepository.deletePost(deletePostId);
   }

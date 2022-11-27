@@ -25,6 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { Request } from 'express';
+import * as jwt from 'jsonwebtoken';
 
 export class InputBlogType {
   @ApiProperty()
@@ -178,13 +179,20 @@ export class BlogsController {
     @Query('pageSize') pageSize: string,
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
+    @Req() req: Request,
   ) {
+    const token = req.headers.authorization?.split(' ')[1];
+    let user;
+    try {
+      user = jwt.verify(token, process.env.SECRET_KEY);
+    } catch (e) {}
     return this.blogsService.getBlogIdPosts(
       bloggerId,
       pageNumber,
       pageSize,
       sortBy,
       sortDirection,
+      user?.userId || '123',
     );
   }
 
