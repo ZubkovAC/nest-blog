@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { BodyCreatePostType } from './posts.controller';
 import mongoose, { Model } from 'mongoose';
 import { PostsSchemaInterface } from './posts.schemas';
@@ -78,11 +78,16 @@ export class PostsRepository {
   }
 
   async getPostId(postId: string, userId: string) {
-    // await this.likesRepository.find({ id: postId });
     const post = await this.postsRepository.findOne(
       { id: postId },
       '-_id -__v',
     );
+    if (!post) {
+      throw new HttpException(
+        { message: 'post not found' },
+        HttpStatus.NOT_FOUND,
+      );
+    }
     return {
       id: post.id,
       title: post.title,
