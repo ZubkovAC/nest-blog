@@ -107,15 +107,15 @@ export class PostsRepository {
           'None',
         newestLikes:
           post.newestLikes
+            ?.filter((s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike')
+            ?.sort(byDate)
+            ?.slice(0, 3)
             ?.map((post) => ({
               addedAt: post.addedAt,
               userId: post.userId,
               login: post.login,
-              myStatus: post.myStatus,
-            }))
-            ?.filter((s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike')
-            ?.sort(byDate)
-            ?.slice(0, 3) || [],
+              // myStatus: post.myStatus,
+            })) || [],
       },
     };
   }
