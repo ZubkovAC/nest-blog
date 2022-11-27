@@ -83,10 +83,7 @@ export class PostsRepository {
       '-_id -__v',
     );
     if (!post) {
-      throw new HttpException(
-        { message: 'post not found' },
-        HttpStatus.NOT_FOUND,
-      );
+      return null;
     }
     return {
       id: post.id,
