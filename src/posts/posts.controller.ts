@@ -481,7 +481,7 @@ export class PostsController {
     @Param('postId') postId: string,
     @Req() req: Request,
   ) {
-    const post = this.postsService.getPostId(postId, '123');
+    const post = await this.postsService.getPostId(postId, '123');
     if (!post) {
       throw new HttpException(
         { message: 'post not found' },
