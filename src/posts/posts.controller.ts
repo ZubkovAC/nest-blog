@@ -508,7 +508,7 @@ export class PostsController {
     @Param('id') postId: string,
     @Body() updatePost: BodyCreatePostType,
   ) {
-    const post = this.postsService.getPostId(postId, '123');
+    const post = await this.postsService.getPostId(postId, '123');
     if (!post) {
       throw new HttpException('not found postId', HttpStatus.NOT_FOUND);
     }
