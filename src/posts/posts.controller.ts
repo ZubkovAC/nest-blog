@@ -61,19 +61,20 @@ class Post_Items {
   @ApiProperty()
   blogName: string;
   @ApiProperty()
-  createdAt: Date;
-  // extendedLikesInfo: {
-  //   likesCount: number;
-  //   dislikesCount: number;
-  //   myStatus: string;
-  //   newestLikes: [
-  //     {
-  //       addedAt: Date;
-  //       userId: string;
-  //       login: string;
-  //     },
-  //   ];
-  // };
+  createdAt: string;
+  @ApiProperty()
+  extendedLikesInfo: {
+    likesCount: number;
+    dislikesCount: number;
+    myStatus: string;
+    newestLikes: [
+      {
+        addedAt: string;
+        userId: string;
+        login: string;
+      },
+    ];
+  };
 }
 
 class DTO_Posts {
@@ -95,19 +96,19 @@ class DTO_Posts {
         blogId: 'string',
         blogName: 'string',
         createdAt: '2022-11-05T05:27:41.215Z',
-        // extendedLikesInfo: {
-        //   likesCount: 0,
-        //   dislikesCount: 0,
-        //   myStatus: 'None Like Dislike',
-        //   newestLikes: [
-        //     {
-        //       addedAt: '2022-11-05T05:27:41.215Z',
-        //       userId: 'string',
-        //       login: 'string',
-        //       createdAt: '2022-11-08T08:47:05.355Z',
-        //     },
-        //   ],
-        // },
+        extendedLikesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: 'None || Like ||  Dislike',
+          newestLikes: [
+            {
+              addedAt: '2022-11-05T05:27:41.215Z',
+              userId: 'string',
+              login: 'string',
+              createdAt: '2022-11-08T08:47:05.355Z',
+            },
+          ],
+        },
       },
     ],
     default: [Post_Items],
@@ -120,18 +121,18 @@ class DTO_Posts {
     blogId: string;
     blogName: string;
     createdAt: Date;
-    // extendedLikesInfo: {
-    //   likesCount: number;
-    //   dislikesCount: number;
-    //   myStatus: string;
-    //   newestLikes: [
-    //     {
-    //       addedAt: Date;
-    //       userId: string;
-    //       login: string;
-    //     },
-    //   ];
-    // };
+    extendedLikesInfo: {
+      likesCount: number;
+      dislikesCount: number;
+      myStatus: string;
+      newestLikes: [
+        {
+          addedAt: Date;
+          userId: string;
+          login: string;
+        },
+      ];
+    };
   };
 }
 
@@ -167,6 +168,18 @@ export class PostsController {
             blogId: 'string',
             blogName: 'string',
             createdAt: '2022-11-21T10:11:46.633Z',
+            extendedLikesInfo: {
+              likesCount: 0,
+              dislikesCount: 0,
+              myStatus: 'None || Like || Dislike',
+              newestLikes: [
+                {
+                  addedAt: 'string',
+                  userId: 'string',
+                  login: 'string',
+                },
+              ],
+            },
           },
         ],
       },
@@ -198,14 +211,30 @@ export class PostsController {
   @ApiResponse({
     status: 200,
     description: 'Success',
-    type: Post_Items,
+    // type: Post_Items,
     schema: {
-      example: Post_Items,
+      example: {
+        id: 'string',
+        title: 'string',
+        shortDescription: 'string',
+        content: 'string',
+        blogId: 'string',
+        blogName: 'string',
+        createdAt: '2022-11-28T16:41:06.489Z',
+        extendedLikesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: 'None',
+          newestLikes: [
+            {
+              addedAt: '2022-11-28T16:41:06.489Z',
+              userId: 'string',
+              login: 'string',
+            },
+          ],
+        },
+      },
     },
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad Request',
   })
   @ApiResponse({
     status: 404,
@@ -251,6 +280,11 @@ export class PostsController {
             userId: 'string',
             userLogin: 'string',
             createdAt: '2022-11-21T10:14:21.053Z',
+            likesInfo: {
+              likesCount: 0,
+              dislikesCount: 0,
+              myStatus: 'None || Like || Dislike',
+            },
           },
         ],
       },
@@ -295,7 +329,6 @@ export class PostsController {
   @ApiBody({
     schema: {
       example: {
-        id: 'string',
         title: 'string @Length(0, 30)',
         shortDescription: 'string @Length(0, 100)',
         content: 'string @Length(0, 1000)',
@@ -315,6 +348,12 @@ export class PostsController {
         blogId: 'string',
         blogName: 'string',
         createdAt: '2022-11-09T04:08:32.749Z',
+        extendedLikesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: 'None',
+          newestLikes: [],
+        },
       },
     },
   })
@@ -351,7 +390,7 @@ export class PostsController {
   @ApiBody({
     schema: {
       example: {
-        content: 'stringstringstringst',
+        content: 'string length 20-300',
       },
     },
   })
@@ -365,6 +404,11 @@ export class PostsController {
         userId: 'string',
         userLogin: 'string',
         createdAt: '2022-11-21T10:15:36.069Z',
+        likesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: 'None',
+        },
       },
     },
   })
@@ -476,6 +520,39 @@ export class PostsController {
   @Put(':postId/like-status')
   @HttpCode(204)
   @UseGuards(AuthBearerGuard)
+  @ApiBody({
+    schema: {
+      example: {
+        likeStatus: 'Like || None || Dislike',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'ok',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'If the inputModel has incorrect values',
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'not found postId',
+  })
   async likeStatusPost(
     @Body('likeStatus') likeStatus: string,
     @Param('postId') postId: string,

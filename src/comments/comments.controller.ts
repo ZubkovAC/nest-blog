@@ -62,6 +62,11 @@ export class CommentsController {
         userId: 'string',
         userLogin: 'string',
         createdAt: '2022-11-21T10:22:31.318Z',
+        likesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: 'None || Like || Dislike',
+        },
       },
     },
   })
@@ -90,7 +95,7 @@ export class CommentsController {
   @ApiBody({
     schema: {
       example: {
-        content: 'stringstringstringst',
+        content: 'string length 20-300',
       },
     },
   })
@@ -153,6 +158,38 @@ export class CommentsController {
   @HttpCode(204)
   @Put(':commentId/like-status')
   @UseGuards(AuthBearerGuard)
+  @ApiBody({
+    schema: {
+      example: {
+        likeStatus: 'None || Like || Dislike',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'ok',
+  })
+  @ApiResponse({
+    status: 400,
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+  })
   async likeStatus(
     @Body() likeStatus: LikeStatus,
     @Param('commentId') commentId: string,

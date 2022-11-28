@@ -11,11 +11,31 @@ import {
 import { DevicesAuthService } from './devicesAuth.service';
 import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('security')
 export class DevicesAuthController {
   constructor(protected devicesAuthService: DevicesAuthService) {}
   @Get('/devices')
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    schema: {
+      example: [
+        {
+          ip: 'string',
+          title: 'string',
+          lastActiveDate: 'string',
+          deviceId: 'string',
+        },
+      ],
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description:
+      'If the JWT refreshToken inside cookie is missing, expired or incorrect',
+  })
   async getDeviseActive(@Req() req: Request) {
     const token = req.cookies.refreshToken;
     let userIdToken;
@@ -45,6 +65,15 @@ export class DevicesAuthController {
   }
   @HttpCode(204)
   @Delete('devices')
+  @ApiResponse({
+    status: 204,
+    description: 'No Content',
+  })
+  @ApiResponse({
+    status: 401,
+    description:
+      'If the JWT refreshToken inside cookie is missing, expired or incorrect',
+  })
   async getDevises(@Req() req: Request) {
     const token = req.cookies.refreshToken;
     let userId;
@@ -66,9 +95,25 @@ export class DevicesAuthController {
     );
     return;
   }
-
   @HttpCode(204)
   @Delete('devices/:deviceId')
+  @ApiResponse({
+    status: 204,
+    description: 'No Content',
+  })
+  @ApiResponse({
+    status: 401,
+    description:
+      'If the JWT refreshToken inside cookie is missing, expired or incorrect',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'If try to delete the deviceId of other user',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found',
+  })
   async getDeviseId(@Param('deviceId') deviceId: string, @Req() req: Request) {
     // need refactor
     console.log(deviceId);

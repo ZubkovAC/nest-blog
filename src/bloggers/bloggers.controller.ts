@@ -51,11 +51,13 @@ class DTO_b {
   id: string;
   @ApiProperty()
   name: string;
+  @ApiProperty()
+  description: string;
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   @ApiProperty()
   // @Matches(/^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/)
-  youtubeUrl: string;
+  websiteUrl: string;
   @ApiProperty()
   createdAt: Date;
 }
@@ -129,7 +131,7 @@ export class BlogsController {
   @UseGuards(CheckBloggerIdParamsGuard)
   @ApiResponse({
     status: 200,
-    description: 'return all BlogId',
+    description: 'Success',
     type: DTO_b,
   })
   @ApiResponse({
@@ -164,6 +166,18 @@ export class BlogsController {
             blogId: 'string',
             blogName: 'string',
             createdAt: '2022-11-09T07:07:44.351Z',
+            extendedLikesInfo: {
+              likesCount: 0,
+              dislikesCount: 0,
+              myStatus: 'None || Like || Dislike',
+              newestLikes: [
+                {
+                  addedAt: '2022-11-28T16:34:10.328Z',
+                  userId: 'string',
+                  login: 'string',
+                },
+              ],
+            },
           },
         ],
       },
@@ -269,6 +283,18 @@ export class BlogsController {
         blogId: 'string',
         blogName: 'string',
         createdAt: '2022-11-09T07:03:39.923Z',
+        extendedLikesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: 'None',
+          newestLikes: [
+            {
+              addedAt: '2022-11-28T16:35:22.821Z',
+              userId: 'string',
+              login: 'string',
+            },
+          ],
+        },
       },
     },
   })
@@ -333,7 +359,8 @@ export class BlogsController {
     schema: {
       example: {
         name: 'string maxLength: 15',
-        youtubeUrl:
+        description: 'string maxLength: 500',
+        websiteUrl:
           'string Length(0, 100) pattern ^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$\n',
       },
     },

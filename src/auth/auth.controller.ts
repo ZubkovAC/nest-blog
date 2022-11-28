@@ -93,6 +93,10 @@ export class AuthController {
       'Input data is accepted. Email with confirmation code will be send to passed email address',
   })
   @ApiResponse({
+    status: 429,
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
+  })
+  @ApiResponse({
     status: 400,
     description: 'Not Found',
     schema: {
@@ -137,6 +141,10 @@ export class AuthController {
   @ApiResponse({
     status: 204,
     description: 'Email was verified. Account was activated',
+  })
+  @ApiResponse({
+    status: 429,
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @ApiResponse({
     status: 400,
@@ -185,8 +193,12 @@ export class AuthController {
     },
   })
   @ApiResponse({
+    status: 429,
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
+  })
+  @ApiResponse({
     status: 400,
-    description: 'Not Found',
+    description: 'If the inputModel has incorrect values',
     schema: {
       example: {
         errorsMessages: [
@@ -219,6 +231,11 @@ export class AuthController {
     },
   })
   @ApiResponse({
+    status: 200,
+    description:
+      'Returns JWT accessToken + cookie refreshToken (http-only, secure)',
+  })
+  @ApiResponse({
     status: 400,
     description: 'Not Found',
     schema: {
@@ -235,6 +252,10 @@ export class AuthController {
   @ApiResponse({
     status: 401,
     description: 'If the password or login is wrong',
+  })
+  @ApiResponse({
+    status: 429,
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   async login(
     @Body() loginValue: LoginValueType,
@@ -275,6 +296,8 @@ export class AuthController {
   @Post('refresh-token') // fix
   @ApiResponse({
     status: 200,
+    description:
+      'Returns JWT accessToken + cookie refreshToken (http-only, secure)',
     schema: {
       example: {
         accessToken: 'string',
@@ -328,7 +351,8 @@ export class AuthController {
   @Post('logout')
   @ApiResponse({
     status: 204,
-    description: 'No Content',
+    description:
+      "Even if current email is not registered (for prevent user's email detection)",
   })
   @ApiResponse({
     status: 401,
@@ -368,6 +392,20 @@ export class AuthController {
   }
 
   @HttpCode(204)
+  @ApiResponse({
+    status: 204,
+    description:
+      "Even if current email is not registered (for prevent user's email detection)",
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'If the inputModel has invalid email (for example 222^gmail.com)',
+  })
+  @ApiResponse({
+    status: 429,
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
+  })
   @Post('password-recovery')
   async passwordRecovery(@Body() email: EmailValidation) {
     console.log('email', email.email);
@@ -385,6 +423,20 @@ export class AuthController {
 
   @HttpCode(204)
   @Post('new-password')
+  @ApiResponse({
+    status: 204,
+    description:
+      "Even if current email is not registered (for prevent user's email detection)",
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'If the inputModel has invalid email (for example 222^gmail.com)',
+  })
+  @ApiResponse({
+    status: 429,
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
+  })
   async newPassword(@Body() newPasswordModel: NewPasswordRecoveryInput) {
     const loginEmail = await this.authRepository.registrationConformationFind(
       newPasswordModel.recoveryCode,

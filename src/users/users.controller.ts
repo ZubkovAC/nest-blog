@@ -128,6 +128,10 @@ export class UsersController {
       },
     },
   })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
   async createUser(
