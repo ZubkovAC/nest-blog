@@ -207,7 +207,6 @@ export class PostsController {
   }
 
   @Get(':id')
-  // @UseGuards(CheckPostIdGuard)
   @ApiResponse({
     status: 200,
     description: 'Success',
@@ -325,7 +324,7 @@ export class PostsController {
   }
 
   @Post()
-  @UseGuards(AuthBaseGuard)
+  // @UseGuards(AuthBaseGuard)
   @ApiBody({
     schema: {
       example: {
@@ -434,7 +433,7 @@ export class PostsController {
     status: 404,
     description: "If post with specified postId doesn't exists",
   })
-  @UseGuards(AuthBearerGuard)
+  // @UseGuards(AuthBearerGuard)
   async createPostIdComment(
     @Param('postId') postId: string,
     @Body('content') content: string,
@@ -466,7 +465,7 @@ export class PostsController {
   }
 
   @Put(':id')
-  @UseGuards(AuthBaseGuard)
+  // @UseGuards(AuthBaseGuard)
   @ApiBody({
     schema: {
       example: {
@@ -519,7 +518,7 @@ export class PostsController {
 
   @Put(':postId/like-status')
   @HttpCode(204)
-  @UseGuards(AuthBearerGuard)
+  // @UseGuards(AuthBearerGuard)
   @ApiBody({
     schema: {
       example: {
@@ -590,8 +589,8 @@ export class PostsController {
   }
 
   @Delete(':id')
-  @UseGuards(CheckPostIdGuard)
-  @UseGuards(AuthBaseGuard)
+  // @UseGuards(CheckPostIdGuard)
+  // @UseGuards(AuthBaseGuard)
   @ApiBasicAuth()
   @ApiResponse({
     status: 204,

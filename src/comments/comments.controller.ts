@@ -91,7 +91,7 @@ export class CommentsController {
   }
   @Put(':id')
   @HttpCode(204)
-  @UseGuards(AuthBearerGuard)
+  // @UseGuards(AuthBearerGuard)
   @ApiBody({
     schema: {
       example: {
@@ -157,7 +157,7 @@ export class CommentsController {
   }
   @HttpCode(204)
   @Put(':commentId/like-status')
-  @UseGuards(AuthBearerGuard)
+  // @UseGuards(AuthBearerGuard)
   @ApiBody({
     schema: {
       example: {
@@ -248,7 +248,7 @@ export class CommentsController {
     description: 'Not Found',
   })
   @HttpCode(204)
-  @UseGuards(AuthBearerGuard)
+  // @UseGuards(AuthBearerGuard)
   @ApiBearerAuth()
   async deleteCommentId(@Param('id') commentId: string, @Req() req: any) {
     const comment = await this.commentsRepository.findOne({

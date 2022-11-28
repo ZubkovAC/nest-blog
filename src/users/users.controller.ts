@@ -47,7 +47,7 @@ export class UsersController {
   ) {}
   @Get()
   @ApiBasicAuth()
-  @UseGuards(AuthBaseGuard)
+  // @UseGuards(AuthBaseGuard)
   @ApiQuery({ name: 'pageSize', required: false, type: Number })
   @ApiQuery({ name: 'pageNumber', required: false, type: Number })
   @ApiQuery({ name: 'sortBy', required: false, type: 'asc || desc' })
@@ -133,7 +133,7 @@ export class UsersController {
     description: 'Unauthorized',
   })
   @ApiBasicAuth()
-  @UseGuards(AuthBaseGuard)
+  // @UseGuards(AuthBaseGuard)
   async createUser(
     @Body() bodyCreateUser: BodyCreateUserType,
     @Req() req: Request,
@@ -171,7 +171,7 @@ export class UsersController {
     status: 404,
     description: 'If specified user is not exists',
   })
-  @UseGuards(AuthBaseGuard)
+  // @UseGuards(AuthBaseGuard)
   @ApiBasicAuth()
   @HttpCode(204)
   async deleteUser(@Param('id') deleteUser: string) {

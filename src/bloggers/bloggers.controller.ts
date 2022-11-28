@@ -259,7 +259,7 @@ export class BlogsController {
   }
   @Post(':blogId/posts')
   @ApiBasicAuth()
-  @UseGuards(AuthBaseGuard)
+  // @UseGuards(AuthBaseGuard)
   @UseGuards(CheckBloggerIdParamsGuard)
   @ApiBody({
     description: 'Data for constructing new post entity',
@@ -327,7 +327,7 @@ export class BlogsController {
     return this.blogsService.createBlogIdPosts(blogId, valueBlogIdPost);
   }
   @ApiBasicAuth()
-  @UseGuards(AuthBaseGuard)
+  // @UseGuards(AuthBaseGuard)
   @UseGuards(CheckBloggerIdParamsGuard)
   @ApiResponse({
     status: 204,
@@ -367,7 +367,7 @@ export class BlogsController {
   })
   @HttpCode(204)
   @Put(':blogId')
-  @UseGuards(AuthBaseGuard)
+  // @UseGuards(AuthBaseGuard)
   async updateBlogger(
     @Param('blogId') blogId: string,
     @Body() blogUpdate: InputBlogType,
@@ -376,8 +376,8 @@ export class BlogsController {
     return;
   }
   @ApiBasicAuth()
-  @UseGuards(AuthBaseGuard)
-  @UseGuards(CheckBloggerIdParamsGuard)
+  // @UseGuards(AuthBaseGuard)
+  // @UseGuards(CheckBloggerIdParamsGuard)
   @ApiResponse({
     status: 204,
     description: 'No Content',
