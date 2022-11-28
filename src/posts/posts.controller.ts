@@ -606,6 +606,13 @@ export class PostsController {
   })
   @HttpCode(204)
   async deletePostId(@Param('id') deletePostId: string) {
+    const post = await this.postsService.getPostId(deletePostId, '123');
+    if (!post) {
+      throw new HttpException(
+        { message: ['postId not found'] },
+        HttpStatus.NOT_FOUND,
+      );
+    }
     await this.postsService.deletePostId(deletePostId);
     return;
   }

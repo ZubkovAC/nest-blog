@@ -44,28 +44,28 @@ export class PostsRepository {
       blogId: p.blogId,
       blogName: p.blogName,
       createdAt: p.createdAt,
-      extendedLikesInfo: {
-        likesCount:
-          p.newestLikes?.filter(
-            (s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike',
-          )?.length || 0,
-        dislikesCount:
-          p.newestLikes?.filter(
-            (s) => s.myStatus !== 'Like' && s.myStatus !== 'None',
-          )?.length || 0,
-        myStatus:
-          p.newestLikes?.find((u) => u.userId === userId)?.myStatus || 'None',
-        newestLikes:
-          p.newestLikes
-            ?.filter((s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike')
-            ?.sort(byDate)
-            ?.slice(0, 3)
-            ?.map((post) => ({
-              addedAt: post.addedAt,
-              userId: post.userId,
-              login: post.login,
-            })) || [],
-      },
+      // extendedLikesInfo: {
+      //   likesCount:
+      //     p.newestLikes?.filter(
+      //       (s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike',
+      //     )?.length || 0,
+      //   dislikesCount:
+      //     p.newestLikes?.filter(
+      //       (s) => s.myStatus !== 'Like' && s.myStatus !== 'None',
+      //     )?.length || 0,
+      //   myStatus:
+      //     p.newestLikes?.find((u) => u.userId === userId)?.myStatus || 'None',
+      //   newestLikes:
+      //     p.newestLikes
+      //       ?.filter((s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike')
+      //       ?.sort(byDate)
+      //       ?.slice(0, 3)
+      //       ?.map((post) => ({
+      //         addedAt: post.addedAt,
+      //         userId: post.userId,
+      //         login: post.login,
+      //       })) || [],
+      // },
     }));
 
     return {
@@ -196,35 +196,35 @@ export class PostsRepository {
       blogId: post.blogId,
       blogName: post.blogName,
       createdAt: post.createdAt,
-      extendedLikesInfo: {
-        likesCount:
-          post.newestLikes?.filter(
-            (s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike',
-          )?.length || 0,
-        dislikesCount:
-          post.newestLikes?.filter(
-            (s) => s.myStatus !== 'Like' && s.myStatus !== 'None',
-          )?.length || 0,
-        myStatus:
-          post.newestLikes?.find((u) => u.userId === userId)?.myStatus ||
-          'None',
-        newestLikes:
-          post.newestLikes
-            ?.map((post) => ({
-              addedAt: post.addedAt,
-              userId: post.userId,
-              login: post.login,
-              myStatus: post.myStatus,
-            }))
-            ?.filter((s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike')
-            ?.sort(byDate)
-            ?.slice(0, 3)
-            ?.map((p) => ({
-              addedAt: p.addedAt,
-              userId: p.userId,
-              login: p.login,
-            })) || [],
-      },
+      // extendedLikesInfo: {
+      //   likesCount:
+      //     post.newestLikes?.filter(
+      //       (s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike',
+      //     )?.length || 0,
+      //   dislikesCount:
+      //     post.newestLikes?.filter(
+      //       (s) => s.myStatus !== 'Like' && s.myStatus !== 'None',
+      //     )?.length || 0,
+      //   myStatus:
+      //     post.newestLikes?.find((u) => u.userId === userId)?.myStatus ||
+      //     'None',
+      //   newestLikes:
+      //     post.newestLikes
+      //       ?.map((post) => ({
+      //         addedAt: post.addedAt,
+      //         userId: post.userId,
+      //         login: post.login,
+      //         myStatus: post.myStatus,
+      //       }))
+      //       ?.filter((s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike')
+      //       ?.sort(byDate)
+      //       ?.slice(0, 3)
+      //       ?.map((p) => ({
+      //         addedAt: p.addedAt,
+      //         userId: p.userId,
+      //         login: p.login,
+      //       })) || [],
+      // },
     }));
 
     return {
