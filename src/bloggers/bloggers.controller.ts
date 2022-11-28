@@ -210,7 +210,7 @@ export class BlogsController {
     );
   }
 
-  @UseGuards(AuthBaseGuard)
+  // @UseGuards(AuthBaseGuard)
   @Post()
   @ApiBasicAuth()
   @ApiBody({
