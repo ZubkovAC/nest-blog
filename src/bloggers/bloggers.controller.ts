@@ -4,6 +4,8 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -393,6 +395,13 @@ export class BlogsController {
   @Delete(':blogId')
   @HttpCode(204)
   async deleteBlogger(@Param('blogId') blogId: string) {
+    const blog = await this.blogsService.getBlogId(blogId);
+    if (!blog) {
+      throw new HttpException(
+        { message: ['blogId not found'] },
+        HttpStatus.NOT_FOUND,
+      );
+    }
     await this.blogsService.deleteBlogId(blogId);
     return;
   }

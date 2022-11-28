@@ -93,30 +93,30 @@ export class PostsRepository {
       blogId: post.blogId,
       blogName: post.blogName,
       createdAt: post.createdAt,
-      extendedLikesInfo: {
-        likesCount:
-          post.newestLikes?.filter(
-            (s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike',
-          )?.length || 0,
-        dislikesCount:
-          post.newestLikes?.filter(
-            (s) => s.myStatus !== 'Like' && s.myStatus !== 'None',
-          )?.length || 0,
-        myStatus:
-          post.newestLikes?.find((u) => u.userId === userId)?.myStatus ||
-          'None',
-        newestLikes:
-          post.newestLikes
-            ?.filter((s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike')
-            ?.sort(byDate)
-            ?.slice(0, 3)
-            ?.map((post) => ({
-              addedAt: post.addedAt,
-              userId: post.userId,
-              login: post.login,
-              // myStatus: post.myStatus,
-            })) || [],
-      },
+      // extendedLikesInfo: {
+      //   likesCount:
+      //     post.newestLikes?.filter(
+      //       (s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike',
+      //     )?.length || 0,
+      //   dislikesCount:
+      //     post.newestLikes?.filter(
+      //       (s) => s.myStatus !== 'Like' && s.myStatus !== 'None',
+      //     )?.length || 0,
+      //   myStatus:
+      //     post.newestLikes?.find((u) => u.userId === userId)?.myStatus ||
+      //     'None',
+      //   newestLikes:
+      //     post.newestLikes
+      //       ?.filter((s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike')
+      //       ?.sort(byDate)
+      //       ?.slice(0, 3)
+      //       ?.map((post) => ({
+      //         addedAt: post.addedAt,
+      //         userId: post.userId,
+      //         login: post.login,
+      //         // myStatus: post.myStatus,
+      //       })) || [],
+      // },
     };
   }
   async getPostIdComments(
@@ -261,12 +261,12 @@ export class PostsRepository {
       blogId: bodyPosts.blogId,
       blogName: blogger.name,
       createdAt: createdAt,
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: 'None',
-        newestLikes: [],
-      },
+      // extendedLikesInfo: {
+      //   likesCount: 0,
+      //   dislikesCount: 0,
+      //   myStatus: 'None',
+      //   newestLikes: [],
+      // },
       // extendedLikesInfo: {
       //   likesCount: 0,
       //   dislikesCount: 0,
