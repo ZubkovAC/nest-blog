@@ -5,6 +5,8 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
+  HttpStatus,
   Inject,
   Ip,
   NotFoundException,
@@ -139,6 +141,16 @@ export class UsersController {
     @Req() req: Request,
     @Ip() ip,
   ) {
+    const token = req.headers?.authorization;
+    if (token !== 'Basic YWRtaW46cXdlcnR5') {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'UNAUTHORIZED',
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     const login = await this.usersRepository.findOne({
       'accountData.login': bodyCreateUser.login,
     });
