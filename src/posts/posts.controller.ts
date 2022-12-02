@@ -386,26 +386,27 @@ export class PostsController {
   ) {
     const error = [];
     if (!bodyPosts.title || bodyPosts?.title?.length > 30) {
-      error.push(['title max length 30']);
+      error.push('title max length 30');
     }
     if (
       !bodyPosts.shortDescription ||
       bodyPosts?.shortDescription?.length > 100
     ) {
-      error.push(['shortDescription max length 100']);
+      error.push('shortDescription max length 100');
     }
     if (!bodyPosts.content || bodyPosts?.content?.length > 1000) {
-      error.push(['content max length 1000']);
+      error.push('content max length 1000');
     }
     const blog = await this.blogsService.getBlogId(bodyPosts.blogId);
     if (!blog) {
-      error.push(['blogId not found']);
+      error.push('blogId not found');
       // throw new HttpException(
       //   { message: ['blogs not found'] },
       //   HttpStatus.NOT_FOUND,
       // );
     }
     if (error.length > 0) {
+      console.log('error', error);
       throw new HttpException({ message: error }, HttpStatus.BAD_REQUEST);
     }
     return this.postsService.createPost(bodyPosts);
@@ -543,20 +544,20 @@ export class PostsController {
   ) {
     const error = [];
     if (!updatePost.title || updatePost?.title?.length > 30) {
-      error.push(['title max length 30']);
+      error.push('title max length 30');
     }
     if (
       !updatePost.shortDescription ||
       updatePost?.shortDescription?.length > 100
     ) {
-      error.push(['shortDescription max length 100']);
+      error.push('shortDescription max length 100');
     }
     if (!updatePost.content || updatePost?.content?.length > 1000) {
-      error.push(['content max length 1000']);
+      error.push('content max length 1000');
     }
     const blog = await this.blogsService.getBlogId(updatePost.blogId);
     if (!blog) {
-      error.push(['blogId not found']);
+      error.push('blogId not found');
       // throw new HttpException(
       //   { message: ['blogs not found'] },
       //   HttpStatus.NOT_FOUND,
