@@ -74,14 +74,14 @@ export class CommentsController {
     status: 404,
     description: 'Not Found',
   })
-  async getComments(@Param('id') commentsId: string, @Req() req: Request) {
+  async getComments(@Param('id') commentId: string, @Req() req: Request) {
     const token = req.headers.authorization?.split(' ')[1];
     let userId;
     try {
       userId = await jwt.verify(token, process.env.SECRET_KEY);
     } catch (e) {}
     const comments = await this.commentsService.getCommentsId(
-      commentsId,
+      commentId,
       userId?.userId || '333',
     );
     if (!comments) {
@@ -127,7 +127,7 @@ export class CommentsController {
   })
   @ApiBearerAuth()
   async updateCommentId(
-    @Param('id') commentId: string,
+    @Param('commentId') commentId: string,
     @Body('content') content: string,
     @Req() req: Request,
   ) {
@@ -216,12 +216,6 @@ export class CommentsController {
     try {
       userToken = await jwt.verify(token, process.env.SECRET_KEY);
     } catch (e) {}
-    console.log(
-      userToken.userId,
-      userToken.login,
-      comment.id,
-      likeStatus.likeStatus,
-    );
     await this.commentsRepository1.updateStatus(
       userToken.userId,
       userToken.login,

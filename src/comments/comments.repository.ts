@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { commentsSchemaInterface } from './comments.schemas';
 
@@ -17,6 +17,9 @@ export class CommentsRepository {
         '-_id -__v -idPostComment',
       )
       .lean();
+    if (!res) {
+      throw new NotFoundException('not found commentId');
+    }
     return {
       id: res.id,
       content: res.content,
