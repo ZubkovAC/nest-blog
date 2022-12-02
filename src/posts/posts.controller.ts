@@ -385,16 +385,25 @@ export class PostsController {
     },
   ) {
     const error = [];
-    if (!bodyPosts.title || bodyPosts?.title?.length > 30) {
+    if (
+      !bodyPosts.title ||
+      bodyPosts.title.trim().length === 0 ||
+      bodyPosts?.title?.length > 30
+    ) {
       error.push('title max length 30');
     }
     if (
       !bodyPosts.shortDescription ||
+      bodyPosts.shortDescription.trim().length === 0 ||
       bodyPosts?.shortDescription?.length > 100
     ) {
       error.push('shortDescription max length 100');
     }
-    if (!bodyPosts.content || bodyPosts?.content?.length > 1000) {
+    if (
+      !bodyPosts.content ||
+      bodyPosts.content.trim().length === 0 ||
+      bodyPosts?.content?.length > 1000
+    ) {
       error.push('content max length 1000');
     }
     const blog = await this.blogsService.getBlogId(bodyPosts.blogId);
@@ -543,16 +552,25 @@ export class PostsController {
     },
   ) {
     const error = [];
-    if (!updatePost.title || updatePost?.title?.length > 30) {
+    if (
+      !updatePost.title ||
+      updatePost.title.trim().length === 0 ||
+      updatePost?.title?.length > 30
+    ) {
       error.push('title max length 30');
     }
     if (
       !updatePost.shortDescription ||
+      updatePost.shortDescription.trim().length === 0 ||
       updatePost?.shortDescription?.length > 100
     ) {
       error.push('shortDescription max length 100');
     }
-    if (!updatePost.content || updatePost?.content?.length > 1000) {
+    if (
+      !updatePost.content ||
+      updatePost.content.trim().length === 0 ||
+      updatePost?.content?.length > 1000
+    ) {
       error.push('content max length 1000');
     }
     const blog = await this.blogsService.getBlogId(updatePost.blogId);
