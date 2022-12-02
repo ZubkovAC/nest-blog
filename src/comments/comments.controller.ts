@@ -89,7 +89,7 @@ export class CommentsController {
     }
     return comments;
   }
-  @Put(':id')
+  @Put(':commentId')
   @HttpCode(204)
   @UseGuards(AuthBearerGuard)
   @ApiBody({
@@ -131,6 +131,7 @@ export class CommentsController {
     @Body('content') content: string,
     @Req() req: Request,
   ) {
+    console.log('123', commentId);
     const comment = await this.commentsRepository.findOne({
       id: commentId,
     });
