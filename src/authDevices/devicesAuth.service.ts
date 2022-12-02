@@ -21,13 +21,13 @@ export class DevicesAuthService {
     const lastActive = new Date().toISOString();
     const accessPassword = await createJWT(
       { deviceId, userId, login, email },
-      // dateExpired['10s'],
-      dateExpired['1h'],
+      dateExpired['10s'],
+      // dateExpired['1h'],
     );
     const refreshPassword = await createJWT(
       { deviceId, userId, login, email },
-      // dateExpired['20s'],
-      dateExpired['2h'],
+      dateExpired['20s'],
+      // dateExpired['2h'],
     );
     const expDate = await jwt.verify(refreshPassword, process.env.SECRET_KEY);
     //@ts-ignore
