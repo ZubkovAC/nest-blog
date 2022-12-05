@@ -4,6 +4,8 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -178,10 +180,18 @@ export class BloggerController {
     description: 'Not Found',
   })
   @Delete('blogs/:blogId')
+  @UseGuards(AuthBearerGuard)
   @HttpCode(204)
   @ApiBearerAuth()
   @UseGuards(CheckBloggerIdParamsGuard)
-  async deleteBlogger(@Param('blogId') blogId: string) {
+  async deleteBlogger(@Param('blogId') blogId: string, @Req() req: Request) {
+    // 403 need
+    const blog = await this.blogsService.getBlogId(blogId);
+    const token = req.headers.authorization.split(' ')[1];
+    const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
+    if (blogger.userId !== blog.blogOwnerInfo.userId) {
+      throw new HttpException({ message: ['forbiden'] }, HttpStatus.FORBIDDEN);
+    }
     await this.blogsService.deleteBlogId(blogId);
     return;
   }

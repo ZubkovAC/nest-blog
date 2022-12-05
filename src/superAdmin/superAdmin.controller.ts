@@ -103,7 +103,12 @@ export class SuperAdminController {
     if (!user) {
       throw new HttpException({ message: ['postId'] }, HttpStatus.NOT_FOUND);
     }
-    const date = new Date().toISOString();
+    let date = new Date().toISOString();
+    let banReason = banValue.banReason;
+    if (!banValue.isBanned) {
+      date = null;
+      banReason = null;
+    }
     await this.usersRepository.updateOne(
       { 'accountData.userId': id },
       {
@@ -111,7 +116,7 @@ export class SuperAdminController {
           banInfo: {
             isBanned: banValue.isBanned,
             banDate: date,
-            banReason: banValue.banReason,
+            banReason: banReason,
           },
         },
       },

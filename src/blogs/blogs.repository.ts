@@ -135,10 +135,10 @@ export class BloggerRepository {
       description: blog.description,
       websiteUrl: blog.websiteUrl,
       createdAt: blog.createdAt,
-      blogOwnerInfo: {
-        userId: blog.blogOwnerInfo.userId,
-        userLogin: blog.blogOwnerInfo.userLogin,
-      },
+      // blogOwnerInfo: {
+      //   userId: blog.blogOwnerInfo.userId,
+      //   userLogin: blog.blogOwnerInfo.userLogin,
+      // },
     }))[0];
   }
   async deleteAll() {
