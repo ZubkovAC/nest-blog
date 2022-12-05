@@ -159,6 +159,7 @@ export class CommentsController {
   @HttpCode(204)
   @Put(':commentId/like-status')
   @UseGuards(AuthBearerGuard)
+  @ApiBearerAuth()
   @ApiBody({
     schema: {
       example: {

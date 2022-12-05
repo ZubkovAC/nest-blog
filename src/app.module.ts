@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BlogsController } from './bloggers/bloggers.controller';
-import { BlogsService } from './bloggers/bloggers.service';
-import { BloggerRepository } from './bloggers/bloggers.repository';
+import { BlogsController } from './blogs/blogs.controller';
+import { BlogsService } from './blogs/blogs.service';
+import { BloggerRepository } from './blogs/blogs.repository';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { UsersRepository } from './users/users.repository';
@@ -25,6 +25,8 @@ import { DevicesAuthController } from './authDevices/devicesAuth.controller';
 import { DevicesAuthService } from './authDevices/devicesAuth.service';
 import { DevicesAuthRepository } from './authDevices/devicesAuth.repository';
 import { LikesRepository } from './likes/likes.repository';
+import { BloggerController } from './blogger/blogger.controller';
+import { SuperAdminController } from './superAdmin/superAdmin.controller';
 
 @Module({
   imports: [DatabaseModule, ConfigModule.forRoot()],
@@ -37,6 +39,8 @@ import { LikesRepository } from './likes/likes.repository';
     CommentsController,
     DevicesAuthController,
     TestingController,
+    BloggerController,
+    SuperAdminController,
   ],
   providers: [
     ...firstProviders,

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { BodyCreatePostType } from './posts.controller';
 import mongoose, { Model } from 'mongoose';
 import { PostsSchemaInterface } from './posts.schemas';
-import { bloggersSchema } from '../bloggers/blogger.schemas';
+import { bloggersSchema } from '../blogs/blogs.schemas';
 import { likesSchemaInterface } from '../likes/likes.schemas';
 import { commentsSchemaInterface } from '../comments/comments.schemas';
 import { byDate } from '../sup/sortByDate';

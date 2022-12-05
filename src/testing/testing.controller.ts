@@ -1,7 +1,7 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { PostsRepository } from '../posts/posts.repository';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { BloggerRepository } from '../bloggers/bloggers.repository';
+import { BloggerRepository } from '../blogs/blogs.repository';
 import { AuthRepository } from '../auth/auth.repository';
 import { CommentsRepository } from '../comments/comments.repository';
 import { DevicesAuthRepository } from '../authDevices/devicesAuth.repository';

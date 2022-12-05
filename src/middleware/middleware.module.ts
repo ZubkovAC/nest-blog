@@ -2,7 +2,7 @@ import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { Model } from 'mongoose';
 import { PostsSchemaInterface } from '../posts/posts.schemas';
-import { bloggersSchema } from '../bloggers/blogger.schemas';
+import { bloggersSchema } from '../blogs/blogs.schemas';
 
 // need fix middleware
 @Injectable()

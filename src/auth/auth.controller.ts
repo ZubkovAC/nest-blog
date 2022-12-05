@@ -12,7 +12,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiProperty,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthRepository } from './auth.repository';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
@@ -455,6 +461,7 @@ export class AuthController {
     return;
   }
 
+  @ApiBearerAuth()
   @Get('me') // fix
   @ApiResponse({
     status: 200,

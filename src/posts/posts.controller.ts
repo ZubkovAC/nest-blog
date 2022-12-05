@@ -30,7 +30,7 @@ import {
 } from '@nestjs/swagger';
 import { AuthBearerGuard } from '../guards/AuthBearer.guard';
 import { Request } from 'express';
-import { BlogsService } from '../bloggers/bloggers.service';
+import { BlogsService } from '../blogs/blogs.service';
 import * as jwt from 'jsonwebtoken';
 
 export class BodyCreatePostType {
@@ -323,103 +323,103 @@ export class PostsController {
     );
   }
 
-  @Post()
-  @UseGuards(AuthBaseGuard)
-  @ApiBody({
-    schema: {
-      example: {
-        title: 'string @Length(0, 30)',
-        shortDescription: 'string @Length(0, 100)',
-        content: 'string @Length(0, 1000)',
-        blogId: 'string',
-      },
-    },
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Returns the newly created post',
-    schema: {
-      example: {
-        id: 'string',
-        title: 'string ',
-        shortDescription: 'string ',
-        content: 'string ',
-        blogId: 'string',
-        blogName: 'string',
-        createdAt: '2022-11-09T04:08:32.749Z',
-        extendedLikesInfo: {
-          likesCount: 0,
-          dislikesCount: 0,
-          myStatus: 'None',
-          newestLikes: [],
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'If the inputModel has incorrect values',
-    schema: {
-      example: {
-        errorsMessages: [
-          {
-            message: 'string',
-            field: 'string',
-          },
-        ],
-      },
-    },
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized',
-  })
-  // async createPost(@Body() bodyPosts: BodyCreatePostType) {
-  async createPost(
-    @Body()
-    bodyPosts: {
-      title: string;
-      shortDescription: string;
-      content: string;
-      blogId: string;
-    },
-  ) {
-    const error = [];
-    if (
-      !bodyPosts.title ||
-      bodyPosts.title.trim().length === 0 ||
-      bodyPosts?.title?.length > 30
-    ) {
-      error.push('title max length 30');
-    }
-    if (
-      !bodyPosts.shortDescription ||
-      bodyPosts.shortDescription.trim().length === 0 ||
-      bodyPosts?.shortDescription?.length > 100
-    ) {
-      error.push('shortDescription max length 100');
-    }
-    if (
-      !bodyPosts.content ||
-      bodyPosts.content.trim().length === 0 ||
-      bodyPosts?.content?.length > 1000
-    ) {
-      error.push('content max length 1000');
-    }
-    const blog = await this.blogsService.getBlogId(bodyPosts.blogId);
-    if (!blog) {
-      error.push('blogId not found');
-      // throw new HttpException(
-      //   { message: ['blogs not found'] },
-      //   HttpStatus.NOT_FOUND,
-      // );
-    }
-    if (error.length > 0) {
-      console.log('error', error);
-      throw new HttpException({ message: error }, HttpStatus.BAD_REQUEST);
-    }
-    return this.postsService.createPost(bodyPosts);
-  }
+  // @Post()
+  // @UseGuards(AuthBaseGuard)
+  // @ApiBody({
+  //   schema: {
+  //     example: {
+  //       title: 'string @Length(0, 30)',
+  //       shortDescription: 'string @Length(0, 100)',
+  //       content: 'string @Length(0, 1000)',
+  //       blogId: 'string',
+  //     },
+  //   },
+  // })
+  // @ApiResponse({
+  //   status: 201,
+  //   description: 'Returns the newly created post',
+  //   schema: {
+  //     example: {
+  //       id: 'string',
+  //       title: 'string ',
+  //       shortDescription: 'string ',
+  //       content: 'string ',
+  //       blogId: 'string',
+  //       blogName: 'string',
+  //       createdAt: '2022-11-09T04:08:32.749Z',
+  //       extendedLikesInfo: {
+  //         likesCount: 0,
+  //         dislikesCount: 0,
+  //         myStatus: 'None',
+  //         newestLikes: [],
+  //       },
+  //     },
+  //   },
+  // })
+  // @ApiResponse({
+  //   status: 400,
+  //   description: 'If the inputModel has incorrect values',
+  //   schema: {
+  //     example: {
+  //       errorsMessages: [
+  //         {
+  //           message: 'string',
+  //           field: 'string',
+  //         },
+  //       ],
+  //     },
+  //   },
+  // })
+  // @ApiResponse({
+  //   status: 401,
+  //   description: 'Unauthorized',
+  // })
+  // // async createPost(@Body() bodyPosts: BodyCreatePostType) {
+  // async createPost(
+  //   @Body()
+  //   bodyPosts: {
+  //     title: string;
+  //     shortDescription: string;
+  //     content: string;
+  //     blogId: string;
+  //   },
+  // ) {
+  //   const error = [];
+  //   if (
+  //     !bodyPosts.title ||
+  //     bodyPosts.title.trim().length === 0 ||
+  //     bodyPosts?.title?.length > 30
+  //   ) {
+  //     error.push('title max length 30');
+  //   }
+  //   if (
+  //     !bodyPosts.shortDescription ||
+  //     bodyPosts.shortDescription.trim().length === 0 ||
+  //     bodyPosts?.shortDescription?.length > 100
+  //   ) {
+  //     error.push('shortDescription max length 100');
+  //   }
+  //   if (
+  //     !bodyPosts.content ||
+  //     bodyPosts.content.trim().length === 0 ||
+  //     bodyPosts?.content?.length > 1000
+  //   ) {
+  //     error.push('content max length 1000');
+  //   }
+  //   const blog = await this.blogsService.getBlogId(bodyPosts.blogId);
+  //   if (!blog) {
+  //     error.push('blogId not found');
+  //     // throw new HttpException(
+  //     //   { message: ['blogs not found'] },
+  //     //   HttpStatus.NOT_FOUND,
+  //     // );
+  //   }
+  //   if (error.length > 0) {
+  //     console.log('error', error);
+  //     throw new HttpException({ message: error }, HttpStatus.BAD_REQUEST);
+  //   }
+  //   return this.postsService.createPost(bodyPosts);
+  // }
   @ApiBearerAuth()
   @Post(':postId/comments')
   @ApiBody({
@@ -500,98 +500,98 @@ export class PostsController {
     );
   }
 
-  @Put(':id')
-  @UseGuards(AuthBaseGuard)
-  @ApiBody({
-    schema: {
-      example: {
-        title: 'string @Length(0, 30)',
-        shortDescription: 'string @Length(0, 100)',
-        content: 'string @Length(0, 1000)',
-        blogId: 'string',
-      },
-    },
-  })
-  @ApiResponse({
-    status: 204,
-    description: 'No Content',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'If the inputModel has incorrect values',
-    schema: {
-      example: {
-        errorsMessages: [
-          {
-            message: 'string',
-            field: 'string',
-          },
-        ],
-      },
-    },
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Not Found',
-  })
-  @ApiBasicAuth()
-  @HttpCode(204)
-  async updatePost(
-    @Param('id') postId: string,
-    // @Body() updatePost: BodyCreatePostType,
-    @Body()
-    updatePost: {
-      title: string;
-      shortDescription: string;
-      content: string;
-      blogId: string;
-    },
-  ) {
-    const error = [];
-    if (
-      !updatePost.title ||
-      updatePost.title.trim().length === 0 ||
-      updatePost?.title?.length > 30
-    ) {
-      error.push('title max length 30');
-    }
-    if (
-      !updatePost.shortDescription ||
-      updatePost.shortDescription.trim().length === 0 ||
-      updatePost?.shortDescription?.length > 100
-    ) {
-      error.push('shortDescription max length 100');
-    }
-    if (
-      !updatePost.content ||
-      updatePost.content.trim().length === 0 ||
-      updatePost?.content?.length > 1000
-    ) {
-      error.push('content max length 1000');
-    }
-    const blog = await this.blogsService.getBlogId(updatePost.blogId);
-    if (!blog) {
-      error.push('blogId not found');
-      // throw new HttpException(
-      //   { message: ['blogs not found'] },
-      //   HttpStatus.NOT_FOUND,
-      // );
-    }
-    if (error.length > 0) {
-      throw new HttpException({ message: error }, HttpStatus.BAD_REQUEST);
-    }
-    const post = await this.postsService.getPostId(postId, '123');
-    if (!post) {
-      throw new HttpException('not found postId', HttpStatus.NOT_FOUND);
-    }
-    await this.postsService.updatePost(postId, updatePost);
-    return;
-  }
-
+  // @Put(':id')
+  // @UseGuards(AuthBaseGuard)
+  // @ApiBody({
+  //   schema: {
+  //     example: {
+  //       title: 'string @Length(0, 30)',
+  //       shortDescription: 'string @Length(0, 100)',
+  //       content: 'string @Length(0, 1000)',
+  //       blogId: 'string',
+  //     },
+  //   },
+  // })
+  // @ApiResponse({
+  //   status: 204,
+  //   description: 'No Content',
+  // })
+  // @ApiResponse({
+  //   status: 400,
+  //   description: 'If the inputModel has incorrect values',
+  //   schema: {
+  //     example: {
+  //       errorsMessages: [
+  //         {
+  //           message: 'string',
+  //           field: 'string',
+  //         },
+  //       ],
+  //     },
+  //   },
+  // })
+  // @ApiResponse({
+  //   status: 401,
+  //   description: 'Unauthorized',
+  // })
+  // @ApiResponse({
+  //   status: 404,
+  //   description: 'Not Found',
+  // })
+  // @ApiBasicAuth()
+  // @HttpCode(204)
+  // async updatePost(
+  //   @Param('id') postId: string,
+  //   // @Body() updatePost: BodyCreatePostType,
+  //   @Body()
+  //   updatePost: {
+  //     title: string;
+  //     shortDescription: string;
+  //     content: string;
+  //     blogId: string;
+  //   },
+  // ) {
+  //   const error = [];
+  //   if (
+  //     !updatePost.title ||
+  //     updatePost.title.trim().length === 0 ||
+  //     updatePost?.title?.length > 30
+  //   ) {
+  //     error.push('title max length 30');
+  //   }
+  //   if (
+  //     !updatePost.shortDescription ||
+  //     updatePost.shortDescription.trim().length === 0 ||
+  //     updatePost?.shortDescription?.length > 100
+  //   ) {
+  //     error.push('shortDescription max length 100');
+  //   }
+  //   if (
+  //     !updatePost.content ||
+  //     updatePost.content.trim().length === 0 ||
+  //     updatePost?.content?.length > 1000
+  //   ) {
+  //     error.push('content max length 1000');
+  //   }
+  //   const blog = await this.blogsService.getBlogId(updatePost.blogId);
+  //   if (!blog) {
+  //     error.push('blogId not found');
+  //     // throw new HttpException(
+  //     //   { message: ['blogs not found'] },
+  //     //   HttpStatus.NOT_FOUND,
+  //     // );
+  //   }
+  //   if (error.length > 0) {
+  //     throw new HttpException({ message: error }, HttpStatus.BAD_REQUEST);
+  //   }
+  //   const post = await this.postsService.getPostId(postId, '123');
+  //   if (!post) {
+  //     throw new HttpException('not found postId', HttpStatus.NOT_FOUND);
+  //   }
+  //   await this.postsService.updatePost(postId, updatePost);
+  //   return;
+  // }
+  @ApiBearerAuth()
   @Put(':postId/like-status')
   @HttpCode(204)
   @UseGuards(AuthBearerGuard)
@@ -664,25 +664,25 @@ export class PostsController {
     return;
   }
 
-  @Delete(':id')
-  @UseGuards(CheckPostIdGuard)
-  @UseGuards(AuthBaseGuard)
-  @ApiBasicAuth()
-  @ApiResponse({
-    status: 204,
-    description: 'No Content',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Not Found',
-  })
-  @HttpCode(204)
-  async deletePostId(@Param('id') deletePostId: string) {
-    await this.postsService.deletePostId(deletePostId);
-    return;
-  }
+  // @Delete(':id')
+  // @UseGuards(CheckPostIdGuard)
+  // @UseGuards(AuthBaseGuard)
+  // @ApiBasicAuth()
+  // @ApiResponse({
+  //   status: 204,
+  //   description: 'No Content',
+  // })
+  // @ApiResponse({
+  //   status: 401,
+  //   description: 'Unauthorized',
+  // })
+  // @ApiResponse({
+  //   status: 404,
+  //   description: 'Not Found',
+  // })
+  // @HttpCode(204)
+  // async deletePostId(@Param('id') deletePostId: string) {
+  //   await this.postsService.deletePostId(deletePostId);
+  //   return;
+  // }
 }

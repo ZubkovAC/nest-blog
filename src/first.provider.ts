@@ -1,5 +1,5 @@
 import { Connection } from 'mongoose';
-import { BloggersSchema } from './bloggers/blogger.schemas';
+import { BloggersSchema } from './blogs/blogs.schemas';
 import { PostsSchema } from './posts/posts.schemas';
 import { UsersSchema } from './users/users.schemas';
 import { CommentsSchema } from './comments/comments.schemas';

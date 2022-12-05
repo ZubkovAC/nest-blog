@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InputBlogType } from './bloggers.controller';
+import { InputBlogType } from './blogs.controller';
 import { Model } from 'mongoose';
-import { bloggersSchema } from './blogger.schemas';
+import { bloggersSchema } from './blogs.schemas';
 
 export const bloggers = [
   {

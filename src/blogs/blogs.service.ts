@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { BloggerRepository } from './bloggers.repository';
-import { InputBlogType, ValueBlogIdPostType } from './bloggers.controller';
+import { BloggerRepository } from './blogs.repository';
+import { InputBlogType, ValueBlogIdPostType } from './blogs.controller';
 import { Types } from 'mongoose';
 import {
   pageNumberValidate,
