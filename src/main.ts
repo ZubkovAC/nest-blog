@@ -26,12 +26,12 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('cats')
     .build();
-  app.use('/auth/login', signUpRequestLimit);
-  app.use('/auth/password-recovery', signUpRequestLimit);
-  app.use('/auth/registration', signUpRequestLimitRegistration);
-  app.use('/auth/registration-confirmation', signUpRequestLimitRC);
-  app.use('/auth/new-password', signUpRequestLimitRC);
-  app.use('/auth/registration-email-resending', signUpRequestLimitRER);
+  // app.use('/auth/login', signUpRequestLimit);
+  // app.use('/auth/password-recovery', signUpRequestLimit);
+  // app.use('/auth/registration', signUpRequestLimitRegistration);
+  // app.use('/auth/registration-confirmation', signUpRequestLimitRC);
+  // app.use('/auth/new-password', signUpRequestLimitRC);
+  // app.use('/auth/registration-email-resending', signUpRequestLimitRER);
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
