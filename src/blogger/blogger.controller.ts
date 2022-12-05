@@ -204,13 +204,12 @@ export class BloggerController {
     @Body() createPost: BodyCreatePostType, // need fix no blogId
   ) {
     // posts
-    await this.postsService.createPost({
+    return this.postsService.createPost({
       blogId,
       title: createPost.title,
       shortDescription: createPost.shortDescription,
       content: createPost.content,
     });
-    return;
   }
   @Put('blogs/:blogId/posts')
   @ApiBearerAuth()
