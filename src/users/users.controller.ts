@@ -96,6 +96,7 @@ export class UsersController {
       sortDirection,
       searchLoginTerm,
       searchEmailTerm,
+      '',
     );
   }
   @Post()

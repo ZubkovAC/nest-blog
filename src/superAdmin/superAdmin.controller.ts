@@ -53,6 +53,7 @@ export class SuperAdminController {
     @Query('sortDirection') sortDirection: string,
     @Query('searchLoginTerm') searchLoginTerm: string,
     @Query('searchEmailTerm') searchEmailTerm: string,
+    @Query('banStatus') banStatus: string,
   ) {
     return this.usersService.getUsers(
       pageNumber,
@@ -61,6 +62,7 @@ export class SuperAdminController {
       sortDirection,
       searchLoginTerm,
       searchEmailTerm,
+      banStatus,
     );
   }
   @ApiBasicAuth()

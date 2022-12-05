@@ -15,8 +15,14 @@ export class UsersRepository {
     sortDirection: any,
     searchLoginTerm: string,
     searchEmailTerm: string,
+    banStatus: any,
   ) {
     const skipCount = (pageNumber - 1) * pageSize;
+    console.log('baaan', banStatus);
+    let banS = banStatus;
+    if (banStatus === null) {
+      banS = { $in: [true, false] };
+    }
     const totalCount = await this.usersRepository.countDocuments({
       $or: [
         {
@@ -24,12 +30,14 @@ export class UsersRepository {
             $regex: searchEmailTerm,
             $options: 'i',
           },
+          'banInfo.isBanned': banS,
         },
         {
           'accountData.login': {
             $regex: searchLoginTerm,
             $options: 'i',
           },
+          'banInfo.isBanned': banS,
         },
       ],
     });
@@ -42,12 +50,14 @@ export class UsersRepository {
               $regex: searchEmailTerm,
               $options: 'i',
             },
+            'banInfo.isBanned': banS,
           },
           {
             'accountData.login': {
               $regex: searchLoginTerm,
               $options: 'i',
             },
+            'banInfo.isBanned': banS,
           },
         ],
       })
@@ -80,6 +90,11 @@ export class UsersRepository {
       login: createUserModel.accountData.login,
       email: createUserModel.accountData.email,
       createdAt: createUserModel.accountData.createdAt,
+      banInfo: {
+        isBanned: false,
+        banDate: null,
+        banReason: null,
+      },
     };
   }
   async deleteUser(deleteUserId: string) {

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { BodyCreateUserType } from './users.controller';
 import {
+  banStatusValidation,
   pageNumberValidate,
   pageSizeValidate,
   searchValidation,
@@ -26,6 +27,7 @@ export class UsersService {
     sortDirection: string,
     searchLoginTerm: string,
     searchEmailTerm: string,
+    banStatus: string,
   ) {
     const pNumber = pageNumberValidate(pageNumber);
     const pSize = pageSizeValidate(pageSize);
@@ -33,6 +35,7 @@ export class UsersService {
     const sortD = sortDirectionValidation(sortDirection);
     const searchLTerm = searchValidation(searchLoginTerm);
     const searchETerm = searchValidation(searchEmailTerm);
+    const banS = banStatusValidation(banStatus);
     return this.usersRepository.getUsers(
       pNumber,
       pSize,
@@ -40,6 +43,7 @@ export class UsersService {
       sortD,
       searchLTerm,
       searchETerm,
+      banS,
     ); // need class Repository / count + page +++
   }
   async createUser(bodyCreateUser: BodyCreateUserType, ip, title) {

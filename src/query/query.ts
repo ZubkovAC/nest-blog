@@ -79,6 +79,16 @@ export const searchValidation = (sortDirection: string) => {
       return sortDirection;
   }
 };
+export const banStatusValidation = (banStatus: string) => {
+  switch (banStatus) {
+    case 'banned':
+      return true;
+    case 'notBanned':
+      return false;
+    default:
+      return null;
+  }
+};
 
 const getMappedParam = (
   paramValue: string,
