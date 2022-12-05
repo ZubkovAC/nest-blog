@@ -127,6 +127,10 @@ export class SuperAdminController {
     );
     await this.blogsService.banned(user.accountData.userId, banValue.isBanned);
     await this.postsService.banned(user.accountData.userId, banValue.isBanned);
+    await this.commentsService.banned(
+      user.accountData.userId,
+      banValue.isBanned,
+    );
     return;
   }
   @UseGuards(AuthBaseGuard)

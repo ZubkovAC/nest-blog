@@ -27,10 +27,12 @@ export class PostsRepository {
     userId: string,
   ) {
     const skipCount = (pageNumber - 1) * pageSize;
-    const totalCount = await this.postsRepository.countDocuments();
+    const totalCount = await this.postsRepository.countDocuments({
+      isBanned: false,
+    });
 
     const posts = await this.postsRepository
-      .find({}, '-_id -__v')
+      .find({ isBanned: false }, '-_id -__v')
       .sort({ [sort]: sortDirection })
       .skip(skipCount)
       .limit(pageSize)
@@ -79,7 +81,9 @@ export class PostsRepository {
 
   async getPostId(postId: string, userId: string) {
     const post = await this.postsRepository.findOne(
-      { id: postId },
+      {
+        $and: [{ id: postId }, { isBanned: false }],
+      },
       '-_id -__v',
     );
     if (!post) {
@@ -128,11 +132,17 @@ export class PostsRepository {
     userId: string,
   ) {
     const allCommentsPost = await this.commentsRepository
-      .find({ idPostComment: postId })
+      .find({ $and: [{ idPostComment: postId }, { isBanned: false }] })
       .lean();
+    if (allCommentsPost.length === 0) {
+      throw new HttpException({ message: 'not found' }, HttpStatus.NOT_FOUND);
+    }
     const skipCount = (pageNumber - 1) * pageSize;
     const post = await this.commentsRepository
-      .find({ idPostComment: postId }, '-_id -__v -idPostComment')
+      .find(
+        { $and: [{ idPostComment: postId }, { isBanned: false }] },
+        '-_id -__v -idPostComment',
+      )
       .sort({ [sortBy]: sortDirection })
       .skip(skipCount)
       .limit(pageSize)

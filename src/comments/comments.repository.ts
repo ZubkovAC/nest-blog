@@ -12,7 +12,14 @@ export class CommentsRepository {
     const res = await this.commentsRepository
       .findOne(
         {
-          id: commentId,
+          $and: [
+            {
+              id: commentId,
+            },
+            {
+              isBanned: false,
+            },
+          ],
         },
         '-_id -__v -idPostComment',
       )
@@ -48,6 +55,12 @@ export class CommentsRepository {
     return this.commentsRepository.updateOne(
       { id: commentId },
       { content: content },
+    );
+  }
+  async banned(userId: string, isBanned: boolean) {
+    return this.commentsRepository.updateMany(
+      { userId: userId },
+      { isBanned: isBanned },
     );
   }
   async deleteCommentId(commentId: string) {

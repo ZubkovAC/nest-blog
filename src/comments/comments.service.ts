@@ -56,6 +56,9 @@ export class CommentsService {
   async updateCommentId(commentsId: string, content: string) {
     return this.commentsRepository.updateCommentsId(commentsId, content);
   }
+  async banned(userId: string, isBanned: boolean) {
+    return this.commentsRepository.banned(userId, isBanned);
+  }
   async deleteCommentId(commentsId: string) {
     await this.commentsRepository.deleteCommentId(commentsId);
     return;
