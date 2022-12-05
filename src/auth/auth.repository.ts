@@ -88,7 +88,10 @@ export class AuthRepository {
   }
   async findUserLogin(login: string) {
     return this.authRepository.findOne({
-      $or: [{ 'accountData.login': login }, { 'accountData.email': login }],
+      $or: [
+        { 'accountData.login': login, 'banInfo.isBanned': false },
+        { 'accountData.email': login, 'banInfo.isBanned': false },
+      ],
     });
   }
   async findUserEmail(email: string) {

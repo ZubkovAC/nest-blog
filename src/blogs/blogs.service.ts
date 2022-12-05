@@ -38,6 +38,28 @@ export class BlogsService {
       sortD,
     );
   }
+  async getBloggerBlogs(
+    pageNumber: string,
+    pageSize: string,
+    searchNameTerm: string,
+    sort: string,
+    sortDirection: string,
+    login: string,
+  ) {
+    const pNumber = pageNumberValidate(pageNumber);
+    const pSize = pageSizeValidate(pageSize);
+    const searchNT = termValidate(searchNameTerm);
+    const sortV = sortBlogValidation(sort);
+    const sortD = sortDirectionValidation(sortDirection);
+    return this.bloggerRepository.getBlogsForUser(
+      pNumber,
+      pSize,
+      searchNT,
+      sortV,
+      sortD,
+      login,
+    );
+  }
   async getBlogId(bloggerId: string) {
     return this.bloggerRepository.findBlogId(bloggerId);
   }
@@ -80,13 +102,21 @@ export class BlogsService {
   async updateBlogId(bloggerId: string, inputBlogType: InputBlogType) {
     return this.bloggerRepository.updateBlogId(bloggerId, inputBlogType);
   }
-  async createBlog(inputBlogger: InputBlogType) {
+  async createBlog(
+    inputBlogger: InputBlogType,
+    userId: string,
+    userLogin: string,
+  ) {
     return this.bloggerRepository.createBlog({
       id: new Types.ObjectId().toString(),
       name: inputBlogger.name,
       description: inputBlogger.description,
       websiteUrl: inputBlogger.websiteUrl,
       createdAt: new Date().toISOString(),
+      blogOwnerInfo: {
+        userId: userId,
+        userLogin: userLogin,
+      },
     });
   }
 }

@@ -18,7 +18,6 @@ export class UsersRepository {
     banStatus: any,
   ) {
     const skipCount = (pageNumber - 1) * pageSize;
-    console.log('baaan', banStatus);
     let banS = banStatus;
     if (banStatus === null) {
       banS = { $in: [true, false] };

@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -21,9 +22,10 @@ import { AuthBearerGuard } from '../guards/AuthBearer.guard';
 import { BlogsService } from '../blogs/blogs.service';
 import { InputBlogType } from '../blogs/blogs.controller';
 import { CheckBloggerIdParamsGuard } from '../guards/check-blogger-id-params-guard.service';
-import { AuthBaseGuard } from '../guards/AuthBase.guard';
 import { PostsService } from '../posts/posts.service';
 import { BodyCreatePostType } from '../posts/posts.controller';
+import { Request } from 'express';
+import * as jwt from 'jsonwebtoken';
 
 @ApiTags('For Blogger')
 @Controller('blogger')
@@ -40,19 +42,23 @@ export class BloggerController {
   @ApiQuery({ name: 'searchNameTerm', required: false, type: String })
   @ApiQuery({ name: 'sortBy', required: false, type: 'asc || desc' })
   @ApiQuery({ name: 'sortDirection', required: false, type: 'params Object' })
-  getBlogs(
+  async getBlogs(
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
     @Query('searchNameTerm') searchNameTerm: string,
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
+    @Req() req: Request,
   ) {
-    return this.blogsService.getBlogs(
+    const token = req.headers.authorization.split(' ')[1];
+    const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
+    return this.blogsService.getBloggerBlogs(
       pageNumber,
       pageSize,
       searchNameTerm,
       sortBy,
       sortDirection,
+      blogger.login,
     );
   }
   @Post('blogs')
@@ -99,11 +105,17 @@ export class BloggerController {
     status: 401,
     description: 'Unauthorized',
   })
-  createBlogs(@Body() inputBlogger: InputBlogType) {
-    return this.blogsService.createBlog(inputBlogger);
+  async createBlogs(@Body() inputBlogger: InputBlogType, @Req() req: Request) {
+    const token = req.headers.authorization.split(' ')[1];
+    const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
+    return this.blogsService.createBlog(
+      inputBlogger,
+      blogger.userId,
+      blogger.login,
+    );
   }
 
-  @UseGuards(AuthBaseGuard)
+  @UseGuards(AuthBearerGuard)
   @UseGuards(CheckBloggerIdParamsGuard)
   @ApiResponse({
     status: 204,
@@ -144,7 +156,7 @@ export class BloggerController {
   @HttpCode(204)
   @Put('blogs/:blogId')
   @ApiBearerAuth()
-  @UseGuards(AuthBaseGuard)
+  @UseGuards(AuthBearerGuard)
   async updateBlogger(
     @Param('blogId') blogId: string,
     @Body() blogUpdate: InputBlogType,
@@ -176,7 +188,7 @@ export class BloggerController {
 
   @Post('blogs/:blogId/posts')
   @ApiBearerAuth()
-  @UseGuards(AuthBaseGuard)
+  @UseGuards(AuthBearerGuard)
   async createBloggerPost(
     @Param('blogId') blogId: string,
     @Body() createPost: BodyCreatePostType, // need fix no blogId
@@ -192,7 +204,7 @@ export class BloggerController {
   }
   @Put('blogs/:blogId/posts')
   @ApiBearerAuth()
-  @UseGuards(AuthBaseGuard)
+  @UseGuards(AuthBearerGuard)
   async updateBloggerPost(
     @Param('blogId') blogId: string,
     @Body() blogUpdate: InputBlogType,
@@ -202,7 +214,7 @@ export class BloggerController {
   }
   @Delete('blogs/:blogId/posts')
   @ApiBearerAuth()
-  @UseGuards(AuthBaseGuard)
+  @UseGuards(AuthBearerGuard)
   async deleteBloggerPost(
     @Param('blogId') blogId: string,
     @Body() blogUpdate: InputBlogType,

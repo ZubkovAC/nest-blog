@@ -272,7 +272,7 @@ export class AuthController {
     const login = await this.authRepository.findUserLogin(
       loginValue.loginOrEmail,
     );
-    if (!login) {
+    if (!login || login.banInfo.isBanned) {
       throw new UnauthorizedException();
     }
     const token = login.accountData;
@@ -414,7 +414,6 @@ export class AuthController {
   })
   @Post('password-recovery')
   async passwordRecovery(@Body() email: EmailValidation) {
-    console.log('email', email.email);
     const loginEmail = await this.authRepository.findUserEmail(email.email);
     if (!loginEmail) {
       // throw new HttpException(

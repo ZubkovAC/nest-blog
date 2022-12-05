@@ -30,7 +30,7 @@ import { BlogsService } from '../blogs/blogs.service';
 class BanValue {
   @IsBoolean()
   isBanned: boolean;
-  @Length(1, 20)
+  @Length(20, 120)
   banReason: string;
 }
 
@@ -94,6 +94,7 @@ export class SuperAdminController {
   }
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
+  @HttpCode(204)
   @Put('users/:id/ban')
   async banUser(@Body() banValue: BanValue, @Param('id') id: string) {
     const user = await this.usersRepository.findOne({
