@@ -177,14 +177,23 @@ export class PostsRepository {
   ) {
     const skipCount = (pageNumber - 1) * pageSize;
     const allPostsBlog = await this.postsRepository
-      .find({ blogId: blogId }, '-_id -__v')
+      .find(
+        {
+          $and: [{ blogId: blogId }, { isBanned: false }],
+        },
+        '-_id -__v',
+      )
       .sort({ [sort]: sortDirection })
       .skip(skipCount)
       .limit(pageSize)
       .lean();
-
+    if (allPostsBlog.length === 0) {
+      throw new HttpException({ message: ['not found'] }, HttpStatus.NOT_FOUND);
+    }
     const post = await this.postsRepository.find(
-      { blogId: blogId },
+      {
+        $and: [{ blogId: blogId }, { 'blogOwnerInfo.isBanned': false }],
+      },
       '-_id -__v',
     );
 
@@ -235,7 +244,7 @@ export class PostsRepository {
       items: postValidate,
     };
   }
-  async createPost(bodyPosts: BodyCreatePostType) {
+  async createPost(bodyPosts: BodyCreatePostType, userId: string) {
     const blogger = await this.bloggersRepository.findOne({
       id: bodyPosts.blogId,
     });
@@ -250,6 +259,8 @@ export class PostsRepository {
         blogId: bodyPosts.blogId,
         blogName: blogger.name,
         createdAt: createdAt,
+        userId: userId,
+        isBanned: false,
         newestLikes: [] as any,
       },
     ]);
@@ -347,7 +358,14 @@ export class PostsRepository {
     }
     return;
   }
-
+  async banned(userId: string, banStatus: boolean) {
+    return this.postsRepository.updateMany(
+      { userId: userId },
+      {
+        $set: { isBanned: banStatus },
+      },
+    );
+  }
   async deletePost(deletePostId: string) {
     return this.postsRepository.deleteOne({ id: deletePostId });
   }

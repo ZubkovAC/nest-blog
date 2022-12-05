@@ -187,7 +187,7 @@ export class BlogsController {
     status: 404,
     description: 'Not Found',
   })
-  async getBloggerIdPosts(
+  async getBlogIdPosts(
     @Param('blogId') bloggerId: string,
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
@@ -198,8 +198,9 @@ export class BlogsController {
     const token = req.headers.authorization?.split(' ')[1];
     let user;
     try {
-      user = jwt.verify(token, process.env.SECRET_KEY);
+      user = await jwt.verify(token, process.env.SECRET_KEY);
     } catch (e) {}
+
     return this.blogsService.getBlogIdPosts(
       bloggerId,
       pageNumber,

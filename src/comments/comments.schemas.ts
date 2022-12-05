@@ -7,12 +7,14 @@ export const CommentsSchema = new mongoose.Schema({
   userId: String,
   userLogin: String,
   createdAt: String,
+  isBanned: Boolean,
   newestLikes: [
     {
       addedAt: String,
       userId: String,
       login: String,
       myStatus: String,
+      isBanned: Boolean,
       // myStatus: "None" || "Like" || "Dislike",
     },
   ],
@@ -25,12 +27,14 @@ export interface commentsSchemaInterface {
   userId: string;
   userLogin: string;
   createdAt: string;
+  isBanned: boolean;
   newestLikes: [
     {
       addedAt: string;
       userId: string;
       login: string;
       myStatus: string;
+      isBanned: boolean;
       // myStatus: "None" || "Like" || "Dislike",
     },
   ];

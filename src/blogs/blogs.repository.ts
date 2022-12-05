@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InputBlogType } from './blogs.controller';
 import { Model } from 'mongoose';
 import { bloggersSchema } from './blogs.schemas';
@@ -37,24 +37,38 @@ export class BloggerRepository {
     const skipCount = (pageNumber - 1) * pageSize;
     const totalCount = await this.blogRepository.countDocuments({
       name: { $regex: searchNameTerm, $options: 'i' },
+      'banInfo.isBanned': false,
     });
 
     const bloggersRestrict = await this.blogRepository
       // .find({ name: { $regex: searchNameTerm } }, '-_id -__v')
       .find(
         {
-          name: {
-            $regex: searchNameTerm,
-            $options: 'i',
-          },
+          $and: [
+            {
+              name: {
+                $regex: searchNameTerm,
+                $options: 'i',
+              },
+            },
+            {
+              'blogOwnerInfo.isBanned': false,
+            },
+          ],
+          // name: {
+          //   $regex: searchNameTerm,
+          //   $options: 'i',
+          // },
+          // 'banInfo.isBanned': false,
         },
-        '-_id -__v',
+        '-_id -__v -blogOwnerInfo',
       )
       .sort({ [sort]: sortDirection })
       .skip(skipCount)
       .limit(pageSize)
       .lean();
 
+    console.log('bloggersRestrict', bloggersRestrict);
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
@@ -101,8 +115,24 @@ export class BloggerRepository {
       items: bloggersRestrict,
     };
   }
-  async findBlogId(bloggerId: string) {
-    return this.blogRepository.findOne({ id: bloggerId }, '-_id -__v').exec();
+  async findBlogId(blogId: string) {
+    const blog = await this.blogRepository
+      .findOne(
+        {
+          $and: [
+            { id: blogId },
+            {
+              'blogOwnerInfo.isBanned': false,
+            },
+          ],
+        },
+        '-_id -__v -blogOwnerInfo',
+      )
+      .exec();
+    if (!blog) {
+      throw new HttpException({ message: ['not found'] }, HttpStatus.NOT_FOUND);
+    }
+    return blog;
   }
   async deleteBlogId(bloggerId: string) {
     await this.blogRepository.deleteOne({ id: bloggerId });
@@ -140,6 +170,12 @@ export class BloggerRepository {
       //   userLogin: blog.blogOwnerInfo.userLogin,
       // },
     }))[0];
+  }
+  async banned(userId: string, isBanned: boolean) {
+    return this.blogRepository.updateMany(
+      { 'blogOwnerInfo.userId': userId },
+      { 'blogOwnerInfo.isBanned': isBanned },
+    );
   }
   async deleteAll() {
     await this.blogRepository.deleteMany({});

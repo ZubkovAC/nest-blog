@@ -84,18 +84,18 @@ export class BlogsService {
       userId,
     );
   }
-  async createBlogIdPosts(
-    blogId: string,
-    valueBloggerIdPost: ValueBlogIdPostType,
-  ) {
-    const bloggerPost = {
-      title: valueBloggerIdPost.title,
-      shortDescription: valueBloggerIdPost.shortDescription,
-      content: valueBloggerIdPost.content,
-      blogId: blogId,
-    };
-    return this.postsRepository.createPost(bloggerPost); // createPost = blogger/{bloggerId}/posts
-  }
+  // async createBlogIdPosts(
+  //   blogId: string,
+  //   valueBloggerIdPost: ValueBlogIdPostType,
+  // ) {
+  //   const bloggerPost = {
+  //     title: valueBloggerIdPost.title,
+  //     shortDescription: valueBloggerIdPost.shortDescription,
+  //     content: valueBloggerIdPost.content,
+  //     blogId: blogId,
+  //   };
+  //   return this.postsRepository.createPost(bloggerPost); // createPost = blogger/{bloggerId}/posts
+  // }
   async deleteBlogId(bloggerId: string) {
     return this.bloggerRepository.deleteBlogId(bloggerId);
   }
@@ -118,5 +118,8 @@ export class BlogsService {
         userLogin: userLogin,
       },
     });
+  }
+  async banned(userId: string, isBanned: boolean) {
+    return this.bloggerRepository.banned(userId, isBanned);
   }
 }

@@ -9,6 +9,7 @@ export const BloggersSchema = new mongoose.Schema({
   blogOwnerInfo: {
     userId: String,
     userLogin: String,
+    isBanned: Boolean,
   },
 });
 
@@ -21,5 +22,6 @@ export interface bloggersSchema {
   blogOwnerInfo: {
     userId: string;
     userLogin: string;
+    isBanned: boolean;
   };
 }

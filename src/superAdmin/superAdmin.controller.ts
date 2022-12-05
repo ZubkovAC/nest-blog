@@ -26,6 +26,8 @@ import { Model } from 'mongoose';
 import { UsersSchemaInterface } from '../users/users.schemas';
 import { IsBoolean, Length } from 'class-validator';
 import { BlogsService } from '../blogs/blogs.service';
+import { PostsService } from '../posts/posts.service';
+import { CommentsService } from '../comments/comments.service';
 
 class BanValue {
   @IsBoolean()
@@ -42,6 +44,8 @@ export class SuperAdminController {
     protected blogsService: BlogsService,
     @Inject('USERS_MODEL')
     private usersRepository: Model<UsersSchemaInterface>,
+    protected postsService: PostsService,
+    protected commentsService: CommentsService,
   ) {}
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
@@ -121,6 +125,8 @@ export class SuperAdminController {
         },
       },
     );
+    await this.blogsService.banned(user.accountData.userId, banValue.isBanned);
+    await this.postsService.banned(user.accountData.userId, banValue.isBanned);
     return;
   }
   @UseGuards(AuthBaseGuard)

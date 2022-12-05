@@ -11,12 +11,14 @@ import { UsersSchemaInterface } from '../users/users.schemas';
 import * as jwt from 'jsonwebtoken';
 import { devicesAuthSchemasInterface } from '../authDevices/devicesAuth.schemas';
 import { DevicesAuthRepository } from '../authDevices/devicesAuth.repository';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class AuthBearerGuard implements CanActivate {
   constructor(
     // @Inject('DEVICES_AUTH')
     private devicesAuthRepository: DevicesAuthRepository,
+    private authService: AuthService,
   ) {}
   async canActivate(context: ExecutionContext): Promise<any> {
     const request = context.switchToHttp().getRequest();
@@ -32,8 +34,8 @@ export class AuthBearerGuard implements CanActivate {
         HttpStatus.UNAUTHORIZED,
       );
     }
+    let userId;
     if (token) {
-      let userId;
       try {
         userId = await jwt.verify(token, process.env.SECRET_KEY);
       } catch (e) {
@@ -43,6 +45,13 @@ export class AuthBearerGuard implements CanActivate {
             error: 'UNAUTHORIZED',
           },
           HttpStatus.UNAUTHORIZED,
+        );
+      }
+      const user = await this.authService.getUser(userId.login);
+      if (!user) {
+        throw new HttpException(
+          { message: ['not found'] },
+          HttpStatus.NOT_FOUND,
         );
       }
       const login = await this.devicesAuthRepository.getAccessToken(token);

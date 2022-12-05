@@ -202,14 +202,20 @@ export class BloggerController {
   async createBloggerPost(
     @Param('blogId') blogId: string,
     @Body() createPost: BodyCreatePostType, // need fix no blogId
+    @Req() req: Request,
   ) {
-    // posts
-    return this.postsService.createPost({
-      blogId,
-      title: createPost.title,
-      shortDescription: createPost.shortDescription,
-      content: createPost.content,
-    });
+    const token = req.headers.authorization.split(' ')[1];
+    const user: any = await jwt.verify(token, process.env.SECRET_KEY);
+    console.log('user', user);
+    return this.postsService.createPost(
+      {
+        blogId,
+        title: createPost.title,
+        shortDescription: createPost.shortDescription,
+        content: createPost.content,
+      },
+      user.userId,
+    );
   }
   @Put('blogs/:blogId/posts')
   @ApiBearerAuth()

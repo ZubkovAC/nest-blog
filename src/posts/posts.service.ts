@@ -49,8 +49,8 @@ export class PostsService {
       userId,
     );
   }
-  async createPost(bodyPosts: BodyCreatePostType) {
-    return this.postsRepository.createPost(bodyPosts);
+  async createPost(bodyPosts: BodyCreatePostType, userId: string) {
+    return this.postsRepository.createPost(bodyPosts, userId);
   }
   async updatePost(postId: string, updatePost: BodyCreatePostType) {
     return this.postsRepository.updatePostId(postId, updatePost);
@@ -63,7 +63,9 @@ export class PostsService {
   ) {
     return this.postsRepository.likeStatusPost(postId, userId, login, status);
   }
-
+  async banned(userId: string, banStatus: boolean) {
+    return this.postsRepository.banned(userId, banStatus);
+  }
   async deletePostId(deletePostId: string) {
     return this.postsRepository.deletePost(deletePostId);
   }

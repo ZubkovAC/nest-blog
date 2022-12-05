@@ -36,6 +36,7 @@ export class CommentsService {
       userId: user.accountData.userId,
       userLogin: user.accountData.login,
       createdAt: new Date().toISOString(),
+      isBanned: false,
       newestLikes: [] as any,
     };
     await this.commentsRepository.createCommentsPost(newCommentPost);

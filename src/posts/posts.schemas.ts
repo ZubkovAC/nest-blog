@@ -8,12 +8,15 @@ export const PostsSchema = new mongoose.Schema({
   blogId: String,
   blogName: String,
   createdAt: String,
+  userId: String,
+  isBanned: Boolean,
   newestLikes: [
     {
       addedAt: String,
       userId: String,
       login: String,
       myStatus: String,
+      isBanned: Boolean,
     },
   ],
 });
@@ -26,12 +29,15 @@ export interface PostsSchemaInterface {
   blogId: string;
   blogName: string;
   createdAt: string;
+  userId: string;
+  isBanned: boolean;
   newestLikes: [
     {
       addedAt: string;
       userId: string;
       login: string;
       myStatus: string;
+      isBanned: boolean;
     },
   ];
 }

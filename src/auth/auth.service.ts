@@ -13,6 +13,9 @@ export class AuthService {
     protected authRepository: AuthRepository,
     protected emailService: EmailService,
   ) {}
+  async getUser(login: string) {
+    return this.authRepository.findUserLogin(login);
+  }
   async registration(
     registrationValueType: RegistrationValueType,
     ip: string,
