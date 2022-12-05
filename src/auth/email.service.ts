@@ -45,6 +45,11 @@ export class EmailService {
         // title: title,
         // deviceId: deviceId,
       },
+      banInfo: {
+        isBanned: false,
+        banDate: null,
+        banReason: null,
+      },
       emailConformation: {
         conformationCode: conformationCode,
         expirationDate: add(new Date(), { minutes: 5 }),

@@ -6,6 +6,10 @@ export const BloggersSchema = new mongoose.Schema({
   description: String,
   websiteUrl: String,
   createdAt: String,
+  blogOwnerInfo: {
+    userId: String,
+    userLogin: String,
+  },
 });
 
 export interface bloggersSchema {
@@ -14,4 +18,8 @@ export interface bloggersSchema {
   description: string;
   websiteUrl: string;
   createdAt: string;
+  blogOwnerInfo: {
+    userId: string;
+    userLogin: string;
+  };
 }

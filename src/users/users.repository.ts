@@ -66,6 +66,7 @@ export class UsersRepository {
         login: u.accountData.login,
         email: u.accountData.email,
         createdAt: u.accountData.createdAt,
+        banInfo: u.banInfo,
       })),
     };
   }
@@ -85,5 +86,21 @@ export class UsersRepository {
     return this.usersRepository.deleteOne({
       'accountData.userId': deleteUserId,
     });
+  }
+  async banUser(userId: string, isBanned: boolean, banReason: string) {
+    const date = new Date().toString();
+    await this.usersRepository.updateOne(
+      { 'accountData.userId': userId },
+      {
+        $set: {
+          banInfo: {
+            isBanned: isBanned,
+            banDate: date,
+            banReason: banReason,
+          },
+        },
+      },
+    );
+    return;
   }
 }
