@@ -116,6 +116,7 @@ export class BlogsService {
       blogOwnerInfo: {
         userId: userId,
         userLogin: userLogin,
+        isBanned: false,
       },
     });
   }

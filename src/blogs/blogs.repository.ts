@@ -156,6 +156,7 @@ export class BloggerRepository {
     blogOwnerInfo: {
       userId: string;
       userLogin: string;
+      isBanned: boolean;
     };
   }) {
     const res = await this.blogRepository.insertMany([inputBlogger]);

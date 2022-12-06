@@ -36,11 +36,17 @@ export class CommentsRepository {
       likesInfo: {
         likesCount:
           res.newestLikes?.filter(
-            (s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike',
+            (s) =>
+              s.myStatus !== 'None' &&
+              s.myStatus !== 'Dislike' &&
+              s.isBanned !== true,
           )?.length || 0,
         dislikesCount:
           res.newestLikes?.filter(
-            (s) => s.myStatus !== 'Like' && s.myStatus !== 'None',
+            (s) =>
+              s.myStatus !== 'Like' &&
+              s.myStatus !== 'None' &&
+              s.isBanned !== true,
           )?.length || 0,
         myStatus:
           res.newestLikes?.find((u) => u.userId === userId)?.myStatus || 'None',
@@ -58,11 +64,23 @@ export class CommentsRepository {
     );
   }
   async banned(userId: string, isBanned: boolean) {
-    return this.commentsRepository.updateMany(
+    await this.commentsRepository.updateMany(
       { userId: userId },
       { isBanned: isBanned },
     );
+    const res = await this.commentsRepository.updateMany(
+      {
+        'newestLikes.userId': userId,
+      },
+      {
+        $set: {
+          'newestLikes.$.isBanned': isBanned,
+        },
+      },
+    );
+    return;
   }
+
   async deleteCommentId(commentId: string) {
     return this.commentsRepository.deleteOne({ id: commentId });
   }
@@ -77,7 +95,6 @@ export class CommentsRepository {
   ) {
     const like = await this.commentsRepository.findOne({
       id: commentId,
-      // newestLikes: { $elemMatch: { userId: userId } },
     });
     const findUserId = like.newestLikes.find((t) => t.userId === userId);
     if (!findUserId) {
@@ -90,23 +107,13 @@ export class CommentsRepository {
               userId: userId,
               login: login,
               myStatus: status,
+              isBanned: false,
             },
           },
         },
       );
     } else {
       await this.commentsRepository.updateOne(
-        // { 'newestLikes.userId': userId },
-        // {
-        //   $set: {
-        //     'newestLikes.$': {
-        //       addedAt: new Date().toISOString(),
-        //       userId: userId,
-        //       login: login,
-        //       myStatus: status,
-        //     },
-        //   },
-        // },
         { $and: [{ id: commentId }, { 'newestLikes.userId': userId }] },
         {
           $set: {
@@ -115,6 +122,7 @@ export class CommentsRepository {
               userId: userId,
               login: login,
               myStatus: status,
+              isBanned: false,
             },
           },
         },
