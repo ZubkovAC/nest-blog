@@ -11,6 +11,7 @@ import {
   sortPostsValidation,
 } from '../query/query';
 import { PostsRepository } from '../posts/posts.repository';
+import { blogUpdateValue } from '../blogger/blogger.controller';
 
 @Injectable()
 export class BlogsService {
@@ -124,6 +125,17 @@ export class BlogsService {
   }
   async updateBlogId(bloggerId: string, inputBlogType: InputBlogType) {
     return this.bloggerRepository.updateBlogId(bloggerId, inputBlogType);
+  }
+  async updateBlogIdPostId(
+    bloggerId: string,
+    postId: string,
+    blogUpdate: blogUpdateValue,
+  ) {
+    return this.bloggerRepository.updateBlogIdPostId(
+      bloggerId,
+      postId,
+      blogUpdate,
+    );
   }
   async createBlog(
     inputBlogger: InputBlogType,

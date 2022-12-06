@@ -2,6 +2,8 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InputBlogType } from './blogs.controller';
 import { Model } from 'mongoose';
 import { bloggersSchema } from './blogs.schemas';
+import { blogUpdateValue } from '../blogger/blogger.controller';
+import { PostsSchemaInterface } from '../posts/posts.schemas';
 
 export const bloggers = [
   {
@@ -26,6 +28,8 @@ export class BloggerRepository {
   constructor(
     @Inject('BLOGGERS_MODEL')
     private blogRepository: Model<bloggersSchema>,
+    @Inject('POSTS_MODEL')
+    private postsRepository: Model<PostsSchemaInterface>,
   ) {}
   async getBlogs(
     pageNumber: number,
@@ -199,6 +203,23 @@ export class BloggerRepository {
       description: inputBloggerType.description,
       websiteUrl: inputBloggerType.websiteUrl,
     };
+  }
+  async updateBlogIdPostId(
+    bloggerId: string,
+    postId: string,
+    inputBloggerType: blogUpdateValue,
+  ) {
+    await this.postsRepository.updateOne(
+      { id: postId },
+      {
+        $set: {
+          title: inputBloggerType.title,
+          shortDescription: inputBloggerType.shortDescription,
+          content: inputBloggerType.content,
+        },
+      },
+    );
+    return;
   }
   async createBlog(inputBlogger: {
     id: string;

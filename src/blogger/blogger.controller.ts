@@ -16,6 +16,7 @@ import {
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiProperty,
   ApiQuery,
   ApiResponse,
   ApiTags,
@@ -28,6 +29,26 @@ import { PostsService } from '../posts/posts.service';
 import { BodyCreatePostType } from '../posts/posts.controller';
 import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
+import { IsNotEmpty, Length } from 'class-validator';
+import { Transform, TransformFnParams } from 'class-transformer';
+
+export class blogUpdateValue {
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @Length(0, 30)
+  title: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @Length(0, 100)
+  shortDescription: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @Length(0, 1000)
+  content: string;
+}
 
 @ApiTags('For Blogger')
 @Controller('blogger')
@@ -162,7 +183,15 @@ export class BloggerController {
   async updateBlogger(
     @Param('blogId') blogId: string,
     @Body() blogUpdate: InputBlogType,
+    @Req() req: Request,
   ) {
+    const blog = await this.blogsService.getBlogIdSA(blogId);
+    const token = req.headers.authorization.split(' ')[1];
+    const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
+
+    if (blogger.userId !== blog.blogOwnerInfo.userId) {
+      throw new HttpException({ message: ['forbiden'] }, HttpStatus.FORBIDDEN);
+    }
     await this.blogsService.updateBlogId(blogId, blogUpdate);
     return;
   }
@@ -185,7 +214,6 @@ export class BloggerController {
   @ApiBearerAuth()
   @UseGuards(CheckBloggerIdParamsGuard)
   async deleteBlogger(@Param('blogId') blogId: string, @Req() req: Request) {
-    // 403 need
     const blog = await this.blogsService.getBlogIdSA(blogId);
     const token = req.headers.authorization.split(' ')[1];
     const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
@@ -207,7 +235,6 @@ export class BloggerController {
   ) {
     const token = req.headers.authorization.split(' ')[1];
     const user: any = await jwt.verify(token, process.env.SECRET_KEY);
-    console.log('user', user);
     return this.postsService.createPost(
       {
         blogId,
@@ -218,24 +245,28 @@ export class BloggerController {
       user.userId,
     );
   }
-  @Put('blogs/:blogId/posts')
+  // need fix
+  @Put('blogs/:blogId/posts/:postId')
   @ApiBearerAuth()
+  @HttpCode(204)
   @UseGuards(AuthBearerGuard)
   async updateBloggerPost(
     @Param('blogId') blogId: string,
-    @Body() blogUpdate: InputBlogType,
+    @Param('postId') postId: string,
+    @Body() blogUpdate: blogUpdateValue,
   ) {
-    await this.blogsService.updateBlogId(blogId, blogUpdate);
+    await this.blogsService.updateBlogIdPostId(blogId, postId, blogUpdate);
     return;
   }
-  @Delete('blogs/:blogId/posts')
+  @Delete('blogs/:blogId/posts/:postId')
+  @HttpCode(204)
   @ApiBearerAuth()
   @UseGuards(AuthBearerGuard)
   async deleteBloggerPost(
     @Param('blogId') blogId: string,
-    @Body() blogUpdate: InputBlogType,
+    @Param('postId') postId: string,
   ) {
-    await this.blogsService.updateBlogId(blogId, blogUpdate);
+    await this.postsService.deletePostId(postId);
     return;
   }
 }

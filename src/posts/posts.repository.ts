@@ -100,18 +100,29 @@ export class PostsRepository {
       extendedLikesInfo: {
         likesCount:
           post.newestLikes?.filter(
-            (s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike',
+            (s) =>
+              s.myStatus !== 'None' &&
+              s.myStatus !== 'Dislike' &&
+              s.isBanned !== true,
           )?.length || 0,
         dislikesCount:
           post.newestLikes?.filter(
-            (s) => s.myStatus !== 'Like' && s.myStatus !== 'None',
+            (s) =>
+              s.myStatus !== 'Like' &&
+              s.myStatus !== 'None' &&
+              s.isBanned !== true,
           )?.length || 0,
         myStatus:
           post.newestLikes?.find((u) => u.userId === userId)?.myStatus ||
           'None',
         newestLikes:
           post.newestLikes
-            ?.filter((s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike')
+            ?.filter(
+              (s) =>
+                s.myStatus !== 'None' &&
+                s.myStatus !== 'Dislike' &&
+                s.isBanned !== true,
+            )
             ?.sort(byDate)
             ?.slice(0, 3)
             ?.map((post) => ({
@@ -218,24 +229,35 @@ export class PostsRepository {
       extendedLikesInfo: {
         likesCount:
           post.newestLikes?.filter(
-            (s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike',
+            (s) =>
+              s.myStatus !== 'None' &&
+              s.myStatus !== 'Dislike' &&
+              s.isBanned !== true,
           )?.length || 0,
         dislikesCount:
           post.newestLikes?.filter(
-            (s) => s.myStatus !== 'Like' && s.myStatus !== 'None',
+            (s) =>
+              s.myStatus !== 'Like' &&
+              s.myStatus !== 'None' &&
+              s.isBanned !== true,
           )?.length || 0,
         myStatus:
           post.newestLikes?.find((u) => u.userId === userId)?.myStatus ||
           'None',
         newestLikes:
           post.newestLikes
+            ?.filter(
+              (s) =>
+                s.myStatus !== 'None' &&
+                s.myStatus !== 'Dislike' &&
+                s.isBanned !== true,
+            )
             ?.map((post) => ({
               addedAt: post.addedAt,
               userId: post.userId,
               login: post.login,
               myStatus: post.myStatus,
             }))
-            ?.filter((s) => s.myStatus !== 'None' && s.myStatus !== 'Dislike')
             ?.sort(byDate)
             ?.slice(0, 3)
             ?.map((p) => ({
