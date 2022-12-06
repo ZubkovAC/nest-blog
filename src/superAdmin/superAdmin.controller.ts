@@ -156,7 +156,7 @@ export class SuperAdminController {
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
   ) {
-    return this.blogsService.getBlogs(
+    return this.blogsService.getBlogsSA(
       pageNumber,
       pageSize,
       searchNameTerm,

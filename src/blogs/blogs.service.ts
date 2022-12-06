@@ -38,6 +38,26 @@ export class BlogsService {
       sortD,
     );
   }
+  async getBlogsSA(
+    pageNumber: string,
+    pageSize: string,
+    searchNameTerm: string,
+    sort: string,
+    sortDirection: string,
+  ) {
+    const pNumber = pageNumberValidate(pageNumber);
+    const pSize = pageSizeValidate(pageSize);
+    const searchNT = termValidate(searchNameTerm);
+    const sortV = sortBlogValidation(sort);
+    const sortD = sortDirectionValidation(sortDirection);
+    return this.bloggerRepository.getBlogsSA(
+      pNumber,
+      pSize,
+      searchNT,
+      sortV,
+      sortD,
+    );
+  }
   async getBloggerBlogs(
     pageNumber: string,
     pageSize: string,
@@ -62,6 +82,9 @@ export class BlogsService {
   }
   async getBlogId(bloggerId: string) {
     return this.bloggerRepository.findBlogId(bloggerId);
+  }
+  async getBlogIdSA(bloggerId: string) {
+    return this.bloggerRepository.findBlogIdSA(bloggerId);
   }
   async getBlogIdPosts(
     bloggerId: string,

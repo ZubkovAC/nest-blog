@@ -326,7 +326,6 @@ export class PostsRepository {
     const post = await this.postsRepository.findOne({ id: postId });
     const findStatusUser = post.newestLikes.find((t) => t.userId === userId);
     if (!findStatusUser) {
-      console.log('123');
       await this.postsRepository.updateOne(
         { id: postId },
         {
@@ -336,6 +335,7 @@ export class PostsRepository {
               userId: userId,
               login: login,
               myStatus: status,
+              isBanned: false,
             },
           },
         },
@@ -361,6 +361,7 @@ export class PostsRepository {
               userId: userId,
               login: login,
               myStatus: status,
+              isBanned: false,
             },
           },
         },
@@ -369,6 +370,14 @@ export class PostsRepository {
     return;
   }
   async banned(userId: string, banStatus: boolean) {
+    await this.postsRepository.updateMany(
+      { 'newestLikes.userId': userId },
+      {
+        $set: {
+          'newestLikes.$.isBanned': banStatus,
+        },
+      },
+    );
     return this.postsRepository.updateMany(
       { userId: userId },
       {

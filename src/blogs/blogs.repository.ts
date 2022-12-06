@@ -41,7 +41,6 @@ export class BloggerRepository {
     });
 
     const bloggersRestrict = await this.blogRepository
-      // .find({ name: { $regex: searchNameTerm } }, '-_id -__v')
       .find(
         {
           $and: [
@@ -55,11 +54,6 @@ export class BloggerRepository {
               'blogOwnerInfo.isBanned': false,
             },
           ],
-          // name: {
-          //   $regex: searchNameTerm,
-          //   $options: 'i',
-          // },
-          // 'banInfo.isBanned': false,
         },
         '-_id -__v -blogOwnerInfo',
       )
@@ -67,8 +61,48 @@ export class BloggerRepository {
       .skip(skipCount)
       .limit(pageSize)
       .lean();
+    return {
+      pagesCount: Math.ceil(totalCount / pageSize),
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount: totalCount,
+      items: bloggersRestrict,
+    };
+  }
+  async getBlogsSA(
+    pageNumber: number,
+    pageSize: number,
+    searchNameTerm: string,
+    sort: any,
+    sortDirection: any,
+  ) {
+    const skipCount = (pageNumber - 1) * pageSize;
+    const totalCount = await this.blogRepository.countDocuments({
+      name: { $regex: searchNameTerm, $options: 'i' },
+      'banInfo.isBanned': false,
+    });
 
-    console.log('bloggersRestrict', bloggersRestrict);
+    const bloggersRestrict = await this.blogRepository
+      .find(
+        {
+          $and: [
+            {
+              name: {
+                $regex: searchNameTerm,
+                $options: 'i',
+              },
+            },
+            {
+              'blogOwnerInfo.isBanned': false,
+            },
+          ],
+        },
+        '-_id -__v -blogOwnerInfo.isBanned',
+      )
+      .sort({ [sort]: sortDirection })
+      .skip(skipCount)
+      .limit(pageSize)
+      .lean();
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
@@ -100,7 +134,7 @@ export class BloggerRepository {
           },
           'blogOwnerInfo.userLogin': login,
         },
-        '-_id -__v',
+        '-_id -__v -blogOwnerInfo',
       )
       .sort({ [sort]: sortDirection })
       .skip(skipCount)
@@ -127,6 +161,25 @@ export class BloggerRepository {
           ],
         },
         '-_id -__v -blogOwnerInfo',
+      )
+      .exec();
+    if (!blog) {
+      throw new HttpException({ message: ['not found'] }, HttpStatus.NOT_FOUND);
+    }
+    return blog;
+  }
+  async findBlogIdSA(blogId: string) {
+    const blog = await this.blogRepository
+      .findOne(
+        {
+          $and: [
+            { id: blogId },
+            {
+              'blogOwnerInfo.isBanned': false,
+            },
+          ],
+        },
+        '-_id -__v',
       )
       .exec();
     if (!blog) {

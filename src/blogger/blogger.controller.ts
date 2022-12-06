@@ -186,9 +186,10 @@ export class BloggerController {
   @UseGuards(CheckBloggerIdParamsGuard)
   async deleteBlogger(@Param('blogId') blogId: string, @Req() req: Request) {
     // 403 need
-    const blog = await this.blogsService.getBlogId(blogId);
+    const blog = await this.blogsService.getBlogIdSA(blogId);
     const token = req.headers.authorization.split(' ')[1];
     const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
+
     if (blogger.userId !== blog.blogOwnerInfo.userId) {
       throw new HttpException({ message: ['forbiden'] }, HttpStatus.FORBIDDEN);
     }
