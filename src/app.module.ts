@@ -48,34 +48,13 @@ import { GetSABlogs } from './superAdmin/useCases/getSA-blogs';
 import { GetSAUsers } from './superAdmin/useCases/getSA-users';
 import { PostSABlogs } from './superAdmin/useCases/postSA-users';
 import { PutSAUserIdBan } from './superAdmin/useCases/putSA-users-id-ban';
-import {
-  GetBloggersBlogs,
-  useGetBloggersBlogs,
-} from './blogger/useCases/getBlogger-blogs';
-import {
-  PostBloggersBlogs,
-  usePostBloggersBlogs,
-} from './blogger/useCases/postBlogger-blogs';
-import {
-  PutBloggersBlogsBlogId,
-  usePutBloggersBlogsBlogId,
-} from './blogger/useCases/putBlogger-blogs-blogId';
-import {
-  DelBloggersBlogsBlogId,
-  useDelBloggersBlogsBlogId,
-} from './blogger/useCases/delBlogger-blogs-blogId';
-import {
-  PostBloggersBlogsBlogIdPosts,
-  usePostBloggersBlogsBlogIdPosts,
-} from './blogger/useCases/postBlogger-blogs-blogId-posts';
-import {
-  PutBloggersBlogsBlogIdPostsPostId,
-  usePutBloggersBlogsBlogIdPostsPostId,
-} from './blogger/useCases/putBlogger-blogs-blogId-posts-postId';
-import {
-  DelBloggersBlogsBlogIdPostPostId,
-  useDelBloggersBlogsBlogIdPostsPostId,
-} from './blogger/useCases/delBlogger-blogs-blogId-posts-postId';
+import { GetBloggersBlogs } from './blogger/useCases/getBlogger-blogs';
+import { PostBloggersBlogs } from './blogger/useCases/postBlogger-blogs';
+import { PutBloggersBlogsBlogId } from './blogger/useCases/putBlogger-blogs-blogId';
+import { DelBloggersBlogsBlogId } from './blogger/useCases/delBlogger-blogs-blogId';
+import { PostBloggersBlogsBlogIdPosts } from './blogger/useCases/postBlogger-blogs-blogId-posts';
+import { PutBloggersBlogsBlogIdPostsPostId } from './blogger/useCases/putBlogger-blogs-blogId-posts-postId';
+import { DelBloggersBlogsBlogIdPostPostId } from './blogger/useCases/delBlogger-blogs-blogId-posts-postId';
 
 const useCasesBlogs = [GetBlogs, GetBlogsBlogId, GetBlogsBlogIdPosts];
 

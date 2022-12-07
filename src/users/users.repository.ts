@@ -108,7 +108,7 @@ export class UsersRepository {
     });
   }
   async banUser(userId: string, isBanned: boolean, banReason: string) {
-    const date = new Date().toString();
+    const date = new Date().toISOString();
     await this.usersRepository.updateOne(
       { 'accountData.userId': userId },
       {
