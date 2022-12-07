@@ -31,15 +31,11 @@ import {
 import { AuthBearerGuard } from '../guards/AuthBearer.guard';
 import { Request } from 'express';
 import { BlogsService } from '../blogs/blogs.service';
-import * as jwt from 'jsonwebtoken';
 import { CommandBus } from '@nestjs/cqrs';
 import { useGetPostsPostId } from './useCases/getPosts-PostId';
 import { useGetPosts } from './useCases/getPosts';
 import { useGetPostsPostIdComments } from './useCases/getPosts-postId-comments';
-import {
-  GetPostsPostIdComments,
-  usePostPostsPostIdComments,
-} from './useCases/postPosts-postId-comments';
+import { usePostPostsPostIdComments } from './useCases/postPosts-postId-comments';
 import { usePutPostsPostIdLikeStatus } from './useCases/putPosts-postId-likeStatus';
 
 export class BodyCreatePostType {

@@ -31,6 +31,14 @@ import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { IsNotEmpty, Length } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
+import { CommandBus } from '@nestjs/cqrs';
+import { useGetBloggersBlogs } from './useCases/getBlogger-blogs';
+import { usePostBloggersBlogs } from './useCases/postBlogger-blogs';
+import { usePostBloggersBlogsBlogIdPosts } from './useCases/postBlogger-blogs-blogId-posts';
+import { useDelBloggersBlogsBlogId } from './useCases/delBlogger-blogs-blogId';
+import { useDelBloggersBlogsBlogIdPostsPostId } from './useCases/delBlogger-blogs-blogId-posts-postId';
+import { usePutBloggersBlogsBlogIdPostsPostId } from './useCases/putBlogger-blogs-blogId-posts-postId';
+import { usePutBloggersBlogsBlogId } from './useCases/putBlogger-blogs-blogId';
 
 export class blogUpdateValue {
   @ApiProperty()
@@ -54,8 +62,7 @@ export class blogUpdateValue {
 @Controller('blogger')
 export class BloggerController {
   constructor(
-    protected blogsService: BlogsService,
-    protected postsService: PostsService,
+    protected commandBus: CommandBus, // protected blogsService: BlogsService, // protected postsService: PostsService,
   ) {}
   @Get('blogs')
   @ApiBearerAuth()
@@ -73,16 +80,26 @@ export class BloggerController {
     @Query('sortDirection') sortDirection: string,
     @Req() req: Request,
   ) {
-    const token = req.headers.authorization.split(' ')[1];
-    const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
-    return this.blogsService.getBloggerBlogs(
-      pageNumber,
-      pageSize,
-      searchNameTerm,
-      sortBy,
-      sortDirection,
-      blogger.login,
+    return this.commandBus.execute(
+      new useGetBloggersBlogs(
+        req,
+        pageNumber,
+        pageSize,
+        searchNameTerm,
+        sortBy,
+        sortDirection,
+      ),
     );
+    // const token = req.headers.authorization.split(' ')[1];
+    // const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
+    // return this.blogsService.getBloggerBlogs(
+    //   pageNumber,
+    //   pageSize,
+    //   searchNameTerm,
+    //   sortBy,
+    //   sortDirection,
+    //   blogger.login,
+    // );
   }
   @Post('blogs')
   @ApiBearerAuth()
@@ -129,13 +146,14 @@ export class BloggerController {
     description: 'Unauthorized',
   })
   async createBlogs(@Body() inputBlogger: InputBlogType, @Req() req: Request) {
-    const token = req.headers.authorization.split(' ')[1];
-    const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
-    return this.blogsService.createBlog(
-      inputBlogger,
-      blogger.userId,
-      blogger.login,
-    );
+    return this.commandBus.execute(new usePostBloggersBlogs(req, inputBlogger));
+    // const token = req.headers.authorization.split(' ')[1];
+    // const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
+    // return this.blogsService.createBlog(
+    //   inputBlogger,
+    //   blogger.userId,
+    //   blogger.login,
+    // );
   }
 
   @UseGuards(AuthBearerGuard)
@@ -185,15 +203,18 @@ export class BloggerController {
     @Body() blogUpdate: InputBlogType,
     @Req() req: Request,
   ) {
-    const blog = await this.blogsService.getBlogIdSA(blogId);
-    const token = req.headers.authorization.split(' ')[1];
-    const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
-
-    if (blogger.userId !== blog.blogOwnerInfo.userId) {
-      throw new HttpException({ message: ['forbiden'] }, HttpStatus.FORBIDDEN);
-    }
-    await this.blogsService.updateBlogId(blogId, blogUpdate);
+    await this.commandBus.execute(
+      new usePutBloggersBlogsBlogId(req, blogId, blogUpdate),
+    );
     return;
+    // const blog = await this.blogsService.getBlogIdSA(blogId);
+    // const token = req.headers.authorization.split(' ')[1];
+    // const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
+    //
+    // if (blogger.userId !== blog.blogOwnerInfo.userId) {
+    //   throw new HttpException({ message: ['forbiden'] }, HttpStatus.FORBIDDEN);
+    // }
+    // await this.blogsService.updateBlogId(blogId, blogUpdate);
   }
 
   @ApiResponse({
@@ -214,15 +235,17 @@ export class BloggerController {
   @ApiBearerAuth()
   @UseGuards(CheckBloggerIdParamsGuard)
   async deleteBlogger(@Param('blogId') blogId: string, @Req() req: Request) {
-    const blog = await this.blogsService.getBlogIdSA(blogId);
-    const token = req.headers.authorization.split(' ')[1];
-    const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
-
-    if (blogger.userId !== blog.blogOwnerInfo.userId) {
-      throw new HttpException({ message: ['forbiden'] }, HttpStatus.FORBIDDEN);
-    }
-    await this.blogsService.deleteBlogId(blogId);
+    await this.commandBus.execute(new useDelBloggersBlogsBlogId(req, blogId));
     return;
+    // const blog = await this.blogsService.getBlogIdSA(blogId);
+    // const token = req.headers.authorization.split(' ')[1];
+    // const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
+    //
+    // if (blogger.userId !== blog.blogOwnerInfo.userId) {
+    //   throw new HttpException({ message: ['forbiden'] }, HttpStatus.FORBIDDEN);
+    // }
+    // await this.blogsService.deleteBlogId(blogId);
+    // return;
   }
 
   @Post('blogs/:blogId/posts')
@@ -233,17 +256,20 @@ export class BloggerController {
     @Body() createPost: BodyCreatePostType, // need fix no blogId
     @Req() req: Request,
   ) {
-    const token = req.headers.authorization.split(' ')[1];
-    const user: any = await jwt.verify(token, process.env.SECRET_KEY);
-    return this.postsService.createPost(
-      {
-        blogId,
-        title: createPost.title,
-        shortDescription: createPost.shortDescription,
-        content: createPost.content,
-      },
-      user.userId,
+    return this.commandBus.execute(
+      new usePostBloggersBlogsBlogIdPosts(req, createPost, blogId),
     );
+    // const token = req.headers.authorization.split(' ')[1];
+    // const user: any = await jwt.verify(token, process.env.SECRET_KEY);
+    // return this.postsService.createPost(
+    //   {
+    //     blogId,
+    //     title: createPost.title,
+    //     shortDescription: createPost.shortDescription,
+    //     content: createPost.content,
+    //   },
+    //   user.userId,
+    // );
   }
   // need fix
   @Put('blogs/:blogId/posts/:postId')
@@ -255,8 +281,12 @@ export class BloggerController {
     @Param('postId') postId: string,
     @Body() blogUpdate: blogUpdateValue,
   ) {
-    await this.blogsService.updateBlogIdPostId(blogId, postId, blogUpdate);
+    await this.commandBus.execute(
+      new usePutBloggersBlogsBlogIdPostsPostId(blogId, postId, blogUpdate),
+    );
     return;
+    // await this.blogsService.updateBlogIdPostId(blogId, postId, blogUpdate);
+    // return;
   }
   @Delete('blogs/:blogId/posts/:postId')
   @HttpCode(204)
@@ -266,7 +296,11 @@ export class BloggerController {
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
   ) {
-    await this.postsService.deletePostId(postId);
+    await this.commandBus.execute(
+      new useDelBloggersBlogsBlogIdPostsPostId(postId, blogId),
+    );
     return;
+    // await this.postsService.deletePostId(postId);
+    // return;
   }
 }

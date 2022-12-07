@@ -5,8 +5,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
-  HttpStatus,
   Inject,
   Ip,
   NotFoundException,
@@ -15,11 +13,10 @@ import {
   Put,
   Query,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { BodyCreateUserType } from '../users/users.controller';
 import { AuthBaseGuard } from '../guards/AuthBase.guard';
 import { Model } from 'mongoose';
@@ -28,8 +25,14 @@ import { IsBoolean, Length } from 'class-validator';
 import { BlogsService } from '../blogs/blogs.service';
 import { PostsService } from '../posts/posts.service';
 import { CommentsService } from '../comments/comments.service';
+import { CommandBus } from '@nestjs/cqrs';
+import { useGetSAUsers } from './useCases/getSA-users';
+import { useGetSABlogs } from './useCases/getSA-blogs';
+import { usePostSABlogs } from './useCases/postSA-users';
+import { usePutSAUserIdBan } from './useCases/putSA-users-id-ban';
+import { useDelSAUserId } from './useCases/delSA-users-id';
 
-class BanValue {
+export class BanValue {
   @IsBoolean()
   isBanned: boolean;
   @Length(20, 120)
@@ -40,12 +43,7 @@ class BanValue {
 @Controller('sa')
 export class SuperAdminController {
   constructor(
-    protected usersService: UsersService,
-    protected blogsService: BlogsService,
-    @Inject('USERS_MODEL')
-    private usersRepository: Model<UsersSchemaInterface>,
-    protected postsService: PostsService,
-    protected commentsService: CommentsService,
+    protected commandBus: CommandBus, // protected usersService: UsersService, // protected blogsService: BlogsService, // @Inject('USERS_MODEL') // private usersRepository: Model<UsersSchemaInterface>, // protected postsService: PostsService, // protected commentsService: CommentsService,
   ) {}
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
@@ -59,15 +57,26 @@ export class SuperAdminController {
     @Query('searchEmailTerm') searchEmailTerm: string,
     @Query('banStatus') banStatus: string,
   ) {
-    return this.usersService.getUsers(
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      searchLoginTerm,
-      searchEmailTerm,
-      banStatus,
+    return this.commandBus.execute(
+      new useGetSAUsers(
+        banStatus,
+        searchLoginTerm,
+        searchEmailTerm,
+        pageNumber,
+        pageSize,
+        sortBy,
+        sortDirection,
+      ),
     );
+    // return this.usersService.getUsers(
+    //   pageNumber,
+    //   pageSize,
+    //   sortBy,
+    //   sortDirection,
+    //   searchLoginTerm,
+    //   searchEmailTerm,
+    //   banStatus,
+    // );
   }
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
@@ -77,74 +86,78 @@ export class SuperAdminController {
     @Req() req: Request,
     @Ip() ip,
   ) {
-    const login = await this.usersRepository.findOne({
-      'accountData.login': bodyCreateUser.login,
-    });
-    const email = await this.usersRepository.findOne({
-      'accountData.email': bodyCreateUser.email,
-    });
-    if (login || email) {
-      const error = [];
-      if (login) {
-        error.push('login is repeated');
-      }
-      if (email) {
-        error.push('email is repeated');
-      }
-      throw new HttpException({ message: error }, HttpStatus.BAD_REQUEST);
-    }
-    const title = req.headers['user-agent'];
-    return this.usersService.createUser(bodyCreateUser, ip, title);
+    return this.commandBus.execute(new usePostSABlogs(ip, req, bodyCreateUser));
+    // const login = await this.usersRepository.findOne({
+    //   'accountData.login': bodyCreateUser.login,
+    // });
+    // const email = await this.usersRepository.findOne({
+    //   'accountData.email': bodyCreateUser.email,
+    // });
+    // if (login || email) {
+    //   const error = [];
+    //   if (login) {
+    //     error.push('login is repeated');
+    //   }
+    //   if (email) {
+    //     error.push('email is repeated');
+    //   }
+    //   throw new HttpException({ message: error }, HttpStatus.BAD_REQUEST);
+    // }
+    // const title = req.headers['user-agent'];
+    // return this.usersService.createUser(bodyCreateUser, ip, title);
   }
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
   @HttpCode(204)
   @Put('users/:id/ban')
   async banUser(@Body() banValue: BanValue, @Param('id') id: string) {
-    const user = await this.usersRepository.findOne({
-      'accountData.userId': id,
-    });
-    if (!user) {
-      throw new HttpException({ message: ['postId'] }, HttpStatus.NOT_FOUND);
-    }
-    let date = new Date().toISOString();
-    let banReason = banValue.banReason;
-    if (!banValue.isBanned) {
-      date = null;
-      banReason = null;
-    }
-    await this.usersRepository.updateOne(
-      { 'accountData.userId': id },
-      {
-        $set: {
-          banInfo: {
-            isBanned: banValue.isBanned,
-            banDate: date,
-            banReason: banReason,
-          },
-        },
-      },
-    );
-    await this.blogsService.banned(user.accountData.userId, banValue.isBanned);
-    await this.postsService.banned(user.accountData.userId, banValue.isBanned);
-    await this.commentsService.banned(
-      user.accountData.userId,
-      banValue.isBanned,
-    );
+    await this.commandBus.execute(new usePutSAUserIdBan(id, banValue));
     return;
+    // const user = await this.usersRepository.findOne({
+    //   'accountData.userId': id,
+    // });
+    // if (!user) {
+    //   throw new HttpException({ message: ['postId'] }, HttpStatus.NOT_FOUND);
+    // }
+    // let date = new Date().toISOString();
+    // let banReason = banValue.banReason;
+    // if (!banValue.isBanned) {
+    //   date = null;
+    //   banReason = null;
+    // }
+    // await this.usersRepository.updateOne(
+    //   { 'accountData.userId': id },
+    //   {
+    //     $set: {
+    //       banInfo: {
+    //         isBanned: banValue.isBanned,
+    //         banDate: date,
+    //         banReason: banReason,
+    //       },
+    //     },
+    //   },
+    // );
+    // await this.blogsService.banned(user.accountData.userId, banValue.isBanned);
+    // await this.postsService.banned(user.accountData.userId, banValue.isBanned);
+    // await this.commentsService.banned(
+    //   user.accountData.userId,
+    //   banValue.isBanned,
+    // );
+    // return;
   }
   @UseGuards(AuthBaseGuard)
   @ApiBasicAuth()
   @HttpCode(204)
   @Delete('users/:id')
   async deleteUser(@Param('id') deleteUser: string) {
-    const userId = await this.usersRepository.findOne({
-      'accountData.userId': deleteUser,
-    });
-    if (!userId) {
-      throw new NotFoundException('not found');
-    }
-    return this.usersService.deleteUser(deleteUser);
+    return this.commandBus.execute(new useDelSAUserId(deleteUser));
+    // const userId = await this.usersRepository.findOne({
+    //   'accountData.userId': deleteUser,
+    // });
+    // if (!userId) {
+    //   throw new NotFoundException('not found');
+    // }
+    // return this.usersService.deleteUser(deleteUser);
   }
   @UseGuards(AuthBaseGuard)
   @ApiBasicAuth()
@@ -156,13 +169,22 @@ export class SuperAdminController {
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
   ) {
-    return this.blogsService.getBlogsSA(
-      pageNumber,
-      pageSize,
-      searchNameTerm,
-      sortBy,
-      sortDirection,
+    return this.commandBus.execute(
+      new useGetSABlogs(
+        pageNumber,
+        pageSize,
+        searchNameTerm,
+        sortBy,
+        sortDirection,
+      ),
     );
+    // return this.blogsService.getBlogsSA(
+    //   pageNumber,
+    //   pageSize,
+    //   searchNameTerm,
+    //   sortBy,
+    //   sortDirection,
+    // );
   }
   @UseGuards(AuthBaseGuard)
   @ApiBasicAuth()

@@ -82,6 +82,12 @@ export class UsersRepository {
   async getUserId(userId: string) {
     return this.usersRepository.findOne({ 'accountData.userId': userId });
   }
+  async findLogin(login: string) {
+    return this.usersRepository.findOne({ 'accountData.login': login });
+  }
+  async findEmail(email: string) {
+    return this.usersRepository.findOne({ 'accountData.email': email });
+  }
   async createUser(createUserModel: UsersSchemaInterface) {
     await this.usersRepository.insertMany([createUserModel]);
     return {

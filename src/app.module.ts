@@ -43,6 +43,39 @@ import { GetPostsPostId } from './posts/useCases/getPosts-PostId';
 import { PostPostsPostIdComments } from './posts/useCases/postPosts-postId-comments';
 import { PutPostsPostIdLikeStatus } from './posts/useCases/putPosts-postId-likeStatus';
 import { GetPostsPostIdComments } from './posts/useCases/getPosts-postId-comments';
+import { DelSAUserId } from './superAdmin/useCases/delSA-users-id';
+import { GetSABlogs } from './superAdmin/useCases/getSA-blogs';
+import { GetSAUsers } from './superAdmin/useCases/getSA-users';
+import { PostSABlogs } from './superAdmin/useCases/postSA-users';
+import { PutSAUserIdBan } from './superAdmin/useCases/putSA-users-id-ban';
+import {
+  GetBloggersBlogs,
+  useGetBloggersBlogs,
+} from './blogger/useCases/getBlogger-blogs';
+import {
+  PostBloggersBlogs,
+  usePostBloggersBlogs,
+} from './blogger/useCases/postBlogger-blogs';
+import {
+  PutBloggersBlogsBlogId,
+  usePutBloggersBlogsBlogId,
+} from './blogger/useCases/putBlogger-blogs-blogId';
+import {
+  DelBloggersBlogsBlogId,
+  useDelBloggersBlogsBlogId,
+} from './blogger/useCases/delBlogger-blogs-blogId';
+import {
+  PostBloggersBlogsBlogIdPosts,
+  usePostBloggersBlogsBlogIdPosts,
+} from './blogger/useCases/postBlogger-blogs-blogId-posts';
+import {
+  PutBloggersBlogsBlogIdPostsPostId,
+  usePutBloggersBlogsBlogIdPostsPostId,
+} from './blogger/useCases/putBlogger-blogs-blogId-posts-postId';
+import {
+  DelBloggersBlogsBlogIdPostPostId,
+  useDelBloggersBlogsBlogIdPostsPostId,
+} from './blogger/useCases/delBlogger-blogs-blogId-posts-postId';
 
 const useCasesBlogs = [GetBlogs, GetBlogsBlogId, GetBlogsBlogIdPosts];
 
@@ -65,6 +98,22 @@ const useCasesPosts = [
   GetPostsPostIdComments,
   PostPostsPostIdComments,
   PutPostsPostIdLikeStatus,
+];
+const useCasesSuperAdmin = [
+  GetSABlogs,
+  GetSAUsers,
+  PostSABlogs,
+  PutSAUserIdBan,
+  DelSAUserId,
+];
+const useCasesBlogger = [
+  GetBloggersBlogs,
+  PostBloggersBlogs,
+  PutBloggersBlogsBlogId,
+  DelBloggersBlogsBlogId,
+  PostBloggersBlogsBlogIdPosts,
+  PutBloggersBlogsBlogIdPostsPostId,
+  DelBloggersBlogsBlogIdPostPostId,
 ];
 
 const allService = [
@@ -110,6 +159,8 @@ const allRepository = [
     ...useCaseComments,
     ...useCasesSecurityDevices,
     ...useCasesPosts,
+    ...useCasesSuperAdmin,
+    ...useCasesBlogger,
   ],
   exports: [],
 })
