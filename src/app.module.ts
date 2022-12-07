@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BlogsController } from './blogs/blogs.controller';
 import { BlogsService } from './blogs/blogs.service';
-import { BloggerRepository } from './blogs/blogs.repository';
+import { BlogsRepository } from './blogs/blogs.repository';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { UsersRepository } from './users/users.repository';
@@ -27,9 +27,25 @@ import { DevicesAuthRepository } from './authDevices/devicesAuth.repository';
 import { LikesRepository } from './likes/likes.repository';
 import { BloggerController } from './blogger/blogger.controller';
 import { SuperAdminController } from './superAdmin/superAdmin.controller';
+import { GetBlogs } from './blogs/useCase/getBlogs';
+import { GetBlogsBlogId } from './blogs/useCase/getBlogs-blogId';
+import { GetBlogsBlogIdPosts } from './blogs/useCase/getBlogs-blogId-posts';
+import { CqrsModule } from '@nestjs/cqrs';
+import { DeleteCommentsCommentsId } from './comments/useCases/deleteCommnets-commentId';
+import { PutCommentsCommentsId } from './comments/useCases/putComments-commentId';
+import { GetCommentsCommentsId } from './comments/useCases/getComments-commentId';
+import { PutCommentsCommentsIdLikeStatus } from './comments/useCases/putComments-commentId-likeStatus';
+
+const useCaseBlogs = [GetBlogs, GetBlogsBlogId, GetBlogsBlogIdPosts];
+const useCaseComments = [
+  GetCommentsCommentsId,
+  DeleteCommentsCommentsId,
+  PutCommentsCommentsId,
+  PutCommentsCommentsIdLikeStatus,
+];
 
 @Module({
-  imports: [DatabaseModule, ConfigModule.forRoot()],
+  imports: [DatabaseModule, ConfigModule.forRoot(), CqrsModule],
   controllers: [
     AppController,
     AuthController,
@@ -46,7 +62,7 @@ import { SuperAdminController } from './superAdmin/superAdmin.controller';
     ...firstProviders,
     AppService,
     BlogsService,
-    BloggerRepository,
+    BlogsRepository,
     UsersService,
     UsersRepository,
     PostsService,
@@ -59,6 +75,8 @@ import { SuperAdminController } from './superAdmin/superAdmin.controller';
     DevicesAuthRepository,
     EmailService,
     LikesRepository,
+    ...useCaseBlogs,
+    ...useCaseComments,
   ],
   exports: [],
 })

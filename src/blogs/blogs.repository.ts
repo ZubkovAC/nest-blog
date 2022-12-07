@@ -24,7 +24,7 @@ export const bloggers = [
 ];
 
 @Injectable()
-export class BloggerRepository {
+export class BlogsRepository {
   constructor(
     @Inject('BLOGGERS_MODEL')
     private blogRepository: Model<bloggersSchema>,

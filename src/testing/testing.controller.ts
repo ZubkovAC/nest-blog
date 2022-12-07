@@ -1,7 +1,7 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { PostsRepository } from '../posts/posts.repository';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { BloggerRepository } from '../blogs/blogs.repository';
+import { BlogsRepository } from '../blogs/blogs.repository';
 import { AuthRepository } from '../auth/auth.repository';
 import { CommentsRepository } from '../comments/comments.repository';
 import { DevicesAuthRepository } from '../authDevices/devicesAuth.repository';
@@ -11,7 +11,7 @@ import { DevicesAuthRepository } from '../authDevices/devicesAuth.repository';
 export class TestingController {
   constructor(
     protected postsRepository: PostsRepository,
-    protected blogsRepository: BloggerRepository,
+    protected blogsRepository: BlogsRepository,
     protected authRepository: AuthRepository,
     protected commentsRepository: CommentsRepository,
     protected devicesAuthRepository: DevicesAuthRepository,

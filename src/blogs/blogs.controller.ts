@@ -26,6 +26,10 @@ import {
 import { Transform, TransformFnParams } from 'class-transformer';
 import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
+import { CommandBus } from '@nestjs/cqrs';
+import { GetBlogs, useGetBlogs } from './useCase/getBlogs';
+import { useGetBlogsBlogId } from './useCase/getBlogs-blogId';
+import { useGetBlogsBlogIdPosts } from './useCase/getBlogs-blogId-posts';
 
 export class InputBlogType {
   @ApiProperty()
@@ -100,7 +104,10 @@ class DTO_Blogger {
 @ApiTags('blogs')
 @Controller('blogs')
 export class BlogsController {
-  constructor(protected blogsService: BlogsService) {}
+  constructor(
+    protected blogsService: BlogsService,
+    private commandBus: CommandBus,
+  ) {}
   @Get()
   @ApiResponse({
     status: 200,
@@ -112,19 +119,21 @@ export class BlogsController {
   @ApiQuery({ name: 'searchNameTerm', required: false, type: String })
   @ApiQuery({ name: 'sortBy', required: false, type: 'asc || desc' })
   @ApiQuery({ name: 'sortDirection', required: false, type: 'params Object' })
-  async getBloggers(
+  async getBlogs(
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
     @Query('searchNameTerm') searchNameTerm: string,
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
   ) {
-    return this.blogsService.getBlogs(
-      pageNumber,
-      pageSize,
-      searchNameTerm,
-      sortBy,
-      sortDirection,
+    return this.commandBus.execute(
+      new useGetBlogs(
+        pageNumber,
+        pageSize,
+        searchNameTerm,
+        sortBy,
+        sortDirection,
+      ),
     );
   }
   @Get(':blogId')
@@ -139,7 +148,7 @@ export class BlogsController {
     description: 'Not Found',
   })
   async getBlogId(@Param('blogId') blogId: string) {
-    return this.blogsService.getBlogId(blogId);
+    return this.commandBus.execute(new useGetBlogsBlogId(blogId));
   }
 
   @Get(':blogId/posts')
@@ -188,214 +197,22 @@ export class BlogsController {
     description: 'Not Found',
   })
   async getBlogIdPosts(
-    @Param('blogId') bloggerId: string,
+    @Param('blogId') blogId: string,
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
     @Req() req: Request,
   ) {
-    const token = req.headers.authorization?.split(' ')[1];
-    let user;
-    try {
-      user = await jwt.verify(token, process.env.SECRET_KEY);
-    } catch (e) {}
-
-    return this.blogsService.getBlogIdPosts(
-      bloggerId,
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      user?.userId || '123',
+    return this.commandBus.execute(
+      new useGetBlogsBlogIdPosts(
+        req,
+        pageNumber,
+        pageSize,
+        sortBy,
+        sortDirection,
+        blogId,
+      ),
     );
   }
-
-  // @UseGuards(AuthBaseGuard)
-  // @Post()
-  // @ApiBasicAuth()
-  // @ApiBody({
-  //   schema: {
-  //     example: {
-  //       name: 'string Length(0, 15)',
-  //       description: 'string Length(0, 500)',
-  //       websiteUrl:
-  //         'string Length(0, 100) pattern ^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$\n',
-  //     },
-  //   },
-  // })
-  // @ApiResponse({
-  //   status: 201,
-  //   description: 'Returns the newly created blog',
-  //   schema: {
-  //     example: {
-  //       id: 'string',
-  //       name: 'string',
-  //       description: 'string',
-  //       websiteUrl: 'string',
-  //       createdAt: '2022-11-08T08:53:15.121Z',
-  //     },
-  //   },
-  // })
-  // @ApiResponse({
-  //   status: 400,
-  //   description: 'If the inputModel has incorrect values',
-  //   schema: {
-  //     example: {
-  //       errorsMessages: [
-  //         {
-  //           message: 'string',
-  //           field: 'string',
-  //         },
-  //       ],
-  //     },
-  //   },
-  // })
-  // @ApiResponse({
-  //   status: 401,
-  //   description: 'Unauthorized',
-  // })
-  // async createBlogger(@Body() inputBlogger: InputBlogType) {
-  //   return this.blogsService.createBlog(inputBlogger);
-  // }
-  // @Post(':blogId/posts')
-  // @ApiBasicAuth()
-  // @UseGuards(AuthBaseGuard)
-  // @UseGuards(CheckBloggerIdParamsGuard)
-  // @ApiBody({
-  //   description: 'Data for constructing new post entity',
-  //   schema: {
-  //     example: {
-  //       title: 'string @Length(0, 30)',
-  //       shortDescription: 'string @Length(0, 100)',
-  //       content: 'string @Length(0, 1000)',
-  //     },
-  //   },
-  // })
-  // @ApiResponse({
-  //   status: 201,
-  //   description: 'Returns the newly created post',
-  //   schema: {
-  //     example: {
-  //       id: 'string',
-  //       title: 'string',
-  //       shortDescription: 'string',
-  //       content: 'string',
-  //       blogId: 'string',
-  //       blogName: 'string',
-  //       createdAt: '2022-11-09T07:03:39.923Z',
-  //       extendedLikesInfo: {
-  //         likesCount: 0,
-  //         dislikesCount: 0,
-  //         myStatus: 'None',
-  //         newestLikes: [
-  //           {
-  //             addedAt: '2022-11-28T16:35:22.821Z',
-  //             userId: 'string',
-  //             login: 'string',
-  //           },
-  //         ],
-  //       },
-  //     },
-  //   },
-  // })
-  // @ApiResponse({
-  //   status: 400,
-  //   description: 'If the inputModel has incorrect values',
-  //   schema: {
-  //     example: {
-  //       errorsMessages: [
-  //         {
-  //           message: 'string',
-  //           field: 'string',
-  //         },
-  //       ],
-  //     },
-  //   },
-  // })
-  // @ApiResponse({
-  //   status: 401,
-  //   description: 'Unauthorized',
-  // })
-  // @ApiResponse({
-  //   status: 404,
-  //   description: "If specified blog doesn't exists",
-  // })
-  // async createBloggerIdPosts(
-  //   @Param('blogId') blogId: string,
-  //   @Body() valueBlogIdPost: ValueBlogIdPostType,
-  // ) {
-  //   return this.blogsService.createBlogIdPosts(blogId, valueBlogIdPost);
-  // }
-  // @ApiBasicAuth()
-  // @UseGuards(AuthBaseGuard)
-  // @UseGuards(CheckBloggerIdParamsGuard)
-  // @ApiResponse({
-  //   status: 204,
-  //   description: 'No Content',
-  // })
-  // @ApiResponse({
-  //   status: 400,
-  //   description: 'If the inputModel has incorrect values',
-  //   schema: {
-  //     example: {
-  //       errorsMessages: [
-  //         {
-  //           message: 'string',
-  //           field: 'string',
-  //         },
-  //       ],
-  //     },
-  //   },
-  // })
-  // @ApiResponse({
-  //   status: 401,
-  //   description: 'Unauthorized',
-  // })
-  // @ApiResponse({
-  //   status: 404,
-  //   description: 'Not Found',
-  // })
-  // @ApiBody({
-  //   schema: {
-  //     example: {
-  //       name: 'string maxLength: 15',
-  //       description: 'string maxLength: 500',
-  //       websiteUrl:
-  //         'string Length(0, 100) pattern ^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$\n',
-  //     },
-  //   },
-  // })
-  // @HttpCode(204)
-  // @Put(':blogId')
-  // @UseGuards(AuthBaseGuard)
-  // async updateBlogger(
-  //   @Param('blogId') blogId: string,
-  //   @Body() blogUpdate: InputBlogType,
-  // ) {
-  //   await this.blogsService.updateBlogId(blogId, blogUpdate);
-  //   return;
-  // }
-  //
-  // @ApiBasicAuth()
-  // @UseGuards(AuthBaseGuard)
-  // @UseGuards(CheckBloggerIdParamsGuard)
-  // @ApiResponse({
-  //   status: 204,
-  //   description: 'No Content',
-  // })
-  // @ApiResponse({
-  //   status: 401,
-  //   description: 'Unauthorized',
-  // })
-  // @ApiResponse({
-  //   status: 404,
-  //   description: 'Not Found',
-  // })
-  // @Delete(':blogId')
-  // @HttpCode(204)
-  // async deleteBlogger(@Param('blogId') blogId: string) {
-  //   await this.blogsService.deleteBlogId(blogId);
-  //   return;
-  // }
 }
