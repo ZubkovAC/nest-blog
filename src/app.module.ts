@@ -77,7 +77,6 @@ const allService = [
   DevicesAuthService,
   EmailService,
 ];
-
 const allRepository = [
   BlogsRepository,
   UsersRepository,
