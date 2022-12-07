@@ -107,8 +107,12 @@ export class UsersRepository {
       'accountData.userId': deleteUserId,
     });
   }
-  async banUser(userId: string, isBanned: boolean, banReason: string) {
-    const date = new Date().toISOString();
+  async banUser(
+    userId: string,
+    isBanned: boolean,
+    banReason: string,
+    date: any,
+  ) {
     await this.usersRepository.updateOne(
       { 'accountData.userId': userId },
       {

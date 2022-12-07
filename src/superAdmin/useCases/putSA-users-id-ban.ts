@@ -30,7 +30,7 @@ export class PutSAUserIdBan implements ICommandHandler<usePutSAUserIdBan> {
       date = null;
       banReason = null;
     }
-    await this.usersRepository.banUser(id, banValue.isBanned, banReason);
+    await this.usersRepository.banUser(id, banValue.isBanned, banReason, date);
     await this.blogsService.banned(user.accountData.userId, banValue.isBanned);
     await this.postsService.banned(user.accountData.userId, banValue.isBanned);
     await this.commentsService.banned(
