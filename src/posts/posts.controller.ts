@@ -32,6 +32,15 @@ import { AuthBearerGuard } from '../guards/AuthBearer.guard';
 import { Request } from 'express';
 import { BlogsService } from '../blogs/blogs.service';
 import * as jwt from 'jsonwebtoken';
+import { CommandBus } from '@nestjs/cqrs';
+import { useGetPostsPostId } from './useCases/getPosts-PostId';
+import { useGetPosts } from './useCases/getPosts';
+import { useGetPostsPostIdComments } from './useCases/getPosts-postId-comments';
+import {
+  GetPostsPostIdComments,
+  usePostPostsPostIdComments,
+} from './useCases/postPosts-postId-comments';
+import { usePutPostsPostIdLikeStatus } from './useCases/putPosts-postId-likeStatus';
 
 export class BodyCreatePostType {
   @ApiProperty()
@@ -140,6 +149,7 @@ class DTO_Posts {
 @Controller('posts')
 export class PostsController {
   constructor(
+    protected commandBus: CommandBus,
     protected postsService: PostsService,
     protected blogsService: BlogsService,
     protected commentsService: CommentsService, // protected userRepository: UsersRepository,
@@ -192,18 +202,21 @@ export class PostsController {
     @Query('sortDirection') sortDirection: string,
     @Req() req: Request,
   ) {
-    const token = req.headers.authorization?.split(' ')[1];
-    let userId;
-    try {
-      userId = jwt.verify(token, process.env.SECRET_KEY);
-    } catch (e) {}
-    return this.postsService.getPosts(
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      userId?.userId || '123',
+    return this.commandBus.execute(
+      new useGetPosts(req, pageNumber, pageSize, sortBy, sortDirection),
     );
+    // const token = req.headers.authorization?.split(' ')[1];
+    // let userId;
+    // try {
+    //   userId = jwt.verify(token, process.env.SECRET_KEY);
+    // } catch (e) {}
+    // return this.postsService.getPosts(
+    //   pageNumber,
+    //   pageSize,
+    //   sortBy,
+    //   sortDirection,
+    //   userId?.userId || '123',
+    // );
   }
 
   @Get(':id')
@@ -240,22 +253,23 @@ export class PostsController {
     description: 'Not Found',
   })
   async getPostId(@Param('id') postId: string, @Req() req: Request) {
-    const token = req.headers.authorization?.split(' ')[1];
-    let userId;
-    try {
-      userId = jwt.verify(token, process.env.SECRET_KEY);
-    } catch (e) {}
-    const post = await this.postsService.getPostId(
-      postId,
-      userId?.userId || '123',
-    );
-    if (!post) {
-      throw new HttpException(
-        { message: ['postId NOT_FOUND '] },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return post;
+    return this.commandBus.execute(new useGetPostsPostId(req, postId));
+    // const token = req.headers.authorization?.split(' ')[1];
+    // let userId;
+    // try {
+    //   userId = jwt.verify(token, process.env.SECRET_KEY);
+    // } catch (e) {}
+    // const post = await this.postsService.getPostId(
+    //   postId,
+    //   userId?.userId || '123',
+    // );
+    // if (!post) {
+    //   throw new HttpException(
+    //     { message: ['postId NOT_FOUND '] },
+    //     HttpStatus.NOT_FOUND,
+    //   );
+    // }
+    // return post;
   }
 
   @Get(':postId/comments') // need fix
@@ -301,26 +315,36 @@ export class PostsController {
     @Query('sortDirection') sortDirection: string,
     @Req() req: Request,
   ) {
-    const token = req.headers.authorization?.split(' ')[1];
-    let userId;
-    try {
-      userId = await jwt.verify(token, process.env.SECRET_KEY);
-    } catch (e) {}
-    const post = await this.postsService.getPostId(postId, '123');
-    if (!post) {
-      throw new HttpException(
-        { message: ['postId NOT_FOUND '] },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return this.postsService.getPostIdComments(
-      postId,
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      userId?.userId || '333',
+    return this.commandBus.execute(
+      new useGetPostsPostIdComments(
+        req,
+        postId,
+        pageNumber,
+        pageSize,
+        sortBy,
+        sortDirection,
+      ),
     );
+    // const token = req.headers.authorization?.split(' ')[1];
+    // let userId;
+    // try {
+    //   userId = await jwt.verify(token, process.env.SECRET_KEY);
+    // } catch (e) {}
+    // const post = await this.postsService.getPostId(postId, '123');
+    // if (!post) {
+    //   throw new HttpException(
+    //     { message: ['postId NOT_FOUND '] },
+    //     HttpStatus.NOT_FOUND,
+    //   );
+    // }
+    // return this.postsService.getPostIdComments(
+    //   postId,
+    //   pageNumber,
+    //   pageSize,
+    //   sortBy,
+    //   sortDirection,
+    //   userId?.userId || '333',
+    // );
   }
 
   // @Post()
@@ -475,29 +499,32 @@ export class PostsController {
     @Body('content') content: string,
     @Req() req: Request,
   ) {
-    const post = await this.postsService.getPostId(postId, '123');
-    if (!post) {
-      throw new HttpException(
-        { message: ['postId NOT_FOUND '] },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    if (
-      !content?.trim() ||
-      content.trim().length < 20 ||
-      content.trim().length > 300
-    ) {
-      throw new HttpException(
-        { message: ['content length > 20 && length  < 300'] },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const token: any = req.headers.authorization;
-    return await this.commentsService.createCommentIdPost(
-      postId,
-      content,
-      token,
+    return this.commandBus.execute(
+      new usePostPostsPostIdComments(req, postId, content),
     );
+    // const post = await this.postsService.getPostId(postId, '123');
+    // if (!post) {
+    //   throw new HttpException(
+    //     { message: ['postId NOT_FOUND '] },
+    //     HttpStatus.NOT_FOUND,
+    //   );
+    // }
+    // if (
+    //   !content?.trim() ||
+    //   content.trim().length < 20 ||
+    //   content.trim().length > 300
+    // ) {
+    //   throw new HttpException(
+    //     { message: ['content length > 20 && length  < 300'] },
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
+    // const token: any = req.headers.authorization;
+    // return await this.commentsService.createCommentIdPost(
+    //   postId,
+    //   content,
+    //   token,
+    // );
   }
 
   // @Put(':id')
@@ -633,35 +660,38 @@ export class PostsController {
     @Param('postId') postId: string,
     @Req() req: Request,
   ) {
-    const post = await this.postsService.getPostId(postId, '123');
-    if (!post) {
-      throw new HttpException(
-        { message: 'post not found' },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    const token = req.headers.authorization?.split(' ')[1];
-    let user;
-    try {
-      user = jwt.verify(token, process.env.SECRET_KEY);
-    } catch (e) {}
-    if (
-      likeStatus !== 'None' &&
-      likeStatus !== 'Like' &&
-      likeStatus !== 'Dislike'
-    ) {
-      throw new HttpException(
-        { message: ['likeStatus only Like, Dislike, None'] },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    await this.postsService.likeStatusPost(
-      postId,
-      user.userId,
-      user.login,
-      likeStatus,
+    return this.commandBus.execute(
+      new usePutPostsPostIdLikeStatus(req, postId, likeStatus),
     );
-    return;
+    // const post = await this.postsService.getPostId(postId, '123');
+    // if (!post) {
+    //   throw new HttpException(
+    //     { message: 'post not found' },
+    //     HttpStatus.NOT_FOUND,
+    //   );
+    // }
+    // const token = req.headers.authorization?.split(' ')[1];
+    // let user;
+    // try {
+    //   user = jwt.verify(token, process.env.SECRET_KEY);
+    // } catch (e) {}
+    // if (
+    //   likeStatus !== 'None' &&
+    //   likeStatus !== 'Like' &&
+    //   likeStatus !== 'Dislike'
+    // ) {
+    //   throw new HttpException(
+    //     { message: ['likeStatus only Like, Dislike, None'] },
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
+    // await this.postsService.likeStatusPost(
+    //   postId,
+    //   user.userId,
+    //   user.login,
+    //   likeStatus,
+    // );
+    // return;
   }
 
   // @Delete(':id')

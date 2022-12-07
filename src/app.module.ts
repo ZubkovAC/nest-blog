@@ -35,13 +35,58 @@ import { DeleteCommentsCommentsId } from './comments/useCases/deleteCommnets-com
 import { PutCommentsCommentsId } from './comments/useCases/putComments-commentId';
 import { GetCommentsCommentsId } from './comments/useCases/getComments-commentId';
 import { PutCommentsCommentsIdLikeStatus } from './comments/useCases/putComments-commentId-likeStatus';
+import { GetSecurityDevices } from './authDevices/useCases/getSecurity-devices';
+import { DelSecurityDevices } from './authDevices/useCases/delSecurity-devices';
+import { DelSecurityDevicesDevicesId } from './authDevices/useCases/delSeciryty-devices-devicesId';
+import { GetPosts } from './posts/useCases/getPosts';
+import { GetPostsPostId } from './posts/useCases/getPosts-PostId';
+import { PostPostsPostIdComments } from './posts/useCases/postPosts-postId-comments';
+import { PutPostsPostIdLikeStatus } from './posts/useCases/putPosts-postId-likeStatus';
+import { GetPostsPostIdComments } from './posts/useCases/getPosts-postId-comments';
 
-const useCaseBlogs = [GetBlogs, GetBlogsBlogId, GetBlogsBlogIdPosts];
+const useCasesBlogs = [GetBlogs, GetBlogsBlogId, GetBlogsBlogIdPosts];
+
 const useCaseComments = [
   GetCommentsCommentsId,
   DeleteCommentsCommentsId,
   PutCommentsCommentsId,
   PutCommentsCommentsIdLikeStatus,
+];
+
+const useCasesSecurityDevices = [
+  GetSecurityDevices,
+  DelSecurityDevices,
+  DelSecurityDevicesDevicesId,
+];
+
+const useCasesPosts = [
+  GetPosts,
+  GetPostsPostId,
+  GetPostsPostIdComments,
+  PostPostsPostIdComments,
+  PutPostsPostIdLikeStatus,
+];
+
+const allService = [
+  AppService,
+  BlogsService,
+  UsersService,
+  PostsService,
+  CommentsService,
+  AuthService,
+  DevicesAuthService,
+  EmailService,
+];
+
+const allRepository = [
+  BlogsRepository,
+  UsersRepository,
+  PostsRepository,
+  CommentsRepository,
+  CommentsService,
+  AuthRepository,
+  DevicesAuthRepository,
+  LikesRepository,
 ];
 
 @Module({
@@ -60,23 +105,12 @@ const useCaseComments = [
   ],
   providers: [
     ...firstProviders,
-    AppService,
-    BlogsService,
-    BlogsRepository,
-    UsersService,
-    UsersRepository,
-    PostsService,
-    PostsRepository,
-    CommentsService,
-    CommentsRepository,
-    AuthService,
-    AuthRepository,
-    DevicesAuthService,
-    DevicesAuthRepository,
-    EmailService,
-    LikesRepository,
-    ...useCaseBlogs,
+    ...allService,
+    ...allRepository,
+    ...useCasesBlogs,
     ...useCaseComments,
+    ...useCasesSecurityDevices,
+    ...useCasesPosts,
   ],
   exports: [],
 })
