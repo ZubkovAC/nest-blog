@@ -81,8 +81,8 @@ export class BlogsService {
       login,
     );
   }
-  async getBlogId(bloggerId: string) {
-    return this.blogsRepository.findBlogId(bloggerId);
+  async getBlogId(blogId: string) {
+    return this.blogsRepository.findBlogId(blogId);
   }
   async getBlogIdSA(bloggerId: string) {
     return this.blogsRepository.findBlogIdSA(bloggerId);
