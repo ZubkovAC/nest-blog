@@ -26,7 +26,8 @@ export class PostBloggersBlogsBlogIdPosts
     const { req, createPost, blogId } = command;
     const token = req.headers.authorization.split(' ')[1];
     const user: any = await jwt.verify(token, process.env.SECRET_KEY);
-    const blog = await this.blogsService.getBlogId(blogId);
+
+    const blog = await this.blogsService.findBlogIdAll(blogId);
     if (!blog) {
       throw new HttpException(
         { message: ['not found postId'] },

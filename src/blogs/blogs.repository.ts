@@ -172,6 +172,25 @@ export class BlogsRepository {
     }
     return blog;
   }
+  async findBlogIdAll(blogId: string) {
+    const blog = await this.blogRepository
+      .findOne(
+        {
+          $and: [
+            { id: blogId },
+            {
+              'blogOwnerInfo.isBanned': false,
+            },
+          ],
+        },
+        '-_id -__v',
+      )
+      .exec();
+    if (!blog) {
+      throw new HttpException({ message: ['not found'] }, HttpStatus.NOT_FOUND);
+    }
+    return blog;
+  }
   async findBlogIdSA(blogId: string) {
     const blog = await this.blogRepository
       .findOne(
