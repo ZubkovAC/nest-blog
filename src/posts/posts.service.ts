@@ -28,6 +28,9 @@ export class PostsService {
   async getPostId(postId: string, userId: string) {
     return this.postsRepository.getPostId(postId, userId);
   }
+  async getPostIdAllData(postId: string, userId: string) {
+    return this.postsRepository.getPostIdMainData(postId, userId);
+  }
   async getPostIdComments(
     postId: string,
     pageNumber: string,

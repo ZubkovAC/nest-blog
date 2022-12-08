@@ -295,9 +295,10 @@ export class BloggerController {
   async deleteBloggerPost(
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
+    @Req() req: Request,
   ) {
     await this.commandBus.execute(
-      new useDelBloggersBlogsBlogIdPostsPostId(postId, blogId),
+      new useDelBloggersBlogsBlogIdPostsPostId(postId, blogId, req),
     );
     return;
     // await this.postsService.deletePostId(postId);

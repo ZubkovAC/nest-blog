@@ -134,6 +134,27 @@ export class PostsRepository {
       },
     };
   }
+  async getPostIdMainData(postId: string, userId: string) {
+    const post = await this.postsRepository.findOne(
+      {
+        $and: [{ id: postId }, { isBanned: false }],
+      },
+      '-_id -__v',
+    );
+    if (!post) {
+      return null;
+    }
+    return {
+      id: post.id,
+      title: post.title,
+      shortDescription: post.shortDescription,
+      content: post.content,
+      blogId: post.blogId,
+      blogName: post.blogName,
+      userId: post.userId,
+      createdAt: post.createdAt,
+    };
+  }
   async getPostIdComments(
     postId: string,
     pageNumber: number,
