@@ -280,9 +280,10 @@ export class BloggerController {
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
     @Body() blogUpdate: blogUpdateValue,
+    @Req() req: Request,
   ) {
     await this.commandBus.execute(
-      new usePutBloggersBlogsBlogIdPostsPostId(blogId, postId, blogUpdate),
+      new usePutBloggersBlogsBlogIdPostsPostId(blogId, postId, blogUpdate, req),
     );
     return;
     // await this.blogsService.updateBlogIdPostId(blogId, postId, blogUpdate);
