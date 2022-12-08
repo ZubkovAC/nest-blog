@@ -55,6 +55,15 @@ import { DelBloggersBlogsBlogId } from './blogger/useCases/delBlogger-blogs-blog
 import { PostBloggersBlogsBlogIdPosts } from './blogger/useCases/postBlogger-blogs-blogId-posts';
 import { PutBloggersBlogsBlogIdPostsPostId } from './blogger/useCases/putBlogger-blogs-blogId-posts-postId';
 import { DelBloggersBlogsBlogIdPostPostId } from './blogger/useCases/delBlogger-blogs-blogId-posts-postId';
+import { GetAuthMe } from './auth/useCases/getAuth-Me';
+import { PostAuthLogin } from './auth/useCases/postAuth-Login';
+import { PostAuthLogout } from './auth/useCases/postAuth-Logout';
+import { PostAuthRegistrationConfirmation } from './auth/useCases/postAuth-RegistrationConfirmation';
+import { PostAuthRegistration } from './auth/useCases/postAuth-Registration';
+import { PostAuthRefreshToken } from './auth/useCases/postAuth-RefreshToken';
+import { PostAuthPasswordRecovery } from './auth/useCases/postAuth-PasswordRecovery';
+import { PostAuthNewPassword } from './auth/useCases/postAuth-NewPassword';
+import { PostAuthRegistrationEmailResending } from './auth/useCases/postAuth-RegistrationEmailResenging';
 
 const useCasesBlogs = [GetBlogs, GetBlogsBlogId, GetBlogsBlogIdPosts];
 
@@ -93,6 +102,17 @@ const useCasesBlogger = [
   PostBloggersBlogsBlogIdPosts,
   PutBloggersBlogsBlogIdPostsPostId,
   DelBloggersBlogsBlogIdPostPostId,
+];
+const useCasesAuth = [
+  GetAuthMe,
+  PostAuthLogin,
+  PostAuthLogout,
+  PostAuthNewPassword,
+  PostAuthPasswordRecovery,
+  PostAuthRefreshToken,
+  PostAuthRegistration,
+  PostAuthRegistrationConfirmation,
+  PostAuthRegistrationEmailResending,
 ];
 
 const allService = [
@@ -140,6 +160,7 @@ const allRepository = [
     ...useCasesPosts,
     ...useCasesSuperAdmin,
     ...useCasesBlogger,
+    ...useCasesAuth,
   ],
   exports: [],
 })
