@@ -31,6 +31,10 @@ export class PutBloggerUserIdBan
         HttpStatus.BAD_REQUEST,
       );
     }
+    if (blog.blogOwnerInfo.userId !== blogger.userId) {
+      throw new HttpException({ message: ['FORBIDDEN'] }, HttpStatus.FORBIDDEN);
+    }
+
     return this.blogsService.updateBannedUserId(
       id,
       isBanned,

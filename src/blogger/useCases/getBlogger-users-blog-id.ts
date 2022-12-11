@@ -24,6 +24,7 @@ export class GetBloggerUserBlogIdBan
     const { req, pageNumber, pageSize, sortBy, sortDirection } = command;
     const token = req.headers?.authorization.split(' ')[1];
     const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
+
     return this.blogsService.getBlogsUsersBan(
       pageNumber,
       pageSize,

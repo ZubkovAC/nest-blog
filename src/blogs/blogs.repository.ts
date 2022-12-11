@@ -149,6 +149,11 @@ export class BlogsRepository {
       'blogOwnerInfo.userLogin': login,
     });
     const skipCount = (pageNumber - 1) * pageSize;
+
+    const allComments = await this.commentsRepository.find({
+      'blogOwnerInfo.userLogin': login,
+    });
+
     const comments = await this.commentsRepository
       .find({
         'blogOwnerInfo.userLogin': login,
@@ -161,10 +166,10 @@ export class BlogsRepository {
       userId: userId,
     });
     return {
-      pagesCount: Math.ceil(comments.length || 0 / pageSize),
+      pagesCount: Math.ceil(allComments.length / pageSize) || 0,
       page: pageNumber,
       pageSize: pageSize,
-      totalCount: comments.length || 0,
+      totalCount: allComments.length || 0,
       items: comments.map((c) => ({
         id: c.id,
         content: c.content,
@@ -228,6 +233,13 @@ export class BlogsRepository {
     // const posts = await this.postsRepository.find({
     //   userId: userId,
     // });
+
+    if (!blogger) {
+      throw new HttpException(
+        { message: ['blogId not found'] },
+        HttpStatus.NOT_FOUND,
+      );
+    }
 
     const bloggerSort = blogger.banUsers.map((b) => ({
       id: b.id,
@@ -460,7 +472,10 @@ export class BlogsRepository {
         { $and: [{ id: blogId }, { 'banUsers.id': userId }] },
         {
           $unset: {
-            'banUsers.$': { id: '', login: '', banInfo: {} },
+            // 'banUsers.$.banInfo': { isBanned: '', banDate: '', banReason: '' },
+            'banUsers.$.id': '',
+            'banUsers.$.login': '',
+            'banUsers.$.banInfo': '',
           },
         },
       );
