@@ -15,7 +15,7 @@ export class PutSABlogsIdBan implements ICommandHandler<usePutSABlogsIdBan> {
   ) {}
   async execute(command: usePutSABlogsIdBan) {
     const { id, isBanned } = command;
-    const blog = await this.blogsService.findBlogId(id);
+    const blog = await this.blogsService.findBlogIdSA(id);
     if (!blog) {
       throw new HttpException(
         { message: ['blogId not found'] },
