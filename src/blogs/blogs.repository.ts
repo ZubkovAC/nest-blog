@@ -102,9 +102,9 @@ export class BlogsRepository {
                 $options: 'i',
               },
             },
-            {
-              'blogOwnerInfo.isBanned': false,
-            },
+            // {
+            //   'blogOwnerInfo.isBanned': false,
+            // },
           ],
         },
         '-_id -__v -banUsers',
@@ -393,7 +393,7 @@ export class BlogsRepository {
         { $and: [{ id: blogId }, { 'banUsers.id': userId }] },
         {
           $unset: {
-            'banUsers.$': { id: '', login: '', banInfo: '' },
+            'banUsers.$': { id: '', login: '', banInfo: {} },
           },
         },
       );
