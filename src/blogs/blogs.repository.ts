@@ -247,8 +247,8 @@ export class BlogsRepository {
       items: bloggerSort
         .sort((a, b) => {
           // a[sort] - b[sort]
-          if (a[sort] < b[sort]) return sortDirection;
-          if (a[sort] > b[sort]) return -sortDirection;
+          if (a[sort] < b[sort]) return -sortDirection;
+          if (a[sort] > b[sort]) return sortDirection;
           return 0;
         })
         .slice(skipCount, pageSize),
