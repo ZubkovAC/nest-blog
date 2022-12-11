@@ -23,7 +23,7 @@ export class GetPostsPostId implements ICommandHandler<useGetPostsPostId> {
       postId,
       userId?.userId || '123',
     );
-    if (!post || post) {
+    if (!post) {
       throw new HttpException(
         { message: ['postId NOT_FOUND '] },
         HttpStatus.NOT_FOUND,

@@ -160,7 +160,7 @@ export class BlogsRepository {
     const posts = await this.postsRepository.find({
       userId: userId,
     });
-
+    console.log('comments', comments);
     return {
       pagesCount: Math.ceil(comments.length || 0 / pageSize),
       page: pageNumber,
@@ -194,7 +194,7 @@ export class BlogsRepository {
         },
         postInfo: {
           id: c.idPostComment,
-          title: posts.find((p) => p.id === c.idPostComment).title, // need post
+          title: posts.find((p) => p.id === c.idPostComment)?.title || 'hello', // need post
           blogId: blogger.id,
           blogName: blogger.name,
         },
