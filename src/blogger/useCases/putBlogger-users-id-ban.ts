@@ -31,7 +31,6 @@ export class PutBloggerUserIdBan
         HttpStatus.BAD_REQUEST,
       );
     }
-
     return this.blogsService.updateBannedUserId(
       id,
       isBanned,

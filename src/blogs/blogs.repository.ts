@@ -356,6 +356,12 @@ export class BlogsRepository {
   }
   async bannedForId(id: string, isBanned: boolean) {
     const date = new Date().toISOString();
+
+    await this.postsRepository.updateMany(
+      { blogId: id },
+      { isBanned: isBanned },
+    );
+
     return this.blogRepository.updateOne(
       { id: id },
       { 'blogOwnerInfo.isBanned': isBanned, 'blogOwnerInfo.banDate': date },
@@ -372,18 +378,21 @@ export class BlogsRepository {
     const login = await this.usersRepository.findOne({
       'accountData.userId': userId,
     });
+
     const date = new Date().toISOString();
     if (!findUser) {
-      await this.blogRepository.updateOne(
+      return this.blogRepository.updateOne(
         { id: blogId },
         {
           $push: {
-            id: userId,
-            login: login.accountData.login, // need login
-            banInfo: {
-              isBanned: isBanned,
-              banDate: date,
-              banReason: banReason,
+            banUsers: {
+              id: userId,
+              login: login.accountData.login, // need login
+              banInfo: {
+                isBanned: isBanned,
+                banDate: date,
+                banReason: banReason,
+              },
             },
           },
         },

@@ -312,6 +312,7 @@ export class BloggerController {
     );
   }
 
+  @HttpCode(204)
   @UseGuards(AuthBearerGuard)
   @Put('users/:id/ban')
   banUser(
