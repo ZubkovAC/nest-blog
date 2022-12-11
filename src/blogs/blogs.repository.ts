@@ -240,11 +240,18 @@ export class BlogsRepository {
     }));
 
     return {
-      pagesCount: Math.ceil(blogger.banUsers.length || 0 / pageSize),
+      pagesCount: Math.ceil(blogger.banUsers.length / pageSize) || 0,
       page: pageNumber,
       pageSize: pageSize,
       totalCount: blogger.banUsers.length || 0,
-      items: bloggerSort,
+      items: bloggerSort
+        .sort((a, b) => {
+          // a[sort] - b[sort]
+          if (a[sort] < b[sort]) return sortDirection;
+          if (a[sort] > b[sort]) return -sortDirection;
+          return 0;
+        })
+        .slice(skipCount, pageSize),
     };
   }
 

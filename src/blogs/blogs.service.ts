@@ -9,6 +9,7 @@ import {
   sortBlogValidation,
   termValidate,
   sortPostsValidation,
+  sortBlogBan,
 } from '../query/query';
 import { PostsRepository } from '../posts/posts.repository';
 import { blogUpdateValue } from '../blogger/blogger.controller';
@@ -112,7 +113,7 @@ export class BlogsService {
   ) {
     const pNumber = pageNumberValidate(pageNumber);
     const pSize = pageSizeValidate(pageSize);
-    const sortV = sortBlogValidation(sort);
+    const sortV = sortBlogBan(sort);
     const sortD = sortDirectionValidation(sortDirection);
     return this.blogsRepository.getBlogsUsersBan(
       pNumber,

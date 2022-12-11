@@ -19,6 +19,16 @@ export const sortBlogValidation = (sort: string) => {
       return 'createdAt';
   }
 };
+export const sortBlogBan = (sort: string) => {
+  switch (sort) {
+    case 'login':
+      return 'login';
+    case 'id':
+      return 'id';
+    default:
+      return 'id';
+  }
+};
 export const sortUserValidation = (sort: string) => {
   switch (sort) {
     case 'userId':
