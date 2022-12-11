@@ -35,11 +35,8 @@ import { useDelBloggersBlogsBlogIdPostsPostId } from './useCases/delBlogger-blog
 import { usePutBloggersBlogsBlogIdPostsPostId } from './useCases/putBlogger-blogs-blogId-posts-postId';
 import { usePutBloggersBlogsBlogId } from './useCases/putBlogger-blogs-blogId';
 import { useGetBloggersComments } from './useCases/getBlogger-blogs-comments';
-import { useGetBloggerUserBlogId } from './useCases/getBlogger-users-blog-id';
-import {
-  PutBloggerUserIdBan,
-  usePutBloggerUserIdBan,
-} from './useCases/putBlogger-users-id-ban';
+import { useGetBloggerUserBlogIdBan } from './useCases/getBlogger-users-blog-id';
+import { usePutBloggerUserIdBan } from './useCases/putBlogger-users-id-ban';
 
 export class blogUpdateValue {
   @ApiProperty()
@@ -293,21 +290,21 @@ export class BloggerController {
   getUserBan(
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
-    @Query('searchNameTerm') searchNameTerm: string,
+    @Query('searchLoginTerm') searchLoginTerm: string,
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
     @Param('id') id: string,
     @Req() req: Request,
   ) {
     return this.commandBus.execute(
-      new useGetBloggerUserBlogId(
+      new useGetBloggerUserBlogIdBan(
         id,
         req,
         pageNumber,
         pageSize,
         sortBy,
         sortDirection,
-        searchNameTerm,
+        searchLoginTerm,
       ),
     );
   }

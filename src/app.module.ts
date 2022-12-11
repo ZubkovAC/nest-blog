@@ -65,7 +65,7 @@ import { PostAuthPasswordRecovery } from './auth/useCases/postAuth-PasswordRecov
 import { PostAuthNewPassword } from './auth/useCases/postAuth-NewPassword';
 import { PostAuthRegistrationEmailResending } from './auth/useCases/postAuth-RegistrationEmailResenging';
 import { GetBloggersComments } from './blogger/useCases/getBlogger-blogs-comments';
-import { GetBloggerUserBlogId } from './blogger/useCases/getBlogger-users-blog-id';
+import { GetBloggerUserBlogIdBan } from './blogger/useCases/getBlogger-users-blog-id';
 import { PutBloggerUserIdBan } from './blogger/useCases/putBlogger-users-id-ban';
 import { PutSABlogsIdBan } from './superAdmin/useCases/putSA-blogs-id-ban';
 
@@ -102,7 +102,7 @@ const useCasesSuperAdmin = [
 const useCasesBlogger = [
   GetBloggersBlogs,
   GetBloggersComments,
-  GetBloggerUserBlogId,
+  GetBloggerUserBlogIdBan,
   PostBloggersBlogs,
   PutBloggerUserIdBan,
   PutBloggersBlogsBlogId,

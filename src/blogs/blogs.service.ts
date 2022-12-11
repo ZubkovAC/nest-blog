@@ -102,6 +102,27 @@ export class BlogsService {
       userId,
     );
   }
+  async getBlogsUsersBan(
+    pageNumber: string,
+    pageSize: string,
+    sort: string,
+    sortDirection: string,
+    login: string,
+    userId: string,
+  ) {
+    const pNumber = pageNumberValidate(pageNumber);
+    const pSize = pageSizeValidate(pageSize);
+    const sortV = sortBlogValidation(sort);
+    const sortD = sortDirectionValidation(sortDirection);
+    return this.blogsRepository.getBlogsUsersBan(
+      pNumber,
+      pSize,
+      sortV,
+      sortD,
+      login,
+      userId,
+    );
+  }
   async getBlogId(blogId: string) {
     return this.blogsRepository.findBlogId(blogId);
   }

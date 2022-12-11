@@ -160,7 +160,6 @@ export class BlogsRepository {
     const posts = await this.postsRepository.find({
       userId: userId,
     });
-    console.log('comments', comments);
     return {
       pagesCount: Math.ceil(comments.length || 0 / pageSize),
       page: pageNumber,
@@ -199,6 +198,53 @@ export class BlogsRepository {
           blogName: blogger.name,
         },
       })),
+    };
+  }
+  async getBlogsUsersBan(
+    pageNumber: number,
+    pageSize: number,
+    sort: any,
+    sortDirection: any,
+    login: string,
+    userId: string,
+  ) {
+    const skipCount = (pageNumber - 1) * pageSize;
+    const blogger = await this.blogRepository
+      .findOne({
+        'blogOwnerInfo.userLogin': login,
+      })
+      .sort({ [sort]: sortDirection })
+      .skip(skipCount)
+      .limit(pageSize);
+
+    // const comments = await this.commentsRepository
+    //   .find({
+    //     'blogOwnerInfo.userLogin': login,
+    //   })
+    //   .sort({ [sort]: sortDirection })
+    //   .skip(skipCount)
+    //   .limit(pageSize)
+    //   .lean();
+    // const posts = await this.postsRepository.find({
+    //   userId: userId,
+    // });
+
+    const bloggerSort = blogger.banUsers.map((b) => ({
+      id: b.id,
+      login: b.login,
+      banInfo: {
+        isBanned: b.banInfo.isBanned,
+        banDate: b.banInfo.banDate,
+        banReason: b.banInfo.banReason,
+      },
+    }));
+
+    return {
+      pagesCount: Math.ceil(blogger.banUsers.length || 0 / pageSize),
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount: blogger.banUsers.length || 0,
+      items: bloggerSort,
     };
   }
 
@@ -373,12 +419,17 @@ export class BlogsRepository {
     banReason: string,
     blogId: string,
   ) {
-    const blog = await this.blogRepository.findOne({ id: blogId });
-    const findUser = blog.banUsers.find((b) => b.id === userId);
     const login = await this.usersRepository.findOne({
       'accountData.userId': userId,
     });
-
+    if (!login) {
+      throw new HttpException(
+        { message: ['not found user'] },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const blog = await this.blogRepository.findOne({ id: blogId });
+    const findUser = blog.banUsers.find((b) => b.id === userId);
     const date = new Date().toISOString();
     if (!findUser) {
       return this.blogRepository.updateOne(

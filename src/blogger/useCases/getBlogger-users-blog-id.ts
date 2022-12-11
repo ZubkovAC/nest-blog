@@ -3,7 +3,7 @@ import * as jwt from 'jsonwebtoken';
 import { Request } from 'express';
 import { BlogsService } from '../../blogs/blogs.service';
 
-export class useGetBloggerUserBlogId {
+export class useGetBloggerUserBlogIdBan {
   constructor(
     public id: string,
     public req: Request,
@@ -14,17 +14,17 @@ export class useGetBloggerUserBlogId {
     public searchLoginTerm: string,
   ) {}
 }
-// for banned user - blog
-@CommandHandler(useGetBloggerUserBlogId)
-export class GetBloggerUserBlogId
-  implements ICommandHandler<useGetBloggerUserBlogId>
+// for banned user - blogs
+@CommandHandler(useGetBloggerUserBlogIdBan)
+export class GetBloggerUserBlogIdBan
+  implements ICommandHandler<useGetBloggerUserBlogIdBan>
 {
   constructor(private blogsService: BlogsService) {}
-  async execute(command: useGetBloggerUserBlogId) {
+  async execute(command: useGetBloggerUserBlogIdBan) {
     const { req, pageNumber, pageSize, sortBy, sortDirection } = command;
     const token = req.headers?.authorization.split(' ')[1];
     const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
-    return this.blogsService.getBlogsComments(
+    return this.blogsService.getBlogsUsersBan(
       pageNumber,
       pageSize,
       sortBy,
