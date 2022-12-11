@@ -145,6 +145,12 @@ export class BlogsRepository {
     login: string,
     userId: string,
   ) {
+    const posts = await this.postsRepository.find({
+      userId: userId,
+    });
+    // if(!posts){
+    //   throw new HttpException({message:['']})
+    // }
     const blogger = await this.blogRepository.findOne({
       'blogOwnerInfo.userLogin': login,
     });
@@ -162,9 +168,7 @@ export class BlogsRepository {
       .skip(skipCount)
       .limit(pageSize)
       .lean();
-    const posts = await this.postsRepository.find({
-      userId: userId,
-    });
+
     return {
       pagesCount: Math.ceil(allComments.length / pageSize) || 0,
       page: pageNumber,
