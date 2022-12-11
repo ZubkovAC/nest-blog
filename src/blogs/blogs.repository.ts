@@ -245,15 +245,17 @@ export class BlogsRepository {
       );
     }
 
-    const bloggerSort = blogger.banUsers.map((b) => ({
-      id: b.id,
-      login: b.login,
-      banInfo: {
-        isBanned: b.banInfo.isBanned,
-        banDate: b.banInfo.banDate,
-        banReason: b.banInfo.banReason,
-      },
-    }));
+    const bloggerSort = blogger.banUsers
+      .map((b) => ({
+        id: b.id,
+        login: b.login,
+        banInfo: {
+          isBanned: b.banInfo.isBanned,
+          banDate: b.banInfo.banDate,
+          banReason: b.banInfo.banReason,
+        },
+      }))
+      .filter((f) => f.banInfo.isBanned !== false);
 
     return {
       pagesCount: Math.ceil(blogger.banUsers.length / pageSize) || 0,
