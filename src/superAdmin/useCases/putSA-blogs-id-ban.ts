@@ -17,7 +17,10 @@ export class PutSABlogsIdBan implements ICommandHandler<usePutSABlogsIdBan> {
     const { id, isBanned } = command;
     const blog = await this.blogsService.findBlogId(id);
     if (!blog) {
-      throw new HttpException({ message: ['blogId'] }, HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        { message: ['blogId not found'] },
+        HttpStatus.NOT_FOUND,
+      );
     }
     let date = new Date().toISOString();
     if (!isBanned) {

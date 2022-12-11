@@ -24,7 +24,7 @@ export class PutBloggerUserIdBan
     const token = req.headers?.authorization.split(' ')[1];
     const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
 
-    const blog = await this.blogsService.getBlogId(blogId);
+    const blog = await this.blogsService.getBlogIdSA(blogId);
     if (!blog) {
       throw new HttpException(
         { message: ['blogIs not found'] },

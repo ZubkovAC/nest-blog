@@ -282,12 +282,7 @@ export class BlogsRepository {
     const blog = await this.blogRepository
       .findOne(
         {
-          $and: [
-            { id: blogId },
-            {
-              'blogOwnerInfo.isBanned': false,
-            },
-          ],
+          $and: [{ id: blogId }],
         },
         '-_id -__v',
       )
@@ -360,9 +355,10 @@ export class BlogsRepository {
     );
   }
   async bannedForId(id: string, isBanned: boolean) {
+    const date = new Date().toISOString();
     return this.blogRepository.updateOne(
       { id: id },
-      { 'blogOwnerInfo.isBanned': isBanned },
+      { 'blogOwnerInfo.isBanned': isBanned, 'blogOwnerInfo.banDate': date },
     );
   }
   async updateBannedUser(
