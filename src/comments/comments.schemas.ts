@@ -15,7 +15,6 @@ export const CommentsSchema = new mongoose.Schema({
       login: String,
       myStatus: String,
       isBanned: Boolean,
-      // myStatus: "None" || "Like" || "Dislike",
     },
   ],
 });
@@ -35,7 +34,6 @@ export interface commentsSchemaInterface {
       login: string;
       myStatus: string;
       isBanned: boolean;
-      // myStatus: "None" || "Like" || "Dislike",
     },
   ];
 }

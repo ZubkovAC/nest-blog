@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BlogsRepository } from './blogs.repository';
-import { InputBlogType, ValueBlogIdPostType } from './blogs.controller';
+import { InputBlogType } from './blogs.controller';
 import { Types } from 'mongoose';
 import {
   pageNumberValidate,
@@ -79,6 +79,27 @@ export class BlogsService {
       sortV,
       sortD,
       login,
+    );
+  }
+  async getBlogsComments(
+    pageNumber: string,
+    pageSize: string,
+    sort: string,
+    sortDirection: string,
+    login: string,
+    userId: string,
+  ) {
+    const pNumber = pageNumberValidate(pageNumber);
+    const pSize = pageSizeValidate(pageSize);
+    const sortV = sortBlogValidation(sort);
+    const sortD = sortDirectionValidation(sortDirection);
+    return this.blogsRepository.getBlogsComments(
+      pNumber,
+      pSize,
+      sortV,
+      sortD,
+      login,
+      userId,
     );
   }
   async getBlogId(blogId: string) {
@@ -160,5 +181,18 @@ export class BlogsService {
   }
   async banned(userId: string, isBanned: boolean) {
     return this.blogsRepository.banned(userId, isBanned);
+  }
+  async updateBannedUserId(
+    userId: string,
+    isBanned: boolean,
+    banReason: string,
+    blogId: string,
+  ) {
+    return this.blogsRepository.updateBannedUser(
+      userId,
+      isBanned,
+      banReason,
+      blogId,
+    );
   }
 }

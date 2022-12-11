@@ -64,6 +64,9 @@ import { PostAuthRefreshToken } from './auth/useCases/postAuth-RefreshToken';
 import { PostAuthPasswordRecovery } from './auth/useCases/postAuth-PasswordRecovery';
 import { PostAuthNewPassword } from './auth/useCases/postAuth-NewPassword';
 import { PostAuthRegistrationEmailResending } from './auth/useCases/postAuth-RegistrationEmailResenging';
+import { GetBloggersComments } from './blogger/useCases/getBlogger-blogs-comments';
+import { GetBloggerUserBlogId } from './blogger/useCases/getBlogger-users-blog-id';
+import { PutBloggerUserIdBan } from './blogger/useCases/putBlogger-users-id-ban';
 
 const useCasesBlogs = [GetBlogs, GetBlogsBlogId, GetBlogsBlogIdPosts];
 
@@ -96,7 +99,10 @@ const useCasesSuperAdmin = [
 ];
 const useCasesBlogger = [
   GetBloggersBlogs,
+  GetBloggersComments,
+  GetBloggerUserBlogId,
   PostBloggersBlogs,
+  PutBloggerUserIdBan,
   PutBloggersBlogsBlogId,
   DelBloggersBlogsBlogId,
   PostBloggersBlogsBlogIdPosts,

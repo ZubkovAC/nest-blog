@@ -68,15 +68,6 @@ export class SuperAdminController {
         sortDirection,
       ),
     );
-    // return this.usersService.getUsers(
-    //   pageNumber,
-    //   pageSize,
-    //   sortBy,
-    //   sortDirection,
-    //   searchLoginTerm,
-    //   searchEmailTerm,
-    //   banStatus,
-    // );
   }
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
@@ -87,24 +78,6 @@ export class SuperAdminController {
     @Ip() ip,
   ) {
     return this.commandBus.execute(new usePostSABlogs(ip, req, bodyCreateUser));
-    // const login = await this.usersRepository.findOne({
-    //   'accountData.login': bodyCreateUser.login,
-    // });
-    // const email = await this.usersRepository.findOne({
-    //   'accountData.email': bodyCreateUser.email,
-    // });
-    // if (login || email) {
-    //   const error = [];
-    //   if (login) {
-    //     error.push('login is repeated');
-    //   }
-    //   if (email) {
-    //     error.push('email is repeated');
-    //   }
-    //   throw new HttpException({ message: error }, HttpStatus.BAD_REQUEST);
-    // }
-    // const title = req.headers['user-agent'];
-    // return this.usersService.createUser(bodyCreateUser, ip, title);
   }
   @ApiBasicAuth()
   @UseGuards(AuthBaseGuard)
@@ -113,37 +86,6 @@ export class SuperAdminController {
   async banUser(@Body() banValue: BanValue, @Param('id') id: string) {
     await this.commandBus.execute(new usePutSAUserIdBan(id, banValue));
     return;
-    // const user = await this.usersRepository.findOne({
-    //   'accountData.userId': id,
-    // });
-    // if (!user) {
-    //   throw new HttpException({ message: ['postId'] }, HttpStatus.NOT_FOUND);
-    // }
-    // let date = new Date().toISOString();
-    // let banReason = banValue.banReason;
-    // if (!banValue.isBanned) {
-    //   date = null;
-    //   banReason = null;
-    // }
-    // await this.usersRepository.updateOne(
-    //   { 'accountData.userId': id },
-    //   {
-    //     $set: {
-    //       banInfo: {
-    //         isBanned: banValue.isBanned,
-    //         banDate: date,
-    //         banReason: banReason,
-    //       },
-    //     },
-    //   },
-    // );
-    // await this.blogsService.banned(user.accountData.userId, banValue.isBanned);
-    // await this.postsService.banned(user.accountData.userId, banValue.isBanned);
-    // await this.commentsService.banned(
-    //   user.accountData.userId,
-    //   banValue.isBanned,
-    // );
-    // return;
   }
   @UseGuards(AuthBaseGuard)
   @ApiBasicAuth()
@@ -151,13 +93,6 @@ export class SuperAdminController {
   @Delete('users/:id')
   async deleteUser(@Param('id') deleteUser: string) {
     return this.commandBus.execute(new useDelSAUserId(deleteUser));
-    // const userId = await this.usersRepository.findOne({
-    //   'accountData.userId': deleteUser,
-    // });
-    // if (!userId) {
-    //   throw new NotFoundException('not found');
-    // }
-    // return this.usersService.deleteUser(deleteUser);
   }
   @UseGuards(AuthBaseGuard)
   @ApiBasicAuth()
@@ -178,13 +113,6 @@ export class SuperAdminController {
         sortDirection,
       ),
     );
-    // return this.blogsService.getBlogsSA(
-    //   pageNumber,
-    //   pageSize,
-    //   searchNameTerm,
-    //   sortBy,
-    //   sortDirection,
-    // );
   }
   @UseGuards(AuthBaseGuard)
   @ApiBasicAuth()

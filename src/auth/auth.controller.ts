@@ -136,25 +136,6 @@ export class AuthController {
     return this.commandBus.execute(
       new usePostAuthRegistration(req, registrationValueType, ip),
     );
-    // const loginName = await this.authRepository.findUserLogin(
-    //   registrationValueType.login,
-    // );
-    // const loginEmail = await this.authRepository.findUserEmail(
-    //   registrationValueType.email,
-    // );
-    // const error = [];
-    // if (loginName) {
-    //   error.push('login this one is registered');
-    // }
-    // if (loginEmail) {
-    //   error.push('email this one is registered');
-    // }
-    // if (error.length > 0) {
-    //   throw new HttpException({ message: error }, HttpStatus.BAD_REQUEST);
-    // }
-    // const title = req.headers['user-agent'];
-    // await this.authService.registration(registrationValueType, ip, title);
-    // return;
   }
   @HttpCode(204)
   @Post('registration-confirmation')
@@ -192,15 +173,6 @@ export class AuthController {
       new usePostAuthRegistrationConfirmation(code),
     );
     return;
-    // const res = await this.authRepository.registrationConformationFind(code);
-    // if (!res || res.emailConformation.isConfirmed) {
-    //   throw new HttpException(
-    //     { message: ['code its not correct'] },
-    //     HttpStatus.BAD_REQUEST,
-    //   );
-    // }
-    // await this.authService.registrationConformation(code);
-    // return;
   }
   @HttpCode(204)
   @Post('registration-email-resending')
@@ -238,15 +210,6 @@ export class AuthController {
     return this.commandBus.execute(
       new usePostAuthRegistrationEmailResending(email),
     );
-    // const emailF = await this.authRepository.emailFindResending(email.email);
-    // if (emailF && !emailF.emailConformation.isConfirmed) {
-    //   await this.authService.emailResending(email.email);
-    //   return;
-    // }
-    // throw new HttpException(
-    //   { message: ['email its not correct'] },
-    //   HttpStatus.BAD_REQUEST,
-    // );
   }
   @Post('login') // fix
   @HttpCode(200)
@@ -293,34 +256,6 @@ export class AuthController {
     return this.commandBus.execute(
       new usePostAuthLogin(req, loginValue, ip, response),
     );
-    // const login = await this.authRepository.findUserLogin(
-    //   loginValue.loginOrEmail,
-    // );
-    // if (!login || login.banInfo.isBanned) {
-    //   throw new UnauthorizedException();
-    // }
-    // const token = login.accountData;
-    // const verifyPassword = await bcrypt.compare(
-    //   loginValue.password,
-    //   token.hash,
-    // );
-    // if (!verifyPassword) {
-    //   throw new UnauthorizedException();
-    // }
-    // const title = req.headers['user-agent'];
-    // const resLogin = await this.devicesAuthService.loginDevices(
-    //   token.userId,
-    //   ip,
-    //   token.login,
-    //   token.email,
-    //   title,
-    // );
-    // response.cookie('refreshToken', resLogin.passwordRefresh, {
-    //   httpOnly: true,
-    //   secure: true,
-    // });
-    //
-    // return response.send({ accessToken: resLogin.accessToken });
   }
   @HttpCode(200)
   @Post('refresh-token') // fix
@@ -347,37 +282,6 @@ export class AuthController {
     return this.commandBus.execute(
       new usePostAuthRefreshToken(req, response, ip),
     );
-    // need logic
-    // const token = req.cookies;
-    // const findRefreshToken = await this.devicesAuthService.findRefreshToken(
-    //   token.refreshToken,
-    // );
-    // if (!findRefreshToken) {
-    //   throw new HttpException(
-    //     { message: ['unauthorized'] },
-    //     HttpStatus.UNAUTHORIZED,
-    //   );
-    // }
-    // let tokenValidate;
-    // try {
-    //   tokenValidate = jwt.verify(token.refreshToken, process.env.SECRET_KEY);
-    // } catch (e) {
-    //   throw new HttpException(
-    //     { message: ['unauthorized'] },
-    //     HttpStatus.UNAUTHORIZED,
-    //   );
-    // }
-    // const title = req.headers['user-agent'];
-    // const resLogin = await this.devicesAuthService.updateDeviseId(
-    //   token.refreshToken,
-    //   ip,
-    //   title,
-    // );
-    // response.cookie('refreshToken', resLogin.passwordRefresh, {
-    //   httpOnly: true,
-    //   secure: true,
-    // });
-    // return response.send({ accessToken: resLogin.accessToken });
   }
 
   @HttpCode(204)
@@ -398,32 +302,6 @@ export class AuthController {
   ) {
     await this.commandBus.execute(new usePostAuthLogout(req, response));
     return;
-    // need logic - black list ?
-    // const refreshToken = req.cookies.refreshToken;
-    // const refreshTokenUser = await this.devicesAuthService.findRefreshToken(
-    //   refreshToken,
-    // );
-    // if (!refreshTokenUser) {
-    //   throw new HttpException(
-    //     { message: ['Unauthorized'] },
-    //     HttpStatus.UNAUTHORIZED,
-    //   );
-    // }
-    //
-    // try {
-    //   const login = jwt.verify(refreshToken, process.env.SECRET_KEY);
-    // } catch (e) {
-    //   throw new HttpException(
-    //     { message: ['Unauthorized'] },
-    //     HttpStatus.UNAUTHORIZED,
-    //   );
-    // }
-    // await this.devicesAuthService.logoutDevice(refreshToken);
-    // response.cookie('refreshToken', '', {
-    //   httpOnly: true,
-    //   secure: true,
-    // });
-    // return;
   }
 
   @HttpCode(204)
@@ -444,16 +322,6 @@ export class AuthController {
   @Post('password-recovery')
   async passwordRecovery(@Body() email: EmailValidation) {
     return this.commandBus.execute(new usePostAuthPasswordRecovery(email));
-    // const loginEmail = await this.authRepository.findUserEmail(email.email);
-    // if (!loginEmail) {
-    //   // throw new HttpException(
-    //   //   { message: ['email is not registered!!!'] },
-    //   //   HttpStatus.BAD_REQUEST,
-    //   // );
-    //   return;
-    // }
-    // await this.authService.newPasswordCode(email.email);
-    // return;
   }
 
   @HttpCode(204)
@@ -476,21 +344,6 @@ export class AuthController {
     return this.commandBus.execute(
       new usePostAuthNewPassword(newPasswordModel),
     );
-    // const loginEmail = await this.authRepository.registrationConformationFind(
-    //   newPasswordModel.recoveryCode,
-    // );
-    // if (!loginEmail) {
-    //   throw new HttpException(
-    //     { message: ['recoveryCode is incorrect or expired'] },
-    //     HttpStatus.BAD_REQUEST,
-    //   );
-    // }
-    // // need fix for new code only one
-    // await this.authService.newPassword(
-    //   newPasswordModel.recoveryCode,
-    //   newPasswordModel.newPassword,
-    // );
-    // return;
   }
 
   @ApiBearerAuth()
@@ -508,20 +361,5 @@ export class AuthController {
   })
   async me(@Req() req: Request) {
     return this.commandBus.execute(new useGetAuthMe(req));
-    // const token = req.headers?.authorization?.split(' ')[1];
-    // let info;
-    // try {
-    //   info = jwt.verify(token, process.env.SECRET_KEY);
-    // } catch (e) {
-    //   throw new HttpException(
-    //     { message: ['Unauthorized'] },
-    //     HttpStatus.UNAUTHORIZED,
-    //   );
-    // }
-    // return {
-    //   email: info.email,
-    //   login: info.login,
-    //   userId: info.userId,
-    // };
   }
 }

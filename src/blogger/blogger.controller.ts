@@ -4,8 +4,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
-  HttpStatus,
   Param,
   Post,
   Put,
@@ -22,13 +20,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthBearerGuard } from '../guards/AuthBearer.guard';
-import { BlogsService } from '../blogs/blogs.service';
 import { InputBlogType } from '../blogs/blogs.controller';
 import { CheckBloggerIdParamsGuard } from '../guards/check-blogger-id-params-guard.service';
-import { PostsService } from '../posts/posts.service';
 import { BodyCreatePostType } from '../posts/posts.controller';
 import { Request } from 'express';
-import * as jwt from 'jsonwebtoken';
 import { IsNotEmpty, Length } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { CommandBus } from '@nestjs/cqrs';
@@ -39,6 +34,12 @@ import { useDelBloggersBlogsBlogId } from './useCases/delBlogger-blogs-blogId';
 import { useDelBloggersBlogsBlogIdPostsPostId } from './useCases/delBlogger-blogs-blogId-posts-postId';
 import { usePutBloggersBlogsBlogIdPostsPostId } from './useCases/putBlogger-blogs-blogId-posts-postId';
 import { usePutBloggersBlogsBlogId } from './useCases/putBlogger-blogs-blogId';
+import { useGetBloggersComments } from './useCases/getBlogger-blogs-comments';
+import { useGetBloggerUserBlogId } from './useCases/getBlogger-users-blog-id';
+import {
+  PutBloggerUserIdBan,
+  usePutBloggerUserIdBan,
+} from './useCases/putBlogger-users-id-ban';
 
 export class blogUpdateValue {
   @ApiProperty()
@@ -61,9 +62,7 @@ export class blogUpdateValue {
 @ApiTags('For Blogger')
 @Controller('blogger')
 export class BloggerController {
-  constructor(
-    protected commandBus: CommandBus, // protected blogsService: BlogsService, // protected postsService: PostsService,
-  ) {}
+  constructor(protected commandBus: CommandBus) {}
   @Get('blogs')
   @ApiBearerAuth()
   @UseGuards(AuthBearerGuard)
@@ -90,16 +89,27 @@ export class BloggerController {
         sortDirection,
       ),
     );
-    // const token = req.headers.authorization.split(' ')[1];
-    // const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
-    // return this.blogsService.getBloggerBlogs(
-    //   pageNumber,
-    //   pageSize,
-    //   searchNameTerm,
-    //   sortBy,
-    //   sortDirection,
-    //   blogger.login,
-    // );
+  }
+  @UseGuards(AuthBearerGuard)
+  @Get('blogs/comments')
+  async getComments(
+    @Query('pageNumber') pageNumber: string,
+    @Query('pageSize') pageSize: string,
+    @Query('searchNameTerm') searchNameTerm: string,
+    @Query('sortBy') sortBy: string,
+    @Query('sortDirection') sortDirection: string,
+    @Req() req: Request,
+  ) {
+    // return 'hell';
+    return this.commandBus.execute(
+      new useGetBloggersComments(
+        req,
+        pageNumber,
+        pageSize,
+        sortBy,
+        sortDirection,
+      ),
+    );
   }
   @Post('blogs')
   @ApiBearerAuth()
@@ -147,13 +157,6 @@ export class BloggerController {
   })
   async createBlogs(@Body() inputBlogger: InputBlogType, @Req() req: Request) {
     return this.commandBus.execute(new usePostBloggersBlogs(req, inputBlogger));
-    // const token = req.headers.authorization.split(' ')[1];
-    // const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
-    // return this.blogsService.createBlog(
-    //   inputBlogger,
-    //   blogger.userId,
-    //   blogger.login,
-    // );
   }
 
   @UseGuards(AuthBearerGuard)
@@ -207,14 +210,6 @@ export class BloggerController {
       new usePutBloggersBlogsBlogId(req, blogId, blogUpdate),
     );
     return;
-    // const blog = await this.blogsService.getBlogIdSA(blogId);
-    // const token = req.headers.authorization.split(' ')[1];
-    // const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
-    //
-    // if (blogger.userId !== blog.blogOwnerInfo.userId) {
-    //   throw new HttpException({ message: ['forbiden'] }, HttpStatus.FORBIDDEN);
-    // }
-    // await this.blogsService.updateBlogId(blogId, blogUpdate);
   }
 
   @ApiResponse({
@@ -237,15 +232,6 @@ export class BloggerController {
   async deleteBlogger(@Param('blogId') blogId: string, @Req() req: Request) {
     await this.commandBus.execute(new useDelBloggersBlogsBlogId(req, blogId));
     return;
-    // const blog = await this.blogsService.getBlogIdSA(blogId);
-    // const token = req.headers.authorization.split(' ')[1];
-    // const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
-    //
-    // if (blogger.userId !== blog.blogOwnerInfo.userId) {
-    //   throw new HttpException({ message: ['forbiden'] }, HttpStatus.FORBIDDEN);
-    // }
-    // await this.blogsService.deleteBlogId(blogId);
-    // return;
   }
 
   @Post('blogs/:blogId/posts')
@@ -253,25 +239,13 @@ export class BloggerController {
   @UseGuards(AuthBearerGuard)
   async createBloggerPost(
     @Param('blogId') blogId: string,
-    @Body() createPost: BodyCreatePostType, // need fix no blogId
+    @Body() createPost: BodyCreatePostType,
     @Req() req: Request,
   ) {
     return this.commandBus.execute(
       new usePostBloggersBlogsBlogIdPosts(req, createPost, blogId),
     );
-    // const token = req.headers.authorization.split(' ')[1];
-    // const user: any = await jwt.verify(token, process.env.SECRET_KEY);
-    // return this.postsService.createPost(
-    //   {
-    //     blogId,
-    //     title: createPost.title,
-    //     shortDescription: createPost.shortDescription,
-    //     content: createPost.content,
-    //   },
-    //   user.userId,
-    // );
   }
-  // need fix
   @Put('blogs/:blogId/posts/:postId')
   @ApiBearerAuth()
   @HttpCode(204)
@@ -286,8 +260,6 @@ export class BloggerController {
       new usePutBloggersBlogsBlogIdPostsPostId(blogId, postId, blogUpdate, req),
     );
     return;
-    // await this.blogsService.updateBlogIdPostId(blogId, postId, blogUpdate);
-    // return;
   }
   @Delete('blogs/:blogId/posts/:postId')
   @HttpCode(204)
@@ -302,7 +274,47 @@ export class BloggerController {
       new useDelBloggersBlogsBlogIdPostsPostId(postId, blogId, req),
     );
     return;
-    // await this.postsService.deletePostId(postId);
-    // return;
+  }
+
+  @UseGuards(AuthBearerGuard)
+  @Get('users/blog/:id')
+  getUserBan(
+    @Query('pageNumber') pageNumber: string,
+    @Query('pageSize') pageSize: string,
+    @Query('searchNameTerm') searchNameTerm: string,
+    @Query('sortBy') sortBy: string,
+    @Query('sortDirection') sortDirection: string,
+    @Param('id') id: string,
+    @Req() req: Request,
+  ) {
+    return this.commandBus.execute(
+      new useGetBloggerUserBlogId(
+        id,
+        req,
+        pageNumber,
+        pageSize,
+        sortBy,
+        sortDirection,
+        searchNameTerm,
+      ),
+    );
+  }
+
+  @UseGuards(AuthBearerGuard)
+  @Put('users/:id/ban')
+  banUser(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Body() banBody: { isBanned: boolean; banReason: string; blogId: string },
+  ) {
+    return this.commandBus.execute(
+      new usePutBloggerUserIdBan(
+        id,
+        req,
+        banBody.isBanned,
+        banBody.banReason,
+        banBody.blogId,
+      ),
+    );
   }
 }

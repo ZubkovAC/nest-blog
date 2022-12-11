@@ -331,16 +331,9 @@ export class PostsRepository {
         myStatus: 'None',
         newestLikes: [],
       },
-      // extendedLikesInfo: {
-      //   likesCount: 0,
-      //   dislikesCount: 0,
-      //   myStatus: 'None',
-      //   newestLikes: [],
-      // },
     };
   }
   async updatePostId(postId: string, updatePost: BodyCreatePostType) {
-    // const post = await this.postsRepository.findOne({ id: postId });
     const blogger = await this.bloggersRepository
       .findOne({
         id: updatePost.blogId,
@@ -385,17 +378,6 @@ export class PostsRepository {
       );
     } else {
       await this.postsRepository.updateOne(
-        // { 'newestLikes.userId': userId },
-        // {
-        //   $set: {
-        //     'newestLikes.$': {
-        //       addedAt: new Date().toISOString(),
-        //       userId: userId,
-        //       login: login,
-        //       myStatus: status,
-        //     },
-        //   },
-        // },
         { $and: [{ id: postId }, { 'newestLikes.userId': userId }] },
         {
           $set: {
