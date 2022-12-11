@@ -472,16 +472,9 @@ export class BlogsRepository {
         },
       );
     } else {
-      return this.blogRepository.updateOne(
+      return this.blogRepository.updateMany(
         { $and: [{ id: blogId }, { 'banUsers.id': userId }] },
-        {
-          $unset: {
-            // 'banUsers.$.banInfo': { isBanned: '', banDate: '', banReason: '' },
-            'banUsers.$.id': '',
-            'banUsers.$.login': '',
-            'banUsers.$.banInfo': '',
-          },
-        },
+        { $pull: { banUsers: { id: userId } } },
       );
     }
   }

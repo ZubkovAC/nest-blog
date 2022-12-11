@@ -3,6 +3,8 @@ import { PostsService } from '../posts.service';
 import { Request } from 'express';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { CommentsService } from '../../comments/comments.service';
+import * as jwt from 'jsonwebtoken';
+import { BlogsService } from '../../blogs/blogs.service';
 
 export class usePostPostsPostIdComments {
   constructor(
@@ -19,6 +21,7 @@ export class PostPostsPostIdComments
   constructor(
     private postsService: PostsService,
     private commentsService: CommentsService,
+    private blogsService: BlogsService,
   ) {}
 
   async execute(command: usePostPostsPostIdComments) {
@@ -41,6 +44,14 @@ export class PostPostsPostIdComments
       );
     }
     const token: any = req.headers.authorization;
+    const userToken = req.headers.authorization.split(' ')[1];
+    const userId: any = await jwt.verify(userToken, process.env.SECRET_KEY);
+    const blog = await this.blogsService.getBlogId(post.blogId);
+
+    const banUser = blog.banUsers.find((b) => b.id === userId.userId);
+    if (banUser) {
+      throw new HttpException({ message: ['FORBIDDEN'] }, HttpStatus.FORBIDDEN);
+    }
     return await this.commentsService.createCommentIdPost(
       postId,
       content,
