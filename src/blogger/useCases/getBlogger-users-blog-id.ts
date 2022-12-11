@@ -32,7 +32,7 @@ export class GetBloggerUserBlogIdBan
     const blogger: any = await jwt.verify(token, process.env.SECRET_KEY);
 
     const user = await this.userRepository.getUserId(blogger.userId);
-    const blog = await this.blogsService.getBlogId(id);
+    const blog = await this.blogsService.getBlogIdSA(id);
     if (!user) {
       throw new HttpException(
         { message: ['userId not found'] },

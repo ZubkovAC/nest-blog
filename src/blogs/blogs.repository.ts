@@ -178,6 +178,10 @@ export class BlogsRepository {
         id: c.id,
         content: c.content,
         createdAt: c.createdAt,
+        commentatorInfo: {
+          userId: blogger.blogOwnerInfo.userId,
+          userLogin: blogger.blogOwnerInfo.userLogin,
+        },
         likesInfo: {
           likesCount:
             c.newestLikes?.filter(
@@ -195,10 +199,6 @@ export class BlogsRepository {
             )?.length || 0,
           myStatus:
             c.newestLikes?.find((u) => u.userId === userId)?.myStatus || 'None',
-        },
-        commentatorInfo: {
-          userId: blogger.blogOwnerInfo.userId,
-          userLogin: blogger.blogOwnerInfo.userLogin,
         },
         postInfo: {
           id: c.idPostComment,
