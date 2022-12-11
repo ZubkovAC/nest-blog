@@ -176,6 +176,7 @@ export class BlogsService {
         userId: userId,
         userLogin: userLogin,
         isBanned: false,
+        banDate: null,
       },
     });
   }

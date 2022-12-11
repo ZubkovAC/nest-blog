@@ -24,7 +24,7 @@ import { InputBlogType } from '../blogs/blogs.controller';
 import { CheckBloggerIdParamsGuard } from '../guards/check-blogger-id-params-guard.service';
 import { BodyCreatePostType } from '../posts/posts.controller';
 import { Request } from 'express';
-import { IsNotEmpty, Length } from 'class-validator';
+import { IsBoolean, IsNotEmpty, Length } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { CommandBus } from '@nestjs/cqrs';
 import { useGetBloggersBlogs } from './useCases/getBlogger-blogs';
@@ -57,6 +57,18 @@ export class blogUpdateValue {
   @Transform(({ value }: TransformFnParams) => value?.trim())
   @Length(0, 1000)
   content: string;
+}
+export class banBodyValue {
+  @IsNotEmpty()
+  @IsBoolean()
+  isBanned: boolean;
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @Length(20, 200)
+  banReason: string;
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  blogId: string;
 }
 
 @ApiTags('For Blogger')

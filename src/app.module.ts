@@ -67,6 +67,7 @@ import { PostAuthRegistrationEmailResending } from './auth/useCases/postAuth-Reg
 import { GetBloggersComments } from './blogger/useCases/getBlogger-blogs-comments';
 import { GetBloggerUserBlogId } from './blogger/useCases/getBlogger-users-blog-id';
 import { PutBloggerUserIdBan } from './blogger/useCases/putBlogger-users-id-ban';
+import { PutSABlogsIdBan } from './superAdmin/useCases/putSA-blogs-id-ban';
 
 const useCasesBlogs = [GetBlogs, GetBlogsBlogId, GetBlogsBlogIdPosts];
 
@@ -96,6 +97,7 @@ const useCasesSuperAdmin = [
   PostSABlogs,
   PutSAUserIdBan,
   DelSAUserId,
+  PutSABlogsIdBan,
 ];
 const useCasesBlogger = [
   GetBloggersBlogs,

@@ -107,7 +107,7 @@ export class BlogsRepository {
             },
           ],
         },
-        '-_id -__v -blogOwnerInfo.isBanned',
+        '-_id -__v -banUsers',
       )
       .sort({ [sort]: sortDirection })
       .skip(skipCount)
@@ -118,7 +118,22 @@ export class BlogsRepository {
       page: pageNumber,
       pageSize: pageSize,
       totalCount: totalCount,
-      items: bloggersRestrict,
+      // items: [...bloggersRestrict],
+      items: bloggersRestrict.map((b) => ({
+        id: b.id,
+        name: b.name,
+        description: b.description,
+        websiteUrl: b.websiteUrl,
+        createdAt: b.createdAt,
+        blogOwnerInfo: {
+          userId: b.blogOwnerInfo.userId,
+          userLogin: b.blogOwnerInfo.userLogin,
+        },
+        banInfo: {
+          isBanned: b.blogOwnerInfo.isBanned,
+          banDate: b.blogOwnerInfo.banDate,
+        },
+      })),
     };
   }
 
@@ -322,6 +337,7 @@ export class BlogsRepository {
       userId: string;
       userLogin: string;
       isBanned: boolean;
+      banDate: any;
     };
   }) {
     const res = await this.blogRepository.insertMany([inputBlogger]);
@@ -340,6 +356,12 @@ export class BlogsRepository {
   async banned(userId: string, isBanned: boolean) {
     return this.blogRepository.updateMany(
       { 'blogOwnerInfo.userId': userId },
+      { 'blogOwnerInfo.isBanned': isBanned },
+    );
+  }
+  async bannedForId(id: string, isBanned: boolean) {
+    return this.blogRepository.updateOne(
+      { id: id },
       { 'blogOwnerInfo.isBanned': isBanned },
     );
   }

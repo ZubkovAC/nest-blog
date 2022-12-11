@@ -15,28 +15,27 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
 import { Request } from 'express';
 import { BodyCreateUserType } from '../users/users.controller';
 import { AuthBaseGuard } from '../guards/AuthBase.guard';
-import { Model } from 'mongoose';
-import { UsersSchemaInterface } from '../users/users.schemas';
 import { IsBoolean, Length } from 'class-validator';
-import { BlogsService } from '../blogs/blogs.service';
-import { PostsService } from '../posts/posts.service';
-import { CommentsService } from '../comments/comments.service';
 import { CommandBus } from '@nestjs/cqrs';
 import { useGetSAUsers } from './useCases/getSA-users';
 import { useGetSABlogs } from './useCases/getSA-blogs';
 import { usePostSABlogs } from './useCases/postSA-users';
 import { usePutSAUserIdBan } from './useCases/putSA-users-id-ban';
 import { useDelSAUserId } from './useCases/delSA-users-id';
+import { usePutSABlogsIdBan } from './useCases/putSA-blogs-id-ban';
 
 export class BanValue {
   @IsBoolean()
   isBanned: boolean;
   @Length(20, 120)
   banReason: string;
+}
+export class isBanned {
+  @IsBoolean()
+  isBanned: boolean;
 }
 
 @ApiTags('Super Admin')
@@ -114,6 +113,16 @@ export class SuperAdminController {
       ),
     );
   }
+  @HttpCode(204)
+  @UseGuards(AuthBaseGuard)
+  @ApiBasicAuth()
+  @Put('blogs/:id/ban')
+  updateIdBanBlog(@Param('id') id: string, @Body() isBanned: isBanned) {
+    return this.commandBus.execute(
+      new usePutSABlogsIdBan(id, isBanned.isBanned),
+    );
+  }
+
   @UseGuards(AuthBaseGuard)
   @ApiBasicAuth()
   @Put('blogs/:id/bind-with-user/:userId')

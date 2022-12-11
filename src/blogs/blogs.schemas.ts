@@ -10,6 +10,7 @@ export const BloggersSchema = new mongoose.Schema({
     userId: String,
     userLogin: String,
     isBanned: Boolean,
+    banDate: String,
   },
   banUsers: [
     {
@@ -34,6 +35,7 @@ export interface bloggersSchema {
     userId: string;
     userLogin: string;
     isBanned: boolean;
+    banDate: string;
   };
   banUsers: [
     {
