@@ -80,19 +80,6 @@ export class CommentsController {
     return this.commandBus.execute(
       new useGetCommentsCommentsId(req, commentId),
     );
-    // const token = req.headers.authorization?.split(' ')[1];
-    // let userId;
-    // try {
-    //   userId = await jwt.verify(token, process.env.SECRET_KEY);
-    // } catch (e) {}
-    // const comments = await this.commentsService.getCommentsId(
-    //   commentId,
-    //   userId?.userId || '333',
-    // );
-    // if (!comments) {
-    //   throw new NotFoundException('not found commentId');
-    // }
-    // return comments;
   }
   @Put(':commentId')
   @HttpCode(204)
@@ -123,6 +110,10 @@ export class CommentsController {
     },
   })
   @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
     status: 403,
     description: 'If try edit the comment that is not your own',
   })
@@ -139,29 +130,6 @@ export class CommentsController {
     return this.commandBus.execute(
       new usePutCommentsCommentsId(req, commentId, content),
     );
-    // const comment = await this.commentsRepository.findOne({
-    //   id: commentId,
-    // });
-    // if (!comment) {
-    //   throw new NotFoundException('not found commentId');
-    // }
-    // if (
-    //   !content?.trim() ||
-    //   content.trim().length < 20 ||
-    //   content.trim().length > 300
-    // ) {
-    //   throw new HttpException(
-    //     { message: ['content length > 20 && length  < 300'] },
-    //     HttpStatus.BAD_REQUEST,
-    //   );
-    // }
-    // const token = req.headers.authorization.split(' ')[1];
-    // const userData: any = await jwt.verify(token, process.env.SECRET_KEY);
-    // if (comment.userId === userData.userId) {
-    //   await this.commentsService.updateCommentId(commentId, content);
-    //   return;
-    // }
-    // throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
   }
   @HttpCode(204)
   @Put(':commentId/like-status')
@@ -211,34 +179,6 @@ export class CommentsController {
         likeStatus.likeStatus,
       ),
     );
-    // const comment = await this.commentsRepository.findOne({
-    //   id: commentId,
-    // });
-    // if (
-    //   likeStatus.likeStatus !== 'None' &&
-    //   likeStatus.likeStatus !== 'Like' &&
-    //   likeStatus.likeStatus !== 'Dislike'
-    // ) {
-    //   throw new HttpException(
-    //     { message: ['likeStatus only Like, Dislike, None'] },
-    //     HttpStatus.BAD_REQUEST,
-    //   );
-    // }
-    // if (!comment) {
-    //   throw new HttpException('Forbidden', HttpStatus.NOT_FOUND);
-    // }
-    // const token = req.headers.authorization?.split(' ')[1];
-    // let userToken;
-    // try {
-    //   userToken = await jwt.verify(token, process.env.SECRET_KEY);
-    // } catch (e) {}
-    // await this.commentsRepository1.updateStatus(
-    //   userToken.userId,
-    //   userToken.login,
-    //   comment.id,
-    //   likeStatus.likeStatus,
-    // );
-    // return;
   }
   @Delete(':id')
   @ApiResponse({
@@ -265,18 +205,4 @@ export class CommentsController {
       new useDelCommentsCommentsId(commentId, req),
     );
   }
-  //   const comment = await this.commentsRepository.findOne({
-  //     id: commentId,
-  //   });
-  //   if (!comment) {
-  //     throw new NotFoundException('not found commentId');
-  //   }
-  //   const token = req.headers.authorization.split(' ')[1];
-  //   const userData: any = await jwt.verify(token, process.env.SECRET_KEY);
-  //   if (comment.userId === userData.userId) {
-  //     await this.commentsService.deleteCommentId(commentId);
-  //     return;
-  //   }
-  //   throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-  // }
 }

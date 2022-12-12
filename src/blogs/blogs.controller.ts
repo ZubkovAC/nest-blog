@@ -1,33 +1,12 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  Param,
-  Post,
-  Put,
-  Query,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { IsNotEmpty, IsUrl, Length } from 'class-validator';
 import { CheckBloggerIdParamsGuard } from '../guards/check-blogger-id-params-guard.service';
-import { AuthBaseGuard } from '../guards/AuthBase.guard';
-import {
-  ApiBasicAuth,
-  ApiBody,
-  ApiProperty,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiProperty, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { Request } from 'express';
-import * as jwt from 'jsonwebtoken';
 import { CommandBus } from '@nestjs/cqrs';
-import { GetBlogs, useGetBlogs } from './useCase/getBlogs';
+import { useGetBlogs } from './useCase/getBlogs';
 import { useGetBlogsBlogId } from './useCase/getBlogs-blogId';
 import { useGetBlogsBlogIdPosts } from './useCase/getBlogs-blogId-posts';
 
@@ -117,8 +96,8 @@ export class BlogsController {
   @ApiQuery({ name: 'pageNumber', required: false, type: Number })
   @ApiQuery({ name: 'pageSize', required: false, type: Number })
   @ApiQuery({ name: 'searchNameTerm', required: false, type: String })
-  @ApiQuery({ name: 'sortBy', required: false, type: 'asc || desc' })
-  @ApiQuery({ name: 'sortDirection', required: false, type: 'params Object' })
+  @ApiQuery({ name: 'sortBy', required: false, type: 'params Object' })
+  @ApiQuery({ name: 'sortDirection', required: false, type: 'asc || desc' })
   async getBlogs(
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,

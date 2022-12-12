@@ -20,8 +20,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthRepository } from './auth.repository';
-import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
 import { IsEmail, IsNotEmpty, Length, Matches } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { Response, Request } from 'express';
@@ -216,7 +214,8 @@ export class AuthController {
   @ApiBody({
     schema: {
       example: {
-        accessToken: 'string',
+        loginOrEmail: 'string',
+        password: 'string',
       },
     },
   })
@@ -224,6 +223,11 @@ export class AuthController {
     status: 200,
     description:
       'Returns JWT accessToken + cookie refreshToken (http-only, secure)',
+    schema: {
+      example: {
+        accessToken: 'string',
+      },
+    },
   })
   @ApiResponse({
     status: 400,
@@ -288,8 +292,7 @@ export class AuthController {
   @Post('logout')
   @ApiResponse({
     status: 204,
-    description:
-      "Even if current email is not registered (for prevent user's email detection)",
+    description: 'No Content',
   })
   @ApiResponse({
     status: 401,

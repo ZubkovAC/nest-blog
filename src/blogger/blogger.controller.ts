@@ -17,6 +17,7 @@ import {
   ApiProperty,
   ApiQuery,
   ApiResponse,
+  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthBearerGuard } from '../guards/AuthBearer.guard';
@@ -72,14 +73,39 @@ export class banBodyValue {
 @Controller('blogger')
 export class BloggerController {
   constructor(protected commandBus: CommandBus) {}
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the newly created blog',
+    schema: {
+      example: {
+        pagesCount: 0,
+        page: 0,
+        pageSize: 0,
+        totalCount: 0,
+        items: [
+          {
+            id: 'string',
+            name: 'string',
+            description: 'string',
+            websiteUrl: 'string',
+            createdAt: '2022-12-12T15:27:28.350Z',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   @Get('blogs')
   @ApiBearerAuth()
   @UseGuards(AuthBearerGuard)
   @ApiQuery({ name: 'pageNumber', required: false, type: Number })
   @ApiQuery({ name: 'pageSize', required: false, type: Number })
   @ApiQuery({ name: 'searchNameTerm', required: false, type: String })
-  @ApiQuery({ name: 'sortBy', required: false, type: 'asc || desc' })
-  @ApiQuery({ name: 'sortDirection', required: false, type: 'params Object' })
+  @ApiQuery({ name: 'sortBy', required: false, type: 'params Object' })
+  @ApiQuery({ name: 'sortDirection', required: false, type: 'asc || desc' })
   async getBlogs(
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
@@ -100,16 +126,57 @@ export class BloggerController {
     );
   }
   @UseGuards(AuthBearerGuard)
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the newly created blog',
+    schema: {
+      example: {
+        pagesCount: 0,
+        page: 0,
+        pageSize: 0,
+        totalCount: 0,
+        items: [
+          {
+            id: 'string',
+            content: 'string',
+            createdAt: '2022-12-12T15:35:17.563Z',
+            likesInfo: {
+              likesCount: 0,
+              dislikesCount: 0,
+              myStatus: 'None',
+            },
+            commentatorInfo: {
+              userId: 'string',
+              userLogin: 'string',
+            },
+            postInfo: {
+              id: 'string',
+              title: 'string',
+              blogId: 'string',
+              blogName: 'string',
+            },
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   @Get('blogs/comments')
+  @ApiSecurity('bearer')
+  @ApiQuery({ name: 'pageNumber', required: false, type: Number })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number })
+  @ApiQuery({ name: 'sortBy', required: false, type: 'params Object' })
+  @ApiQuery({ name: 'sortDirection', required: false, type: 'asc || desc' })
   async getComments(
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
-    @Query('searchNameTerm') searchNameTerm: string,
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
     @Req() req: Request,
   ) {
-    // return 'hell';
     return this.commandBus.execute(
       new useGetBloggersComments(
         req,
@@ -193,8 +260,8 @@ export class BloggerController {
     description: 'Unauthorized',
   })
   @ApiResponse({
-    status: 404,
-    description: 'Not Found',
+    status: 403,
+    description: 'Forbidden',
   })
   @ApiBody({
     schema: {
@@ -230,6 +297,10 @@ export class BloggerController {
     description: 'Unauthorized',
   })
   @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
     status: 404,
     description: 'Not Found',
   })
@@ -243,6 +314,66 @@ export class BloggerController {
     return;
   }
 
+  @ApiBody({
+    schema: {
+      example: {
+        title: 'string maxLength: 30',
+        shortDescription: 'string maxLength: 100',
+        content: 'string maxLength: 1000',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    schema: {
+      example: {
+        id: 'string',
+        title: 'string',
+        shortDescription: 'string',
+        content: 'string',
+        blogId: 'string',
+        blogName: 'string',
+        createdAt: '2022-12-12T15:39:12.106Z',
+        extendedLikesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: 'None',
+          newestLikes: [
+            {
+              addedAt: '2022-12-12T15:39:12.106Z',
+              userId: 'string',
+              login: 'string',
+            },
+          ],
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
   @Post('blogs/:blogId/posts')
   @ApiBearerAuth()
   @UseGuards(AuthBearerGuard)
@@ -255,6 +386,36 @@ export class BloggerController {
       new usePostBloggersBlogsBlogIdPosts(req, createPost, blogId),
     );
   }
+
+  @ApiResponse({
+    status: 204,
+    description: 'No content',
+  })
+  @ApiResponse({
+    status: 400,
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
   @Put('blogs/:blogId/posts/:postId')
   @ApiBearerAuth()
   @HttpCode(204)
@@ -270,6 +431,22 @@ export class BloggerController {
     );
     return;
   }
+  @ApiResponse({
+    status: 204,
+    description: 'No content',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not found',
+  })
   @Delete('blogs/:blogId/posts/:postId')
   @HttpCode(204)
   @ApiBearerAuth()
@@ -285,15 +462,48 @@ export class BloggerController {
     return;
   }
 
+  @ApiSecurity('bearer')
+  @ApiResponse({
+    status: 200,
+    description: 'Return all ban Users',
+    schema: {
+      example: {
+        pagesCount: 0,
+        page: 0,
+        pageSize: 0,
+        totalCount: 0,
+        items: [
+          {
+            id: 'string',
+            login: 'string',
+            banInfo: {
+              isBanned: true,
+              banDate: '2022-12-12T16:12:26.872Z',
+              banReason: 'string',
+            },
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   @UseGuards(AuthBearerGuard)
   @Get('users/blog/:id')
+  @ApiQuery({ name: 'searchLoginTerm', required: false, type: String })
+  @ApiQuery({ name: 'pageNumber', required: false, type: Number })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number })
+  @ApiQuery({ name: 'sortBy', required: false, type: 'params Object' })
+  @ApiQuery({ name: 'sortDirection', required: false, type: 'asc || desc' })
   getUserBan(
+    @Param('id') id: string,
     @Query('pageNumber') pageNumber: string,
     @Query('pageSize') pageSize: string,
     @Query('searchLoginTerm') searchLoginTerm: string,
     @Query('sortBy') sortBy: string,
     @Query('sortDirection') sortDirection: string,
-    @Param('id') id: string,
     @Req() req: Request,
   ) {
     return this.commandBus.execute(
@@ -311,6 +521,37 @@ export class BloggerController {
 
   @HttpCode(204)
   @UseGuards(AuthBearerGuard)
+  @ApiSecurity('bearer')
+  @ApiBody({
+    schema: {
+      example: {
+        isBanned: 'true - for ban user, false - for unban user',
+        banReason: 'string minLength: 20',
+        blogId: 'string',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'User ID that should be banned / unbanned',
+  })
+  @ApiResponse({
+    status: 400,
+    schema: {
+      example: {
+        errorsMessages: [
+          {
+            message: 'string',
+            field: 'string',
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   @Put('users/:id/ban')
   banUser(
     @Param('id') id: string,

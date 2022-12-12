@@ -137,18 +137,13 @@ class DTO_Posts {
 @ApiTags('posts')
 @Controller('posts')
 export class PostsController {
-  constructor(
-    protected commandBus: CommandBus,
-    protected postsService: PostsService,
-    protected blogsService: BlogsService,
-    protected commentsService: CommentsService, // protected userRepository: UsersRepository,
-  ) {}
+  constructor(protected commandBus: CommandBus) {}
 
   @Get()
   @ApiQuery({ name: 'pageSize', required: false, type: Number })
   @ApiQuery({ name: 'pageNumber', required: false, type: Number })
-  @ApiQuery({ name: 'sortBy', required: false, type: 'asc || desc' })
-  @ApiQuery({ name: 'sortDirection', required: false, type: 'params Object' })
+  @ApiQuery({ name: 'sortBy', required: false, type: 'params Object' })
+  @ApiQuery({ name: 'sortDirection', required: false, type: 'asc || desc' })
   @ApiResponse({
     status: 200,
     description: 'Success',
@@ -236,8 +231,8 @@ export class PostsController {
   @Get(':postId/comments') // need fix
   @ApiQuery({ name: 'pageSize', required: false, type: Number })
   @ApiQuery({ name: 'pageNumber', required: false, type: Number })
-  @ApiQuery({ name: 'sortBy', required: false, type: 'asc || desc' })
-  @ApiQuery({ name: 'sortDirection', required: false, type: 'params Object' })
+  @ApiQuery({ name: 'sortBy', required: false, type: 'params Object' })
+  @ApiQuery({ name: 'sortDirection', required: false, type: 'asc || desc' })
   @ApiResponse({
     status: 200,
     description: 'Success',

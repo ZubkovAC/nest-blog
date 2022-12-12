@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { BlogsController } from './blogs/blogs.controller';
 import { BlogsService } from './blogs/blogs.service';
 import { BlogsRepository } from './blogs/blogs.repository';
-import { UsersController } from './users/users.controller';
+// import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { UsersRepository } from './users/users.repository';
 import { PostsController } from './posts/posts.controller';
@@ -151,7 +151,7 @@ const allRepository = [
     AuthController,
     BlogsController,
     PostsController,
-    UsersController,
+    // UsersController,
     CommentsController,
     DevicesAuthController,
     TestingController,
