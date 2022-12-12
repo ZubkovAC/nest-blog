@@ -145,21 +145,7 @@ export class BlogsRepository {
     login: string,
     userId: string,
   ) {
-    const posts = await this.postsRepository.find({
-      userId: userId,
-    });
-    // if(!posts){
-    //   throw new HttpException({message:['']})
-    // }
-    const blogger = await this.blogRepository.findOne({
-      'blogOwnerInfo.userLogin': login,
-    });
     const skipCount = (pageNumber - 1) * pageSize;
-
-    const allComments = await this.commentsRepository.find({
-      'blogOwnerInfo.userLogin': login,
-    });
-
     const comments = await this.commentsRepository
       .find({
         'blogOwnerInfo.userLogin': login,
@@ -168,6 +154,33 @@ export class BlogsRepository {
       .skip(skipCount)
       .limit(pageSize)
       .lean();
+
+    // if(!posts){
+    //   throw new HttpException({message:['']})
+    // }
+    const usersId = comments.map((c) => c.userId);
+    const postsId = comments.map((c) => c.idPostComment);
+
+    const posts = await this.postsRepository.find({
+      id: postsId,
+    });
+    // const blogger = await this.blogRepository.findOne({
+    //   'blogOwnerInfo.userLogin': login,
+    // });
+    const users = await this.usersRepository.find({
+      'accountData.userId': usersId,
+    });
+
+    const allComments = await this.commentsRepository.find({
+      'blogOwnerInfo.userId': login,
+    });
+    // console.log(`'blogOwnerInfo.userLogin': ${bloggersId},`);
+    // console.log('bloggersId', bloggersId);
+    // console.log('usersId', usersId);
+    // console.log('blogger1', users);
+    // comments userId
+    // bloggersId
+    // bloggersId
 
     return {
       pagesCount: Math.ceil(allComments.length / pageSize) || 0,
@@ -179,8 +192,10 @@ export class BlogsRepository {
         content: c.content,
         createdAt: c.createdAt,
         commentatorInfo: {
-          userId: blogger.blogOwnerInfo.userId,
-          userLogin: blogger.blogOwnerInfo.userLogin,
+          userId: users.find((b) => b.accountData.userId === c.userId)
+            .accountData.userId,
+          userLogin: users.find((b) => b.accountData.userId === c.userId)
+            .accountData.login,
         },
         likesInfo: {
           likesCount:
@@ -203,8 +218,10 @@ export class BlogsRepository {
         postInfo: {
           id: c.idPostComment,
           title: posts.find((p) => p.id === c.idPostComment)?.title || 'hello', // need post
-          blogId: blogger.id,
-          blogName: blogger.name,
+          blogId:
+            posts.find((p) => p.id === c.idPostComment)?.blogId || 'hello',
+          blogName:
+            posts.find((p) => p.id === c.idPostComment)?.blogName || 'hello',
         },
       })),
     };
