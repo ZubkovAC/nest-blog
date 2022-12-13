@@ -18,7 +18,8 @@ export class AuthService {
   }
   async registration(
     registrationValueType: RegistrationValueType,
-    ip: string,
+    url: string, // - ip
+    params: string,
     title: string,
   ) {
     const { login, email, password } = registrationValueType;
@@ -27,11 +28,11 @@ export class AuthService {
     const deviceId = uuidv4();
     const passwordAccess = await createJWT(
       { deviceId, userId, login, email },
-      dateExpired['1h'],
+      dateExpired['2h'],
     );
     const passwordRefresh = await createJWT(
       { deviceId, userId, login, email },
-      dateExpired['2h'],
+      dateExpired['48h'],
     );
     const newUser = await this.emailService.createUser(
       login,
@@ -41,12 +42,14 @@ export class AuthService {
       passwordRefresh,
       userId,
       conformationCode,
-      ip,
+      url,
       title,
     );
     try {
       const telegramEmail = await this.emailService.sendEmail(
         email,
+        url,
+        params,
         conformationCode,
       );
     } catch (e) {
@@ -62,10 +65,10 @@ export class AuthService {
   async registrationConformation(code: string) {
     return this.authRepository.registrationConformation(code);
   }
-  async emailResending(email: string) {
+  async emailResending(email: string, ip: string, params: string) {
     const conformationCode = uuidv4();
     await this.authRepository.emailResending(email, conformationCode);
-    await this.emailService.sendEmail(email, conformationCode);
+    await this.emailService.sendEmail(email, ip, params, conformationCode);
     return;
   }
   async login(loginValue: LoginValueType, ip, title) {
@@ -92,9 +95,14 @@ export class AuthService {
     );
     return { accessToken: passwordAccess, passwordRefresh: passwordRefresh };
   }
-  async newPasswordCode(email: string) {
+  async newPasswordCode(email: string, ip: string, params: string) {
     const conformationCode = uuidv4();
-    await this.emailService.sendNewPasswordEmail(email, conformationCode);
+    await this.emailService.sendNewPasswordEmail(
+      email,
+      ip,
+      params,
+      conformationCode,
+    );
     await this.authRepository.newPasswordCode(email, conformationCode);
   }
   async newPassword(recoveryCode: string, password: string) {

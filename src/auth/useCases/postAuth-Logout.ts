@@ -14,6 +14,7 @@ export class PostAuthLogout implements ICommandHandler<usePostAuthLogout> {
   async execute(command: usePostAuthLogout) {
     const { req, response } = command;
     const refreshToken = req.cookies.refreshToken;
+    console.log('cookie', refreshToken);
     const refreshTokenUser = await this.devicesAuthService.findRefreshToken(
       refreshToken,
     );
@@ -33,9 +34,12 @@ export class PostAuthLogout implements ICommandHandler<usePostAuthLogout> {
       );
     }
     await this.devicesAuthService.logoutDevice(refreshToken);
+
     response.cookie('refreshToken', '', {
       httpOnly: true,
+      // httpOnly: false,
       secure: true,
+      // secure: false,
     });
     return;
   }

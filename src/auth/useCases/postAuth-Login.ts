@@ -47,7 +47,9 @@ export class PostAuthLogin implements ICommandHandler<usePostAuthLogin> {
     );
     response.cookie('refreshToken', resLogin.passwordRefresh, {
       httpOnly: true,
+      // httpOnly: false,
       secure: true,
+      // secure: false,
     });
 
     return response.send({ accessToken: resLogin.accessToken });

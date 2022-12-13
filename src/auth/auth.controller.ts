@@ -204,9 +204,9 @@ export class AuthController {
       },
     },
   })
-  async registrationEmailResending(@Body() email: EmailValidation) {
+  async registrationEmailResending(@Body() email: EmailValidation, @Ip() ip) {
     return this.commandBus.execute(
-      new usePostAuthRegistrationEmailResending(email),
+      new usePostAuthRegistrationEmailResending(email, ip),
     );
   }
   @Post('login') // fix
@@ -257,6 +257,7 @@ export class AuthController {
     @Req() req: Request,
     @Ip() ip,
   ) {
+    console.log('ip', ip === '::1');
     return this.commandBus.execute(
       new usePostAuthLogin(req, loginValue, ip, response),
     );
@@ -323,8 +324,8 @@ export class AuthController {
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('password-recovery')
-  async passwordRecovery(@Body() email: EmailValidation) {
-    return this.commandBus.execute(new usePostAuthPasswordRecovery(email));
+  async passwordRecovery(@Body() email: EmailValidation, @Ip() ip) {
+    return this.commandBus.execute(new usePostAuthPasswordRecovery(email, ip));
   }
 
   @HttpCode(204)

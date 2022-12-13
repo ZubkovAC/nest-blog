@@ -57,7 +57,12 @@ export class EmailService {
       },
     };
   }
-  async sendEmail(emailTo: string, conformationCode: string) {
+  async sendEmail(
+    emailTo: string,
+    url: string,
+    params: string,
+    conformationCode: string,
+  ) {
     const transporter = await nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -65,25 +70,28 @@ export class EmailService {
         pass: process.env.PASSWORD,
       },
     });
+    let address = url;
+    if (url === '::1') {
+      address = 'http://localhost:3000';
+    }
     await transporter.sendMail({
       from: `3y6kob <${process.env.EMAIL}>`, // sender address
       to: emailTo, // list of receivers
       subject: 'Registration ✔', // Subject line
-      // html: `<a href='https://nest-test-blog4412.vercel.app/auth/confirm-email?code=${conformationCode}'>complete registration</a>`,
-      // html: `<h1>To confirm registration, please, press the link below </h1>
-      //  <p>To finish registration please follow the link below:
-      //     <a href='https://nest-test-blog4412.vercel.app/auth/confirm-email?code=${conformationCode}'>complete registration</a>
-      // </p>`,
       body: `<h1>To confirm registration, please, press the link below </h1>
-      <a href='https://nest-test-blog4412.vercel.app/auth/registration-confirmation?code=${conformationCode}'>Confirm registration</a>`,
+      <a href='${address}/${params}?code=${conformationCode}'>Confirm registration</a>`,
       html: `<h1>To confirm registration, please, press the link below </h1>
-      <a href='https://nest-test-blog4412.vercel.app/auth/registration-confirmation?code=${conformationCode}'>Confirm registration</a>`,
-
-      // text: `https://some-front.com/confirm-registration?code=${conformationCode}`, // plain text body <a href='${config.linkBase}/auth/confirm-email?code=${code}'>complete registration</a>
+      <a href='${address}/${params}?code=${conformationCode}'>Confirm registration</a>`,
+      // <a href='https://nest-test-blog4412.vercel.app/auth/registration-confirmation?code=${conformationCode}'>Confirm registration</a>`,
     });
     return;
   }
-  async sendNewPasswordEmail(emailTo: string, conformationCode: string) {
+  async sendNewPasswordEmail(
+    emailTo: string,
+    ip: string,
+    params: string,
+    conformationCode: string,
+  ) {
     const transporter = await nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -91,21 +99,19 @@ export class EmailService {
         pass: process.env.PASSWORD,
       },
     });
+    let address = ip;
+    if (ip === '::1') {
+      address = 'http://localhost:3000';
+    }
     await transporter.sendMail({
       from: `3y6kob <${process.env.EMAIL}>`, // sender address
       to: emailTo, // list of receivers
-      subject: 'Registration ✔', // Subject line
-      // html: `<a href='https://nest-test-blog4412.vercel.app/auth/confirm-email?code=${conformationCode}'>complete registration</a>`,
-      // html: `<h1>To confirm registration, please, press the link below </h1>
-      //  <p>To finish registration please follow the link below:
-      //     <a href='https://nest-test-blog4412.vercel.app/auth/confirm-email?code=${conformationCode}'>complete registration</a>
-      // </p>`,
+      subject: 'Password-recovery ✔', // Subject line
       body: `<h1>To confirm registration, please, press the link below </h1>
-      <a href='https://nest-test-blog4412.vercel.app/auth/password-recovery?recoveryCode=${conformationCode}'>Confirm registration</a>`,
+      <a href='${address}/${params}?code=${conformationCode}'>password-recovery</a>`,
       html: `<h1>To confirm registration, please, press the link below </h1>
-      <a href='https://nest-test-blog4412.vercel.app/auth/password-recovery?recoveryCode=${conformationCode}'>Confirm registration</a>`,
-
-      // text: `https://some-front.com/confirm-registration?code=${conformationCode}`, // plain text body <a href='${config.linkBase}/auth/confirm-email?code=${code}'>complete registration</a>
+      <a href='${address}/${params}?code=${conformationCode}'>password-recovery</a>`,
+      // <a href='https://nest-test-blog4412.vercel.app/auth/password-recovery?recoveryCode=${conformationCode}'>Confirm registration</a>`,
     });
     return;
   }

@@ -40,7 +40,12 @@ export class PostAuthRegistration
       throw new HttpException({ message: error }, HttpStatus.BAD_REQUEST);
     }
     const title = req.headers['user-agent'];
-    await this.authService.registration(registrationValueType, ip, title);
+    await this.authService.registration(
+      registrationValueType,
+      'registration-confirmation',
+      ip,
+      title,
+    );
     return;
   }
 }

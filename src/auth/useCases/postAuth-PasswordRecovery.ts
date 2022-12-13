@@ -4,7 +4,7 @@ import { AuthService } from '../auth.service';
 import { EmailValidation } from '../auth.controller';
 
 export class usePostAuthPasswordRecovery {
-  constructor(public email: EmailValidation) {}
+  constructor(public email: EmailValidation, public ip: string) {}
 }
 
 @CommandHandler(usePostAuthPasswordRecovery)
@@ -16,7 +16,7 @@ export class PostAuthPasswordRecovery
     protected authService: AuthService,
   ) {}
   async execute(command: usePostAuthPasswordRecovery) {
-    const { email } = command;
+    const { email, ip } = command;
     const loginEmail = await this.authRepository.findUserEmail(email.email);
     if (!loginEmail) {
       // throw new HttpException(
@@ -25,7 +25,7 @@ export class PostAuthPasswordRecovery
       // );
       return;
     }
-    await this.authService.newPasswordCode(email.email);
+    await this.authService.newPasswordCode(email.email, ip, 'newPassword');
     return;
   }
 }
