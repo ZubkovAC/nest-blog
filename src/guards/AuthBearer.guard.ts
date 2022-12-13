@@ -3,20 +3,15 @@ import {
   ExecutionContext,
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
 } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { UsersSchemaInterface } from '../users/users.schemas';
 import * as jwt from 'jsonwebtoken';
-import { devicesAuthSchemasInterface } from '../authDevices/devicesAuth.schemas';
 import { DevicesAuthRepository } from '../authDevices/devicesAuth.repository';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class AuthBearerGuard implements CanActivate {
   constructor(
-    // @Inject('DEVICES_AUTH')
     private devicesAuthRepository: DevicesAuthRepository,
     private authService: AuthService,
   ) {}

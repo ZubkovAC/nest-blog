@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { bloggersSchema } from '../blogs/blogs.schemas';
-import { PostsSchemaInterface } from '../posts/posts.schemas';
 
 @Injectable() // request.params
 export class CheckBloggerIdParamsGuard implements CanActivate {

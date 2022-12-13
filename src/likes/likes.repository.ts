@@ -1,6 +1,5 @@
 import { Inject } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { commentsSchemaInterface } from '../comments/comments.schemas';
 import { likesSchemaInterface } from './likes.schemas';
 
 export class LikesRepository {

@@ -10,9 +10,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { PostsService } from './posts.service';
 import { Length } from 'class-validator';
-import { CommentsService } from '../comments/comments.service';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -23,7 +21,6 @@ import {
 } from '@nestjs/swagger';
 import { AuthBearerGuard } from '../guards/AuthBearer.guard';
 import { Request } from 'express';
-import { BlogsService } from '../blogs/blogs.service';
 import { CommandBus } from '@nestjs/cqrs';
 import { useGetPostsPostId } from './useCases/getPosts-PostId';
 import { useGetPosts } from './useCases/getPosts';

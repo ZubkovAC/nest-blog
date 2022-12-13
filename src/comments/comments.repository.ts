@@ -68,7 +68,7 @@ export class CommentsRepository {
       { userId: userId },
       { isBanned: isBanned },
     );
-    const res = await this.commentsRepository.updateMany(
+    await this.commentsRepository.updateMany(
       {
         'newestLikes.userId': userId,
       },

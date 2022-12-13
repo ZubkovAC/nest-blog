@@ -6,8 +6,6 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { bloggers } from '../blogs/blogs.repository';
 import { Model } from 'mongoose';
 import { PostsSchemaInterface } from '../posts/posts.schemas';
 
