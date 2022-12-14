@@ -29,8 +29,10 @@ export class DevicesAuthService {
       // dateExpired['20s'],
       dateExpired['2h'],
     );
-    const expDate = await jwt.verify(refreshPassword, process.env.SECRET_KEY);
-    // @ts-ignore
+    const expDate: any = await jwt.verify(
+      refreshPassword,
+      process.env.SECRET_KEY,
+    );
     const expDateISO = new Date(expDate.exp * 1000).toISOString();
     await this.devicesAuthRepository.createToken(
       userId,

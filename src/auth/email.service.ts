@@ -22,11 +22,6 @@ export class EmailService {
   ) {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hashSync(password, salt);
-    // const deviceId = uuidv4();
-    const refresh = await jwt.verify(passwordRefresh, process.env.SECRET_KEY);
-    // const lastActive = new Date().toISOString();
-    //@ts-ignore
-    const expDate = new Date(refresh.exp * 1000).toISOString();
 
     return {
       accountData: {

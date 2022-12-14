@@ -51,11 +51,11 @@ export class DevicesAuthRepository {
       dateExpired['20s'],
     );
     const lastActive = new Date().toISOString();
-    const expActiveToken = await jwt.verify(
+    const expActiveToken: any = await jwt.verify(
       refreshPassword,
       process.env.SECRET_KEY,
     );
-    //@ts-ignore
+
     const expActive = new Date(expActiveToken.exp * 1000).toISOString();
     await this.devicesAuthRepository.updateOne(
       { deviceId: deviceId },
