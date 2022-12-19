@@ -286,7 +286,7 @@ export class AuthController {
       title,
     );
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      httpOnly: true,
+      // httpOnly: true,
       secure: true,
     });
 
@@ -358,7 +358,7 @@ export class AuthController {
       title,
     );
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      httpOnly: true,
+      // httpOnly: true,
       secure: true,
     });
     return response.send({ accessToken: resLogin.accessToken });
@@ -410,7 +410,7 @@ export class AuthController {
     }
     await this.devicesAuthService.logoutDevice(refreshToken);
     response.cookie('refreshToken', '', {
-      httpOnly: true,
+      // httpOnly: true,
       secure: true,
     });
     return;
