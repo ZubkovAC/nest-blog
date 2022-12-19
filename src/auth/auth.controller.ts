@@ -286,14 +286,21 @@ export class AuthController {
       title,
     );
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      // httpOnly: true,
-      // secure: true,
+      httpOnly: true,
+      secure: true,
     });
 
     return response.send({ accessToken: resLogin.accessToken });
   }
   @HttpCode(200)
   @Post('refresh-token') // fix
+  @ApiBody({
+    schema: {
+      example: {
+        refreshToken: 'string',
+      },
+    },
+  })
   @ApiResponse({
     status: 200,
     description:
@@ -312,12 +319,18 @@ export class AuthController {
   async refreshToken(
     @Req() req,
     @Res({ passthrough: true }) response: Response,
+    @Body('refreshToken') refreshToken: string,
     @Ip() ip,
   ) {
-    // need logic
-    const token = req.cookies;
+    // НЕ РЕАЛИЗОВАНО
+    // const token = req.cookies;
+    // const findRefreshToken = await this.devicesAuthService.findRefreshToken(
+    //   token.refreshToken,
+    // );
+
+    // ВРЕМЕННО
     const findRefreshToken = await this.devicesAuthService.findRefreshToken(
-      token.refreshToken,
+      refreshToken,
     );
     if (!findRefreshToken) {
       throw new HttpException(
@@ -327,7 +340,9 @@ export class AuthController {
     }
     let tokenValidate;
     try {
-      tokenValidate = jwt.verify(token.refreshToken, process.env.SECRET_KEY);
+      // ИСПРАВИТЬ
+      // tokenValidate = jwt.verify(token.refreshToken, process.env.SECRET_KEY);
+      tokenValidate = jwt.verify(refreshToken, process.env.SECRET_KEY);
     } catch (e) {
       throw new HttpException(
         { message: ['unauthorized'] },
@@ -336,19 +351,28 @@ export class AuthController {
     }
     const title = req.headers['user-agent'];
     const resLogin = await this.devicesAuthService.updateDeviseId(
-      token.refreshToken,
+      // ИСПРАВИТЬ
+      // token.refreshToken,
+      refreshToken,
       ip,
       title,
     );
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      // httpOnly: true,
-      // secure: true,
+      httpOnly: true,
+      secure: true,
     });
     return response.send({ accessToken: resLogin.accessToken });
   }
 
   @HttpCode(204)
   @Post('logout')
+  @ApiBody({
+    schema: {
+      example: {
+        refreshToken: 'string',
+      },
+    },
+  })
   @ApiResponse({
     status: 204,
     description:
@@ -361,10 +385,11 @@ export class AuthController {
   })
   async logout(
     @Res({ passthrough: true }) response: Response,
+    @Body('refreshToken') refreshToken: string,
     @Req() req: any,
   ) {
-    // need logic - black list ?
-    const refreshToken = req.cookies.refreshToken;
+    // НЕ РЕАЛИЗОВАНО --- не понятно
+    // const refreshToken = req.cookies.refreshToken;
     const refreshTokenUser = await this.devicesAuthService.findRefreshToken(
       refreshToken,
     );
