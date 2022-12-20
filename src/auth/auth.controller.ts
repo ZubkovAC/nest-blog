@@ -286,7 +286,7 @@ export class AuthController {
       title,
     );
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      expires: new Date(Date.now() + 3600 * 1000 * 24 * 180 * 1),
+      // expires: new Date(Date.now() + 3600 * 1000 * 24 * 180 * 1),
       sameSite: 'none',
       // httpOnly: true,
       // secure: true,
