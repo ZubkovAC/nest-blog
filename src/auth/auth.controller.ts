@@ -322,17 +322,11 @@ export class AuthController {
   async refreshToken(
     @Req() req,
     @Res({ passthrough: true }) response: Response,
-    @Body('refreshToken') refreshToken: string,
     @Ip() ip,
   ) {
-    // НЕ РЕАЛИЗОВАНО
-    // const token = req.cookies;
-    // const findRefreshToken = await this.devicesAuthService.findRefreshToken(
-    //   token.refreshToken,
-    // );
-    // ВРЕМЕННО
+    const token = req.cookies;
     const findRefreshToken = await this.devicesAuthService.findRefreshToken(
-      refreshToken,
+      token.refreshToken,
     );
     if (!findRefreshToken) {
       throw new HttpException(
@@ -342,9 +336,7 @@ export class AuthController {
     }
     let tokenValidate;
     try {
-      // ИСПРАВИТЬ
-      // tokenValidate = jwt.verify(token.refreshToken, process.env.SECRET_KEY);
-      tokenValidate = jwt.verify(refreshToken, process.env.SECRET_KEY);
+      tokenValidate = jwt.verify(token.refreshToken, process.env.SECRET_KEY);
     } catch (e) {
       throw new HttpException(
         { message: ['unauthorized'] },
@@ -353,15 +345,14 @@ export class AuthController {
     }
     const title = req.headers['user-agent'];
     const resLogin = await this.devicesAuthService.updateDeviseId(
-      // ИСПРАВИТЬ
-      // token.refreshToken,
-      refreshToken,
+      token.refreshToken,
       ip,
       title,
     );
     response.cookie('refreshToken', resLogin.passwordRefresh, {
       // httpOnly: true,
-      // secure: true,
+      sameSite: 'none',
+      secure: true,
     });
     return response.send({ accessToken: resLogin.accessToken });
   }
@@ -387,18 +378,13 @@ export class AuthController {
   })
   async logout(
     @Res({ passthrough: true }) response: Response,
-    // @Body('refreshToken') refreshToken: string,
     @Req() req: any,
   ) {
-    // НЕ РЕАЛИЗОВАНО --- не понятно
     const refreshToken = req.cookies.refreshToken;
-
-    console.log(11213, refreshToken);
 
     const refreshTokenUser = await this.devicesAuthService.findRefreshToken(
       refreshToken,
     );
-    console.log('refreshTokenUser', refreshTokenUser);
 
     if (!refreshTokenUser) {
       throw new HttpException(
