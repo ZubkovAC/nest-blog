@@ -285,35 +285,15 @@ export class AuthController {
       token.email,
       title,
     );
-    console.log('resLogin.passwordRefresh', resLogin.passwordRefresh);
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      // expires: new Date(Date.now() + 3600 * 1000 * 24 * 180 * 1),
       sameSite: 'none',
       // httpOnly: true,
       secure: true,
     });
-
     return response.send({ accessToken: resLogin.accessToken });
   }
   @HttpCode(200)
-  @Post('refresh-token') // fix
-  @ApiBody({
-    schema: {
-      example: {
-        refreshToken: 'string',
-      },
-    },
-  })
-  @ApiResponse({
-    status: 200,
-    description:
-      'Returns JWT accessToken + cookie refreshToken (http-only, secure)',
-    schema: {
-      example: {
-        accessToken: 'string',
-      },
-    },
-  })
+  @Post('refresh-token')
   @ApiResponse({
     status: 401,
     description:
