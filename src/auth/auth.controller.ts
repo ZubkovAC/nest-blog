@@ -285,11 +285,12 @@ export class AuthController {
       token.email,
       title,
     );
+    console.log('resLogin.passwordRefresh', resLogin.passwordRefresh);
     response.cookie('refreshToken', resLogin.passwordRefresh, {
       // expires: new Date(Date.now() + 3600 * 1000 * 24 * 180 * 1),
-      sameSite: 'none',
+      // sameSite: 'none',
       // httpOnly: true,
-      // secure: true,
+      secure: true,
     });
 
     return response.send({ accessToken: resLogin.accessToken });
@@ -329,7 +330,6 @@ export class AuthController {
     // const findRefreshToken = await this.devicesAuthService.findRefreshToken(
     //   token.refreshToken,
     // );
-
     // ВРЕМЕННО
     const findRefreshToken = await this.devicesAuthService.findRefreshToken(
       refreshToken,
@@ -387,14 +387,19 @@ export class AuthController {
   })
   async logout(
     @Res({ passthrough: true }) response: Response,
-    @Body('refreshToken') refreshToken: string,
+    // @Body('refreshToken') refreshToken: string,
     @Req() req: any,
   ) {
     // НЕ РЕАЛИЗОВАНО --- не понятно
-    // const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies.refreshToken;
+
+    console.log(11213, refreshToken);
+
     const refreshTokenUser = await this.devicesAuthService.findRefreshToken(
       refreshToken,
     );
+    console.log('refreshTokenUser', refreshTokenUser);
+
     if (!refreshTokenUser) {
       throw new HttpException(
         { message: ['Unauthorized'] },
@@ -411,10 +416,7 @@ export class AuthController {
       );
     }
     await this.devicesAuthService.logoutDevice(refreshToken);
-    response.cookie('refreshToken', '', {
-      // httpOnly: true,
-      // secure: true,
-    });
+    response.clearCookie('refreshToken');
     return;
   }
 
