@@ -473,6 +473,15 @@ export class AuthController {
         HttpStatus.UNAUTHORIZED,
       );
     }
+    const findAccessToken = await this.devicesAuthService.findAccessToken(
+      token,
+    );
+    if (!findAccessToken) {
+      throw new HttpException(
+        { message: ['Unauthorized'] },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     return {
       email: info.email,
       login: info.login,

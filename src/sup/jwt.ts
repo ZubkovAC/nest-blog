@@ -16,6 +16,7 @@ export const dateExpired = {
   '10s': '10sec',
   '15s': '15sec',
   '20s': '20sec',
+  '300s': '300sec',
   '1h': '1h',
   '2h': '2h',
   '24h': '24h',

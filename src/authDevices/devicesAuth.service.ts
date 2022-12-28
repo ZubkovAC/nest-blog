@@ -22,12 +22,12 @@ export class DevicesAuthService {
     const accessPassword = await createJWT(
       { deviceId, userId, login, email },
       // dateExpired['10s'],
-      dateExpired['1h'],
+      dateExpired['300s'],
     );
     const refreshPassword = await createJWT(
       { deviceId, userId, login, email },
       // dateExpired['20s'],
-      dateExpired['2h'],
+      dateExpired['48h'],
     );
     const expDate = await jwt.verify(refreshPassword, process.env.SECRET_KEY);
     //@ts-ignore
@@ -46,6 +46,9 @@ export class DevicesAuthService {
   }
   async findRefreshToken(refreshToken: string) {
     return this.devicesAuthRepository.getToken(refreshToken);
+  }
+  async findAccessToken(accessToken: string) {
+    return this.devicesAuthRepository.getAccessToken(accessToken);
   }
   async findTokenDeviceId(deviceTokenId: string) {
     return this.devicesAuthRepository.getTokenDeviceId(deviceTokenId);
