@@ -68,6 +68,8 @@ import { GetBloggersComments } from './blogger/useCases/getBlogger-blogs-comment
 import { GetBloggerUserBlogIdBan } from './blogger/useCases/getBlogger-users-blog-id';
 import { PutBloggerUserIdBan } from './blogger/useCases/putBlogger-users-id-ban';
 import { PutSABlogsIdBan } from './superAdmin/useCases/putSA-blogs-id-ban';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 const useCasesBlogs = [GetBlogs, GetBlogsBlogId, GetBlogsBlogIdPosts];
 
@@ -145,7 +147,15 @@ const allRepository = [
 ];
 
 @Module({
-  imports: [DatabaseModule, ConfigModule.forRoot(), CqrsModule],
+  imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'swagger-static'),
+      serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/swagger',
+    }),
+    DatabaseModule,
+    ConfigModule.forRoot(),
+    CqrsModule,
+  ],
   controllers: [
     AppController,
     AuthController,

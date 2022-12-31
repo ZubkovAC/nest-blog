@@ -1,0 +1,1 @@
+{"statusCode":404,"message":"ENOENT: no such file or directory, stat 'C:\\Users\\Aleksander\\Desktop\\nest\\first-step\\swagger-static\\index.html'"}
