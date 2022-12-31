@@ -20,24 +20,25 @@ async function bootstrap() {
   app.use(cookieParser());
   // swagger
   const config = new DocumentBuilder()
-    .addSecurity('basic', {
-      type: 'http',
-      scheme: 'basic',
-    })
-    .addBearerAuth()
+    // .addSecurity('basic', {
+    //   type: 'http',
+    //   scheme: 'basic',
+    // })
+    // .addBearerAuth()
     .setTitle('"Study, study and study again." @ Lenin')
     .setDescription('educational API description')
     .setVersion('1.0')
+    .addTag('blogs')
     .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document);
+
   app.use('/auth/login', signUpRequestLimit);
   app.use('/auth/password-recovery', signUpRequestLimit);
   app.use('/auth/registration', signUpRequestLimitRegistration);
   app.use('/auth/registration-confirmation', signUpRequestLimitRC);
   app.use('/auth/new-password', signUpRequestLimitRC);
   app.use('/auth/registration-email-resending', signUpRequestLimitRER);
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
   app.enableCors({ credentials: true, origin: true });
 
   app.useGlobalPipes(new ValidationPipe());
