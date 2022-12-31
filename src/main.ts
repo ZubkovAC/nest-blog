@@ -20,11 +20,11 @@ async function bootstrap() {
   app.use(cookieParser());
   // swagger
   const config = new DocumentBuilder()
-    // .addSecurity('basic', {
-    //   type: 'http',
-    //   scheme: 'basic',
-    // })
-    // .addBearerAuth()
+    .addSecurity('basic', {
+      type: 'http',
+      scheme: 'basic',
+    })
+    .addBearerAuth()
     .setTitle('"Study, study and study again." @ Lenin')
     .setDescription('educational API description')
     .setVersion('1.0')
