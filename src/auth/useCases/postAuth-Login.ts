@@ -14,7 +14,6 @@ export class usePostAuthLogin {
     public response: Response,
   ) {}
 }
-
 @CommandHandler(usePostAuthLogin)
 export class PostAuthLogin implements ICommandHandler<usePostAuthLogin> {
   constructor(
@@ -46,12 +45,11 @@ export class PostAuthLogin implements ICommandHandler<usePostAuthLogin> {
       title,
     );
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      httpOnly: true,
-      // httpOnly: false,
+      sameSite: 'none',
+      // httpOnly: true,
       secure: true,
       // secure: false,
     });
-
     return response.send({ accessToken: resLogin.accessToken });
   }
 }

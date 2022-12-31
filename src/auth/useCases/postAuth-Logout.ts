@@ -36,8 +36,9 @@ export class PostAuthLogout implements ICommandHandler<usePostAuthLogout> {
     await this.devicesAuthService.logoutDevice(refreshToken);
 
     response.cookie('refreshToken', '', {
-      httpOnly: true,
-      // httpOnly: false,
+      // httpOnly: true,
+      // httpOnly: false
+      sameSite: 'none',
       secure: true,
       // secure: false,
     });

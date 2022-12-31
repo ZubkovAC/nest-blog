@@ -97,7 +97,12 @@ export class DevicesAuthRepository {
     return;
   }
   async getAllToken(userId: string) {
-    return this.devicesAuthRepository.find({ userId: userId });
+    return this.devicesAuthRepository.find({
+      $and: [
+        { userId: userId },
+        { expActive: { $gte: new Date().toISOString() } },
+      ],
+    });
   }
   async deleteAll() {
     return this.devicesAuthRepository.deleteMany({});

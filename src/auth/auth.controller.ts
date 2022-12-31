@@ -254,23 +254,12 @@ export class AuthController {
     @Req() req: Request,
     @Ip() ip,
   ) {
-    console.log('ip', ip === '::1');
     return this.commandBus.execute(
       new usePostAuthLogin(req, loginValue, ip, response),
     );
   }
   @HttpCode(200)
   @Post('refresh-token') // fix
-  @ApiResponse({
-    status: 200,
-    description:
-      'Returns JWT accessToken + cookie refreshToken (http-only, secure)',
-    schema: {
-      example: {
-        accessToken: 'string',
-      },
-    },
-  })
   @ApiResponse({
     status: 401,
     description:

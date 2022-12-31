@@ -45,7 +45,8 @@ export class PostAuthRefreshToken
       title,
     );
     response.cookie('refreshToken', resLogin.passwordRefresh, {
-      httpOnly: true,
+      // httpOnly: true,
+      sameSite: 'none',
       secure: true,
     });
     return response.send({ accessToken: resLogin.accessToken });
