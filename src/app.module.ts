@@ -161,7 +161,6 @@ const allRepository = [
     AuthController,
     BlogsController,
     PostsController,
-    // UsersController,
     CommentsController,
     DevicesAuthController,
     TestingController,

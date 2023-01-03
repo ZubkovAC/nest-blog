@@ -2359,6 +2359,17 @@ window.onload = function() {
     ],
     "servers": [],
     "components": {
+      "securitySchemes": {
+        "basic": {
+          "type": "http",
+          "scheme": "basic"
+        },
+        "bearer": {
+          "scheme": "bearer",
+          "bearerFormat": "JWT",
+          "type": "http"
+        }
+      },
       "schemas": {
         "EmailValidation": {
           "type": "object",
