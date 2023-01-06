@@ -2343,6 +2343,20 @@ window.onload = function() {
             }
           ]
         }
+      },
+      "/sql": {
+        "get": {
+          "operationId": "CqlController_getHello",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "sql"
+          ]
+        }
       }
     },
     "info": {
@@ -2359,6 +2373,17 @@ window.onload = function() {
     ],
     "servers": [],
     "components": {
+      "securitySchemes": {
+        "basic": {
+          "type": "http",
+          "scheme": "basic"
+        },
+        "bearer": {
+          "scheme": "bearer",
+          "bearerFormat": "JWT",
+          "type": "http"
+        }
+      },
       "schemas": {
         "EmailValidation": {
           "type": "object",

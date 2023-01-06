@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { BlogsController } from './blogs/blogs.controller';
 import { BlogsService } from './blogs/blogs.service';
 import { BlogsRepository } from './blogs/blogs.repository';
-// import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { UsersRepository } from './users/users.repository';
 import { PostsController } from './posts/posts.controller';
@@ -70,6 +69,8 @@ import { PutBloggerUserIdBan } from './blogger/useCases/putBlogger-users-id-ban'
 import { PutSABlogsIdBan } from './superAdmin/useCases/putSA-blogs-id-ban';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CqlController } from './connetsSql';
 
 const useCasesBlogs = [GetBlogs, GetBlogsBlogId, GetBlogsBlogIdPosts];
 
@@ -155,19 +156,30 @@ const allRepository = [
     DatabaseModule,
     ConfigModule.forRoot(),
     CqrsModule,
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'db.thin.dev',
+      port: +process.env.PORT,
+      username: 'TKQVTviLPJCbKUQYtSTYOVhnREUnxiDk',
+      password: 'MJSIlVyJlPetIzaCZfvSRDdAfuuFYZcj',
+      database: '9d91b848-e942-4215-9d4a-4a64ba26d6cc',
+      // entities: [],
+      // synchronize: true,
+    }),
   ],
   controllers: [
     AppController,
     AuthController,
     BlogsController,
     PostsController,
-    // UsersController,
     CommentsController,
     DevicesAuthController,
     TestingController,
     BloggerController,
     SuperAdminController,
+    CqlController,
   ],
+
   providers: [
     ...firstProviders,
     ...allService,
