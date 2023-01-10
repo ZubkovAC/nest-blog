@@ -3,7 +3,6 @@ import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { AuthRepository } from './auth.repository';
-import { v4 as uuidv4 } from 'uuid';
 import * as jwt from 'jsonwebtoken';
 
 @Injectable()
