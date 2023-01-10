@@ -70,9 +70,10 @@ export class EmailService {
       //     <a href='https://nest-test-blog4412.vercel.app/auth/confirm-email?code=${conformationCode}'>complete registration</a>
       // </p>`,
       body: `<h1>To confirm registration, please, press the link below </h1>
-      <a href='https://nest-test-blog4412.vercel.app/auth/registration-confirmation?code=${conformationCode}'>Confirm registration</a>`,
+      <a href='https://dinasem.github.io/BlogsProject/#/registration-confirmation?code=${conformationCode}'>Confirm registration</a>`,
       html: `<h1>To confirm registration, please, press the link below </h1>
-      <a href='https://nest-test-blog4412.vercel.app/auth/registration-confirmation?code=${conformationCode}'>Confirm registration</a>`,
+       <a href='https://dinasem.github.io/BlogsProject/#/registration-confirmation?code=${conformationCode}'>Confirm registration</a>`,
+      // <a href='https://nest-test-blog4412.vercel.app/auth/registration-confirmation?code=${conformationCode}'>Confirm registration</a>`,
 
       // text: `https://some-front.com/confirm-registration?code=${conformationCode}`, // plain text body <a href='${config.linkBase}/auth/confirm-email?code=${code}'>complete registration</a>
     });
@@ -96,9 +97,9 @@ export class EmailService {
       //     <a href='https://nest-test-blog4412.vercel.app/auth/confirm-email?code=${conformationCode}'>complete registration</a>
       // </p>`,
       body: `<h1>To confirm registration, please, press the link below </h1>
-      <a href='https://nest-test-blog4412.vercel.app/auth/password-recovery?recoveryCode=${conformationCode}'>Confirm registration</a>`,
+      <a href='https://dinasem.github.io/BlogsProject/#/password-recovery?recoveryCode=${conformationCode}'>Confirm registration</a>`,
       html: `<h1>To confirm registration, please, press the link below </h1>
-      <a href='https://nest-test-blog4412.vercel.app/auth/password-recovery?recoveryCode=${conformationCode}'>Confirm registration</a>`,
+      <a href='https://dinasem.github.io/BlogsProject/#/password-recovery?recoveryCode=${conformationCode}'>Confirm registration</a>`,
 
       // text: `https://some-front.com/confirm-registration?code=${conformationCode}`, // plain text body <a href='${config.linkBase}/auth/confirm-email?code=${code}'>complete registration</a>
     });
