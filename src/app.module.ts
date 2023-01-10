@@ -25,9 +25,18 @@ import { DevicesAuthController } from './authDevices/devicesAuth.controller';
 import { DevicesAuthService } from './authDevices/devicesAuth.service';
 import { DevicesAuthRepository } from './authDevices/devicesAuth.repository';
 import { LikesRepository } from './likes/likes.repository';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
-  imports: [DatabaseModule, ConfigModule.forRoot()],
+  imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'swagger-static'),
+      serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/swagger',
+    }),
+    DatabaseModule,
+    ConfigModule.forRoot(),
+  ],
   controllers: [
     AppController,
     AuthController,
