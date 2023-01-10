@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginValueType } from '../auth.controller';
 import { AuthRepository } from '../auth.repository';
 import { DevicesAuthService } from '../../authDevices/devicesAuth.service';
+import { AuthRepositorySql } from '../auth.repositorySql';
 
 export class usePostAuthLogin {
   constructor(
@@ -17,14 +18,17 @@ export class usePostAuthLogin {
 @CommandHandler(usePostAuthLogin)
 export class PostAuthLogin implements ICommandHandler<usePostAuthLogin> {
   constructor(
-    protected authRepository: AuthRepository,
+    // protected authRepository: AuthRepository,
+    protected authRepository: AuthRepositorySql,
     protected devicesAuthService: DevicesAuthService,
   ) {}
   async execute(command: usePostAuthLogin) {
     const { req, loginValue, ip, response } = command;
+    console.log('123');
     const login = await this.authRepository.findUserLogin(
       loginValue.loginOrEmail,
     );
+    console.log('login', login);
     if (!login || login.banInfo.isBanned) {
       throw new UnauthorizedException();
     }

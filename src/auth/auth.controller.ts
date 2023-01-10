@@ -53,12 +53,12 @@ export class RegistrationValueType {
 export class LoginValueType {
   @ApiProperty()
   @IsNotEmpty()
-  @Transform(({ value }: TransformFnParams) => value?.trim())
+  // @Transform(({ value }: TransformFnParams) => value?.trim())
   @Length(3, 30)
   loginOrEmail: string;
   @ApiProperty()
   @IsNotEmpty()
-  @Transform(({ value }: TransformFnParams) => value?.trim())
+  // @Transform(({ value }: TransformFnParams) => value?.trim())
   @Length(6, 20)
   password: string;
 }
@@ -250,7 +250,7 @@ export class AuthController {
   })
   async login(
     @Body() loginValue: LoginValueType,
-    @Res({ passthrough: true }) response: Response,
+    @Res() response: Response,
     @Req() req: Request,
     @Ip() ip,
   ) {
@@ -337,7 +337,7 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
-  @Get('me') // fix
+  @Get('me')
   @ApiResponse({
     status: 200,
     description: 'Success',

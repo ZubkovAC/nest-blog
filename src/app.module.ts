@@ -71,6 +71,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CqlController } from './connetsSql';
+import { AuthRepositorySql } from './auth/auth.repositorySql';
 
 const useCasesBlogs = [GetBlogs, GetBlogsBlogId, GetBlogsBlogIdPosts];
 
@@ -145,6 +146,7 @@ const allRepository = [
   AuthRepository,
   DevicesAuthRepository,
   LikesRepository,
+  AuthRepositorySql,
 ];
 
 @Module({
